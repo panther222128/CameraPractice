@@ -7,31 +7,27 @@
 
 import AVFoundation
 
-protocol AuthorizationManager {
-    func checkAuthorized()
-}
+// MARK: - UseCase, AuthorizationManager의 책임, 역할 명확히 해야 함.
 
-enum SessionSetupResult {
-    case success
-    case notAuthorized
+protocol AuthorizationManager {
+    func checkAuthorization()
+    func requestAccess()
 }
 
 final class DefaultAuthorizationManager: AuthorizationManager {
 
-    func checkAuthorized() {
+    func checkAuthorization() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
             return
         default:
-            self.requestAuthorization()
+            self.requestAccess()
         }
     }
     
-    private func requestAuthorization() {
+    func requestAccess() {
         AVCaptureDevice.requestAccess(for: .video, completionHandler: { granted in
             if !granted {
-                
-            } else {
                 
             }
         })
