@@ -1,0 +1,6 @@
+module Pods_CameraPractice {
+  umbrella header "Pods-CameraPractice-umbrella.h"
+
+  export *
+  module * { export * }
+}

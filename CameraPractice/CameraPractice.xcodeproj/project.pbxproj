@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9B2373B708CEDE453110E580 /* libPods-CameraPractice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB10BA060D23B295B40FEF6 /* libPods-CameraPractice.a */; };
 		A0A0968A2840900B00BCB214 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096892840900B00BCB214 /* AppDelegate.swift */; };
 		A0A0968C2840900B00BCB214 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A0968B2840900B00BCB214 /* SceneDelegate.swift */; };
 		A0A096932840900D00BCB214 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0A096922840900D00BCB214 /* Assets.xcassets */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5B5CA06E605C74C1EE2DEB64 /* Pods-CameraPractice.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CameraPractice.release.xcconfig"; path = "Target Support Files/Pods-CameraPractice/Pods-CameraPractice.release.xcconfig"; sourceTree = "<group>"; };
 		A0A096862840900B00BCB214 /* CameraPractice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CameraPractice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A0A096892840900B00BCB214 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A0A0968B2840900B00BCB214 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -44,6 +46,8 @@
 		A0A096BF2840AF5300BCB214 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		A0A096C22840B9E700BCB214 /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
 		A0A096C52840C08A00BCB214 /* AuthorizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationManager.swift; sourceTree = "<group>"; };
+		BFB10BA060D23B295B40FEF6 /* libPods-CameraPractice.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CameraPractice.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF9C11EFDC1D3A534ECBAAC5 /* Pods-CameraPractice.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CameraPractice.debug.xcconfig"; path = "Target Support Files/Pods-CameraPractice/Pods-CameraPractice.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9B2373B708CEDE453110E580 /* libPods-CameraPractice.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -62,6 +67,8 @@
 			children = (
 				A0A096882840900B00BCB214 /* CameraPractice */,
 				A0A096872840900B00BCB214 /* Products */,
+				C168D6BC77B8CFCD3D1FD9BC /* Pods */,
+				FA43348C704AC43944C6E981 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -76,8 +83,8 @@
 		A0A096882840900B00BCB214 /* CameraPractice */ = {
 			isa = PBXGroup;
 			children = (
-				A0A0969F2840905C00BCB214 /* Application */,
 				A0A0969D2840903600BCB214 /* Resources */,
+				A0A0969F2840905C00BCB214 /* Application */,
 				A0A0969E2840905600BCB214 /* Presentation */,
 				A0A096A12840907000BCB214 /* Domain */,
 				A0A096A42840909600BCB214 /* Data */,
@@ -233,6 +240,24 @@
 			path = AuthorizationManager;
 			sourceTree = "<group>";
 		};
+		C168D6BC77B8CFCD3D1FD9BC /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				FF9C11EFDC1D3A534ECBAAC5 /* Pods-CameraPractice.debug.xcconfig */,
+				5B5CA06E605C74C1EE2DEB64 /* Pods-CameraPractice.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		FA43348C704AC43944C6E981 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BFB10BA060D23B295B40FEF6 /* libPods-CameraPractice.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -240,6 +265,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A0A0969A2840900D00BCB214 /* Build configuration list for PBXNativeTarget "CameraPractice" */;
 			buildPhases = (
+				0442E93A301EB2731418F525 /* [CP] Check Pods Manifest.lock */,
 				A0A096822840900B00BCB214 /* Sources */,
 				A0A096832840900B00BCB214 /* Frameworks */,
 				A0A096842840900B00BCB214 /* Resources */,
@@ -297,6 +323,31 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0442E93A301EB2731418F525 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-CameraPractice-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A0A096822840900B00BCB214 /* Sources */ = {
@@ -384,7 +435,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -438,7 +489,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -450,6 +501,7 @@
 		};
 		A0A0969B2840900D00BCB214 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FF9C11EFDC1D3A534ECBAAC5 /* Pods-CameraPractice.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -477,6 +529,7 @@
 		};
 		A0A0969C2840900D00BCB214 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5B5CA06E605C74C1EE2DEB64 /* Pods-CameraPractice.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

@@ -7,30 +7,19 @@
 
 import AVFoundation
 
-// MARK: - UseCase, AuthorizationManager의 책임, 역할 명확히 해야 함.
-
 protocol AuthorizationManager {
-    func checkAuthorization()
-    func requestAccess()
+    func checkAuthorization(completion: @escaping (Bool) -> Void)
 }
 
 final class DefaultAuthorizationManager: AuthorizationManager {
 
-    func checkAuthorization() {
+    func checkAuthorization(completion: @escaping (Bool) -> Void) {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
-            return
+            completion(true)
         default:
-            self.requestAccess()
+            completion(false)
         }
-    }
-    
-    func requestAccess() {
-        AVCaptureDevice.requestAccess(for: .video, completionHandler: { granted in
-            if !granted {
-                
-            }
-        })
     }
     
 }
