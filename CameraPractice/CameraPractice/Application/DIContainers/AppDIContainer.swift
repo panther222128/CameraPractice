@@ -18,8 +18,12 @@ final class AppDIContainer {
         return DefaultAuthorizationManager()
     }()
     
+    lazy var cameraService: CameraService = {
+       return DefaultCameraSerivce()
+    }()
+    
     func makeSceneDIContainer() -> SceneDIContainer {
-        let dependencies = SceneDIContainer.Dependencies(authorizationManager: authorizationManager)
+        let dependencies = SceneDIContainer.Dependencies(authorizationManager: authorizationManager, cameraService: cameraService)
         return SceneDIContainer(dependencies: dependencies)
     }
     

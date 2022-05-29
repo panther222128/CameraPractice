@@ -12,6 +12,7 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     struct Dependencies {
 //        let apiDataTransferService: DataTransferService
         let authorizationManager: AuthorizationManager
+        let cameraService: CameraService
     }
     
     private let dependencies: Dependencies
@@ -32,7 +33,7 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     }
     
     private func makeCameraSearchUseCase() -> CameraUseCase {
-        return DefaultCameraUseCase(cameraRepository: self.makeCameraRepository(), authorizationManager: self.dependencies.authorizationManager)
+        return DefaultCameraUseCase(cameraRepository: self.makeCameraRepository(), authorizationManager: self.dependencies.authorizationManager, cameraService: self.dependencies.cameraService)
     }
     
     private func makeCameraViewModel() -> CameraViewModel {

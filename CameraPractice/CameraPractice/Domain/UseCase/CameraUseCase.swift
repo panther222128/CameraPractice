@@ -11,15 +11,21 @@ protocol CameraUseCase {
     func excuteCheckAuthorization(completion: @escaping (Bool) -> Void)
 }
 
-final class DefaultCameraUseCase: CameraUseCase {
+final class DefaultCameraUseCase {
     
     private let cameraRepository: CameraRepository
     private let authorizationManager: AuthorizationManager
+    private let cameraService: CameraService
     
-    init(cameraRepository: CameraRepository, authorizationManager: AuthorizationManager) {
+    init(cameraRepository: CameraRepository, authorizationManager: AuthorizationManager, cameraService: CameraService) {
         self.cameraRepository = cameraRepository
         self.authorizationManager = authorizationManager
+        self.cameraService = cameraService
     }
+    
+}
+
+extension DefaultCameraUseCase: CameraUseCase {
     
     func excuteCheckAuthorization(completion: @escaping (Bool) -> Void) {
         self.authorizationManager.checkAuthorization { isAuthorized in
@@ -38,6 +44,18 @@ final class DefaultCameraUseCase: CameraUseCase {
             }
         }
     }
+    
+    func excecuteSetUpCamera() {
+        self.cameraService.configureSession()
+        self.cameraService.configureCameraDivce( )
+        self.cameraService.configureAudioDevice()
+        self.cameraService.configureCameraDivcePhotoOutput()
+//        self.cameraService.configurePreviewSession()
+    }
+    
+}
+
+extension DefaultCameraUseCase {
     
     private func requestAccess(completion: @escaping (Bool) -> Void) {
         AVCaptureDevice.requestAccess(for: .video, completionHandler: { isAuthorized in
