@@ -5,7 +5,7 @@
 //  Created by Jun Ho JANG on 2022/05/27.
 //
 
-import Foundation
+import AVFoundation
 
 final class AppDIContainer {
     
@@ -19,7 +19,8 @@ final class AppDIContainer {
     }()
     
     lazy var cameraService: CameraService = {
-       return DefaultCameraSerivce()
+        let cameraDeviceConfiguration: CameraDeviceConfigurable & AudioDeviceConfigurable = DefaultDeviceConfiguration()
+        return DefaultCameraSerivce(deviceConfiguration: cameraDeviceConfiguration)
     }()
     
     func makeSceneDIContainer() -> SceneDIContainer {

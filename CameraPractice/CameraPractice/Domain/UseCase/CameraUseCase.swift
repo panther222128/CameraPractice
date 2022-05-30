@@ -8,7 +8,8 @@
 import AVFoundation
 
 protocol CameraUseCase {
-    func excuteCheckAuthorization(completion: @escaping (Bool) -> Void)
+    func executeCheckAuthorization(completion: @escaping (Bool) -> Void)
+    func setUpCamera(previewView: PreviewView)
 }
 
 final class DefaultCameraUseCase {
@@ -27,7 +28,7 @@ final class DefaultCameraUseCase {
 
 extension DefaultCameraUseCase: CameraUseCase {
     
-    func excuteCheckAuthorization(completion: @escaping (Bool) -> Void) {
+    func executeCheckAuthorization(completion: @escaping (Bool) -> Void) {
         self.authorizationManager.checkAuthorization { isAuthorized in
             switch isAuthorized {
             case true:
@@ -45,12 +46,12 @@ extension DefaultCameraUseCase: CameraUseCase {
         }
     }
     
-    func excecuteSetUpCamera() {
-        self.cameraService.configureSession()
-        self.cameraService.configureCameraDivce( )
-        self.cameraService.configureAudioDevice()
-        self.cameraService.configureCameraDivcePhotoOutput()
-//        self.cameraService.configurePreviewSession()
+    func setUpCamera(previewView: PreviewView) {
+        DispatchQueue.main.async {
+            self.cameraService.startSession()
+            self.cameraService.applyPreviewView(previewView: previewView)
+            self.cameraService.configureSession()
+        }
     }
     
 }

@@ -9,108 +9,57 @@ import AVFoundation
 
 protocol CameraService {
     func configureSession()
-    func configureCameraDivce()
-    func configureAudioDevice()
-    func configureCameraDivcePhotoOutput()
-//    func configurePreviewSession()
+    func startSession()
+    func applyPreviewView(previewView: PreviewView)
 }
 
 final class DefaultCameraSerivce: CameraService {
     
-    private var captureSession: AVCaptureSession?
+    private let deviceConfiguration: CameraDeviceConfigurable & AudioDeviceConfigurable
+    private var captureSession: AVCaptureSession = AVCaptureSession()
+    private var photoOutput: CapturePhotoOutput?
+
     private let sessionQueue = DispatchQueue(label: "session queue")
     
-    // MARK: - Photo input, output
-    private let photoOutput = AVCapturePhotoOutput()
-    @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
-    
-    init() {
-        self.captureSession = nil
-    }
-    
-    // Session
-    func configureSession() {
+    init(deviceConfiguration: CameraDeviceConfigurable & AudioDeviceConfigurable) {
         self.captureSession = AVCaptureSession()
-        guard let captureSession = captureSession else { return }
-        captureSession.beginConfiguration()
-        captureSession.sessionPreset = .photo
+        self.deviceConfiguration = deviceConfiguration
     }
     
-    // Photo input
-    func configureCameraDivce() {
-        guard let captureSession = captureSession else { return }
-        do {
-            var defaultVideoDevice: AVCaptureDevice?
-            
-            if let dualCameraDevice = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) {
-                defaultVideoDevice = dualCameraDevice
-            } else if let dualWideCameraDevice = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) {
-                defaultVideoDevice = dualWideCameraDevice
-            } else if let backCameraDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
-                defaultVideoDevice = backCameraDevice
-            } else if let frontCameraDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) {
-                defaultVideoDevice = frontCameraDevice
-            }
-            
-            guard let videoDevice = defaultVideoDevice else {
-                captureSession.commitConfiguration()
-                return
-            }
-            
-            let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
-            
-            if captureSession.canAddInput(videoDeviceInput) {
-                captureSession.addInput(videoDeviceInput)
-                self.videoDeviceInput = videoDeviceInput
-//                DispatchQueue.main.async {
-//                    let initialVideoOrientation: AVCaptureVideoOrientation = .portrait
-//                    previewView.videoPreviewLayer.connection?.videoOrientation = initialVideoOrientation
-//                }
-            } else {
-                captureSession.commitConfiguration()
-                return
-            }
-        } catch {
-            captureSession.commitConfiguration()
-            return
+    func configureSession() {
+        DispatchQueue.main.async {
+            self.captureSession.beginConfiguration()
+            self.captureSession.sessionPreset = .photo
+            self.configureDevice()
+            self.configureOutput()
         }
     }
     
-    func configureAudioDevice() {
-        guard let captureSession = captureSession else { return }
-        do {
-            let audioDevice = AVCaptureDevice.default(for: .audio)
-            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
-            if captureSession.canAddInput(audioDeviceInput) {
-                captureSession.addInput(audioDeviceInput)
-            } else {
-                print("Could not add audio device input to the session")
-            }
-        } catch {
-            print("Could not create audio device input: \(error)")
-        }
+    func startSession() {
+        self.captureSession.startRunning()
     }
     
-    // MARK: - Photo output
-    func configureCameraDivcePhotoOutput() {
-        guard let captureSession = captureSession else { return }
-        if captureSession.canAddOutput(photoOutput) {
-            captureSession.addOutput(photoOutput)
-            
-            photoOutput.isHighResolutionCaptureEnabled = true
-            photoOutput.isLivePhotoCaptureEnabled = photoOutput.isLivePhotoCaptureSupported
-            photoOutput.isDepthDataDeliveryEnabled = photoOutput.isDepthDataDeliverySupported
-            photoOutput.isPortraitEffectsMatteDeliveryEnabled = photoOutput.isPortraitEffectsMatteDeliverySupported
-            photoOutput.enabledSemanticSegmentationMatteTypes = photoOutput.availableSemanticSegmentationMatteTypes
+    func applyPreviewView(previewView: PreviewView) {
+        previewView.session = self.captureSession
+    }
+    
+}
+
+extension DefaultCameraSerivce {
+    
+    private func configureDevice() {
+        self.deviceConfiguration.configureCameraDevice(captureSession: self.captureSession)
+        self.deviceConfiguration.configureAudioDevice(captureSession: self.captureSession)
+    }
+    
+    private func configureOutput() {
+        guard let photoOutput = photoOutput else { return }
+        if self.captureSession.canAddOutput(photoOutput) {
+            self.captureSession.addOutput(photoOutput)
         } else {
-            captureSession.commitConfiguration()
-            return
+            self.captureSession.commitConfiguration()
         }
-        captureSession.commitConfiguration()
+        self.captureSession.commitConfiguration()
     }
-    
-//    func configurePreviewSession() {
-//        previewView.session = captureSession
-//    }
     
 }
