@@ -47,9 +47,9 @@ extension DefaultCameraUseCase: CameraUseCase {
     
     func excecuteSetUpCamera() {
         self.cameraService.configureSession()
-        self.cameraService.configureCameraDivce( )
+        self.cameraService.configureCameraDevice( )
         self.cameraService.configureAudioDevice()
-        self.cameraService.configureCameraDivcePhotoOutput()
+        self.cameraService.configureCameraDevicePhotoOutput()
 //        self.cameraService.configurePreviewSession()
     }
     

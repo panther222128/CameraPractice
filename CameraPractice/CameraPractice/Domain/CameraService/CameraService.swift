@@ -9,9 +9,9 @@ import AVFoundation
 
 protocol CameraService {
     func configureSession()
-    func configureCameraDivce()
+    func configureCameraDevice()
     func configureAudioDevice()
-    func configureCameraDivcePhotoOutput()
+    func configureCameraDevicePhotoOutput()
 //    func configurePreviewSession()
 }
 
@@ -37,7 +37,7 @@ final class DefaultCameraSerivce: CameraService {
     }
     
     // Photo input
-    func configureCameraDivce() {
+    func configureCameraDevice() {
         guard let captureSession = captureSession else { return }
         do {
             var defaultVideoDevice: AVCaptureDevice?
@@ -92,7 +92,7 @@ final class DefaultCameraSerivce: CameraService {
     }
     
     // MARK: - Photo output
-    func configureCameraDivcePhotoOutput() {
+    func configureCameraDevicePhotoOutput() {
         guard let captureSession = captureSession else { return }
         if captureSession.canAddOutput(photoOutput) {
             captureSession.addOutput(photoOutput)
