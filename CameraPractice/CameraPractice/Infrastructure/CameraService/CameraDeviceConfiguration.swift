@@ -8,8 +8,8 @@
 import AVFoundation
 
 protocol CameraDeviceConfigurable {
-    func configureCameraDevice(captureSession: AVCaptureSession)
     func isDeviceFlashAvailable() -> Bool
+    func configureCameraDevice(captureSession: AVCaptureSession)
 }
 
 protocol AudioDeviceConfigurable {
