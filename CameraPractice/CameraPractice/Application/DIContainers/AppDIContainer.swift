@@ -20,7 +20,8 @@ final class AppDIContainer {
     
     lazy var cameraService: CameraService = {
         let cameraDeviceConfiguration: CameraDeviceConfigurable & AudioDeviceConfigurable = DefaultDeviceConfiguration()
-        return DefaultCameraSerivce(deviceConfiguration: cameraDeviceConfiguration)
+        let photoSettings: DefaultPhotoSettings = DefaultPhotoSettings()
+        return DefaultCameraSerivce(deviceConfiguration: cameraDeviceConfiguration, photoSettings: photoSettings)
     }()
     
     func makeSceneDIContainer() -> SceneDIContainer {

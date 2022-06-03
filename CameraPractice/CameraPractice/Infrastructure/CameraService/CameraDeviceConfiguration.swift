@@ -9,6 +9,7 @@ import AVFoundation
 
 protocol CameraDeviceConfigurable {
     func configureCameraDevice(captureSession: AVCaptureSession)
+    func isDeviceFlashAvailable() -> Bool
 }
 
 protocol AudioDeviceConfigurable {
@@ -24,6 +25,10 @@ final class DefaultDeviceConfiguration {
         self.defaultVideoDevice = nil
     }
     
+    func isDeviceFlashAvailable() -> Bool {
+        return self.videoDeviceInput.device.isFlashAvailable
+    }
+    
 }
 
 // MARK: - Camera device configuration
@@ -36,15 +41,17 @@ extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
                 self.defaultVideoDevice = dualCameraDevice
             } else if let dualWideCameraDevice = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) {
                 self.defaultVideoDevice = dualWideCameraDevice
-            } else if let backCameraDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
-                self.defaultVideoDevice = backCameraDevice
-            } else if let frontCameraDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) {
-                self.defaultVideoDevice = frontCameraDevice
+            } else if let builtInWideAngleCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
+                self.defaultVideoDevice = builtInWideAngleCamera
+            } else if let builtInWideAngleCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) {
+                self.defaultVideoDevice = builtInWideAngleCamera
             }
+            
             guard let videoDevice = defaultVideoDevice else {
                 captureSession.commitConfiguration()
                 return
             }
+            
             let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
             
             if captureSession.canAddInput(videoDeviceInput) {

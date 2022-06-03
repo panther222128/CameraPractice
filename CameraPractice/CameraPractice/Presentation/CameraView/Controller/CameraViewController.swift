@@ -13,25 +13,24 @@ final class CameraViewController: UIViewController {
 
     private var viewModel: CameraViewModel!
     private let previewView = PreviewView()
+    private let takePhotoButton = UIButton()
     
-    // MARK: - Related with session
-    private let sessionQueue = DispatchQueue(label: "session queue")
-
-    // MARK: - viewDidLoad()
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.viewModel.didCheckIsAuthorized()
+        self.viewModel.checkIsAuthorized()
         self.addSubviews()
         self.configureLayout()
+        self.configureTakePhotoButton()
         self.bind()
     }
     
     private func bind() {
         self.viewModel.isAuthorized.bind { [weak self] isAuthorized in
             guard let self = self else { return }
+            guard let isAuthorized = isAuthorized else { return }
             if isAuthorized {
                 DispatchQueue.main.async {
-                    self.viewModel.didTakePhoto(previewView: self.previewView)
+                    self.viewModel.didPressTakePhotoButton(previewView: self.previewView)
                 }
             } else {
                 self.presentAuthorizationAlert()
@@ -62,12 +61,22 @@ extension CameraViewController {
     
     private func addSubviews() {
         self.view.addSubview(self.previewView)
+        self.view.addSubview(self.takePhotoButton)
     }
     
     private func configureLayout() {
         self.previewView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
+        self.takePhotoButton.snp.makeConstraints {
+            $0.leading.trailing.bottom.equalToSuperview()
+            $0.top.equalTo(self.previewView.snp.bottom).offset(-60)
+        }
+    }
+    
+    private func configureTakePhotoButton() {
+        self.takePhotoButton.backgroundColor = .red
     }
     
 }
+

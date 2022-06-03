@@ -9,7 +9,7 @@ import AVFoundation
 
 protocol CameraUseCase {
     func executeCheckAuthorization(completion: @escaping (Bool) -> Void)
-    func setUpCamera(previewView: PreviewView)
+    func executeTakePhoto(previewView: PreviewView)
 }
 
 final class DefaultCameraUseCase {
@@ -46,12 +46,8 @@ extension DefaultCameraUseCase: CameraUseCase {
         }
     }
     
-    func setUpCamera(previewView: PreviewView) {
-        DispatchQueue.main.async {
-            self.cameraService.startSession()
-            self.cameraService.applyPreviewView(previewView: previewView)
-            self.cameraService.configureSession()
-        }
+    func executeTakePhoto(previewView: PreviewView) {
+
     }
     
 }

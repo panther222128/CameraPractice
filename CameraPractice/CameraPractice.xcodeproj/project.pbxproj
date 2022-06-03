@@ -25,6 +25,7 @@
 		A0A096C02840AF5300BCB214 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096BF2840AF5300BCB214 /* Observable.swift */; };
 		A0A096C32840B9E700BCB214 /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096C22840B9E700BCB214 /* PreviewView.swift */; };
 		A0A096C62840C08A00BCB214 /* AuthorizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096C52840C08A00BCB214 /* AuthorizationManager.swift */; };
+		A0A7FD052849AB8D00A8AD5B /* DefaultPhotoSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A7FD042849AB8D00A8AD5B /* DefaultPhotoSettings.swift */; };
 		A0DA208D2843644E00604A5D /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DA208C2843644E00604A5D /* CameraService.swift */; };
 		A0F9D9D12844874C001FAF59 /* CapturePhotoOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F9D9D02844874C001FAF59 /* CapturePhotoOutput.swift */; };
 /* End PBXBuildFile section */
@@ -50,6 +51,7 @@
 		A0A096BF2840AF5300BCB214 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		A0A096C22840B9E700BCB214 /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
 		A0A096C52840C08A00BCB214 /* AuthorizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationManager.swift; sourceTree = "<group>"; };
+		A0A7FD042849AB8D00A8AD5B /* DefaultPhotoSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultPhotoSettings.swift; sourceTree = "<group>"; };
 		A0DA208C2843644E00604A5D /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
 		A0F9D9D02844874C001FAF59 /* CapturePhotoOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturePhotoOutput.swift; sourceTree = "<group>"; };
 		BFB10BA060D23B295B40FEF6 /* libPods-CameraPractice.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CameraPractice.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -142,7 +144,6 @@
 			isa = PBXGroup;
 			children = (
 				A0F9D9CF28448734001FAF59 /* Entity */,
-				A0DA208B2843643F00604A5D /* CameraService */,
 				A0A096B62840ACCE00BCB214 /* Interface */,
 				A0A096A22840908B00BCB214 /* UseCase */,
 			);
@@ -160,6 +161,7 @@
 		A0A096A32840909000BCB214 /* Infrastructure */ = {
 			isa = PBXGroup;
 			children = (
+				A0DA208B2843643F00604A5D /* CameraService */,
 				A0A096C42840C07200BCB214 /* AuthorizationManager */,
 			);
 			path = Infrastructure;
@@ -253,6 +255,7 @@
 			children = (
 				A0DA208C2843644E00604A5D /* CameraService.swift */,
 				A01287D5284456650068A093 /* CameraDeviceConfiguration.swift */,
+				A0A7FD042849AB8D00A8AD5B /* DefaultPhotoSettings.swift */,
 			);
 			path = CameraService;
 			sourceTree = "<group>";
@@ -387,6 +390,7 @@
 				A0A096C02840AF5300BCB214 /* Observable.swift in Sources */,
 				A0A0968C2840900B00BCB214 /* SceneDelegate.swift in Sources */,
 				A0A096AF2840918900BCB214 /* ViewFlowCoordinator.swift in Sources */,
+				A0A7FD052849AB8D00A8AD5B /* DefaultPhotoSettings.swift in Sources */,
 				A0A096B12840AC4F00BCB214 /* CameraViewController.swift in Sources */,
 				A0A096C62840C08A00BCB214 /* AuthorizationManager.swift in Sources */,
 				A0A096B52840ACAD00BCB214 /* CameraViewModel.swift in Sources */,
