@@ -6,11 +6,11 @@
 //
 
 import AVFoundation
+import Photos
 
 protocol CameraUseCase {
-    func executeCheckAuthorization(completion: @escaping (Bool) -> Void)
-    func executeTakePhoto()
-    func executePrepareToTakePhoto()
+    func checkDeviceAccessAuthorizationStatus(completion: @escaping (Bool) -> Void)
+    func checkPhotoAlbumAccessAuthorizationStatus(completion: @escaping (Bool) -> Void)
 }
 
 final class DefaultCameraUseCase {
@@ -27,13 +27,13 @@ final class DefaultCameraUseCase {
 
 extension DefaultCameraUseCase: CameraUseCase {
     
-    func executeCheckAuthorization(completion: @escaping (Bool) -> Void) {
-        self.authorizationManager.checkAuthorization { isAuthorized in
+    func checkDeviceAccessAuthorizationStatus(completion: @escaping (Bool) -> Void) {
+        self.authorizationManager.checkDeviceAuthorization { isAuthorized in
             switch isAuthorized {
             case true:
                 completion(true)
             case false:
-                self.requestAccess { isAuthorized in
+                self.requestForDeviceAccess { isAuthorized in
                     switch isAuthorized {
                     case true:
                         completion(true)
@@ -45,18 +45,29 @@ extension DefaultCameraUseCase: CameraUseCase {
         }
     }
     
-    func executeTakePhoto() {
+    func checkPhotoAlbumAccessAuthorizationStatus(completion: @escaping (Bool) -> Void) {
+        self.authorizationManager.checkPhotoAlbumAuthorization { isAuthorized in
+            switch isAuthorized {
+            case true:
+                completion(true)
+            case false:
+                self.requestForPhotoAlbumAccess { isAuthorized in
+                    switch isAuthorized {
+                    case true:
+                        completion(true)
+                    case false:
+                        completion(false)
+                    }
+                }
+            }
+        }
+    }
 
-    }
-    
-    func executePrepareToTakePhoto() {
-    }
-    
 }
 
 extension DefaultCameraUseCase {
     
-    private func requestAccess(completion: @escaping (Bool) -> Void) {
+    private func requestForDeviceAccess(completion: @escaping (Bool) -> Void) {
         AVCaptureDevice.requestAccess(for: .video, completionHandler: { isAuthorized in
             if !isAuthorized {
                 completion(false)
@@ -64,6 +75,17 @@ extension DefaultCameraUseCase {
                 completion(true)
             }
         })
+    }
+    
+    private func requestForPhotoAlbumAccess(completion: @escaping (Bool) -> Void) {
+        PHPhotoLibrary.requestAuthorization(for: .readWrite) { authorizationStatus in
+            switch authorizationStatus {
+            case .authorized:
+                completion(true)
+            default:
+                completion(false)
+            }
+        }
     }
     
 }

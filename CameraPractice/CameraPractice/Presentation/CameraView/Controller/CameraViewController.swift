@@ -35,7 +35,8 @@ final class CameraViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.viewModel.checkIsAuthorized()
+        self.viewModel.didCheckIsDeviceAccessAuthorized()
+        self.viewModel.didCheckIsPhotoAlbumAccessAuthorized()
         self.addSubviews()
         self.configureLayout()
         self.configureTakePhotoButton()
@@ -48,7 +49,7 @@ final class CameraViewController: UIViewController {
     }
     
     private func bind() {
-        self.viewModel.isAuthorized.bind { [weak self] isAuthorized in
+        self.viewModel.isDeviceAccessAuthorized.bind { [weak self] isAuthorized in
             guard let self = self else { return }
             guard let isAuthorized = isAuthorized else { return }
             if isAuthorized {
@@ -56,7 +57,18 @@ final class CameraViewController: UIViewController {
                     self.cameraService.prepareToUseCamera(at: self.cameraConverter.selectedSegmentIndex, presenter: self)
                 }
             } else {
-                self.presentAuthorizationAlert()
+                self.presentDeviceAccessAuthorizationStatusAlert()
+            }
+        }
+        self.viewModel.isPhotoAlbumAccessAuthorized.bind { [weak self] isAuthorized in
+            guard let self = self else { return }
+            guard let isAuthorized = isAuthorized else { return }
+            if isAuthorized {
+                DispatchQueue.main.async {
+                    
+                }
+            } else {
+                self.presentPhotoAlbumAccessAuthorizationStatusAlert()
             }
         }
     }
@@ -68,9 +80,18 @@ final class CameraViewController: UIViewController {
         return viewController
     }
     
-    private func presentAuthorizationAlert() {
+    private func presentDeviceAccessAuthorizationStatusAlert() {
         DispatchQueue.main.async {
             let authorizationAlert = UIAlertController(title: "카메라 접근 권한", message: "접근 권한을 허용하지 않으면 카메라를 사용할 수 없습니다.", preferredStyle: UIAlertController.Style.alert)
+            let addAuthorizationAlertAction = UIAlertAction(title: "OK", style: .default)
+            authorizationAlert.addAction(addAuthorizationAlertAction)
+            self.present(authorizationAlert, animated: true, completion: nil)
+        }
+    }
+    
+    private func presentPhotoAlbumAccessAuthorizationStatusAlert() {
+        DispatchQueue.main.async {
+            let authorizationAlert = UIAlertController(title: "사진 앨범 접근 권한", message: "접근 권한을 허용하지 않으면 앱의 주요 기능을 사용할 수 없습니다.", preferredStyle: UIAlertController.Style.alert)
             let addAuthorizationAlertAction = UIAlertAction(title: "OK", style: .default)
             authorizationAlert.addAction(addAuthorizationAlertAction)
             self.present(authorizationAlert, animated: true, completion: nil)

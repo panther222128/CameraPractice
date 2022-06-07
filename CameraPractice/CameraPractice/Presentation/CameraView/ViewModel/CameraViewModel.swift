@@ -8,35 +8,49 @@
 import Foundation
 
 protocol CameraViewModel {
-    var isAuthorized: Observable<Bool?> { get }
+    var isDeviceAccessAuthorized: Observable<Bool?> { get }
+    var isPhotoAlbumAccessAuthorized: Observable<Bool?> { get }
 
     func didPressTakePhotoButton()
-
-    func checkIsAuthorized()
+    func didCheckIsDeviceAccessAuthorized()
+    func didCheckIsPhotoAlbumAccessAuthorized()
 }
 
 class DefaultCameraViewModel: CameraViewModel {
     
     private let cameraUseCase: CameraUseCase
     
-    let isAuthorized: Observable<Bool?>
+    let isDeviceAccessAuthorized: Observable<Bool?>
+    let isPhotoAlbumAccessAuthorized: Observable<Bool?>
     
     init(cameraUseCase: CameraUseCase) {
         self.cameraUseCase = cameraUseCase
-        self.isAuthorized = Observable(nil)
+        self.isDeviceAccessAuthorized = Observable(nil)
+        self.isPhotoAlbumAccessAuthorized = Observable(nil)
     }
     
     func didPressTakePhotoButton() {
-        self.cameraUseCase.executeTakePhoto()
+        
     }
 
-    func checkIsAuthorized() {
-        self.cameraUseCase.executeCheckAuthorization { isAuthorized in
+    func didCheckIsDeviceAccessAuthorized() {
+        self.cameraUseCase.checkDeviceAccessAuthorizationStatus { isAuthorized in
             switch isAuthorized {
             case true:
-                self.isAuthorized.value = true
+                self.isDeviceAccessAuthorized.value = true
             case false:
-                self.isAuthorized.value = false
+                self.isDeviceAccessAuthorized.value = false
+            }
+        }
+    }
+    
+    func didCheckIsPhotoAlbumAccessAuthorized() {
+        self.cameraUseCase.checkPhotoAlbumAccessAuthorizationStatus { isAuthorized in
+            switch isAuthorized {
+            case true:
+                self.isPhotoAlbumAccessAuthorized.value = true
+            case false:
+                self.isPhotoAlbumAccessAuthorized.value = false
             }
         }
     }

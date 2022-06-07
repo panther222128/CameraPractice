@@ -52,10 +52,6 @@ extension DefaultCameraSerivce: CameraService {
         }
     }
     
-    func takePhoto() {
-        
-    }
-    
 }
 
 // MARK: - Session and previewview

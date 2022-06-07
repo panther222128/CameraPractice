@@ -6,15 +6,26 @@
 //
 
 import AVFoundation
+import Photos
 
 protocol AuthorizationManager {
-    func checkAuthorization(completion: @escaping (Bool) -> Void)
+    func checkDeviceAuthorization(completion: @escaping (Bool) -> Void)
+    func checkPhotoAlbumAuthorization(completion: @escaping (Bool) -> Void)
 }
 
 final class DefaultAuthorizationManager: AuthorizationManager {
 
-    func checkAuthorization(completion: @escaping (Bool) -> Void) {
+    func checkDeviceAuthorization(completion: @escaping (Bool) -> Void) {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            completion(true)
+        default:
+            completion(false)
+        }
+    }
+    
+    func checkPhotoAlbumAuthorization(completion: @escaping (Bool) -> Void) {
+        switch PHPhotoLibrary.authorizationStatus(for: .readWrite) {
         case .authorized:
             completion(true)
         default:
