@@ -33,7 +33,7 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     }
     
     private func makeCameraSearchUseCase() -> CameraUseCase {
-        return DefaultCameraUseCase(cameraRepository: self.makeCameraRepository(), authorizationManager: self.dependencies.authorizationManager, cameraService: self.dependencies.cameraService)
+        return DefaultCameraUseCase(cameraRepository: self.makeCameraRepository(), authorizationManager: self.dependencies.authorizationManager)
     }
     
     private func makeCameraViewModel() -> CameraViewModel {
@@ -41,7 +41,7 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     }
     
     func makeCameraViewController() -> CameraViewController {
-        return CameraViewController.create(with: self.makeCameraViewModel())
+        return CameraViewController.create(with: self.makeCameraViewModel(), with: self.dependencies.cameraService)
     }
 
 }

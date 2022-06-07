@@ -7,18 +7,27 @@
 
 import AVFoundation
 
+protocol DeviceConfigurable: CameraDeviceConfigurable & AudioDeviceConfigurable {
+    var defaultVideoDevice: AVCaptureDevice? { get }
+}
+
 protocol CameraDeviceConfigurable {
     func isDeviceFlashAvailable() -> Bool
-    func configureCameraDevice(captureSession: AVCaptureSession)
+    func configureCameraDevice(captureSession: AVCaptureSession, cameraDevices: CameraDevices)
 }
 
 protocol AudioDeviceConfigurable {
     func configureAudioDevice(captureSession: AVCaptureSession)
 }
 
-final class DefaultDeviceConfiguration {
+enum CameraDevices {
+    case builtInDualWideCamera
+    case frontCamera
+}
+
+final class DefaultDeviceConfiguration: DeviceConfigurable {
     
-    private var defaultVideoDevice: AVCaptureDevice?
+    var defaultVideoDevice: AVCaptureDevice?
     @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
     
     init() {
@@ -35,16 +44,17 @@ final class DefaultDeviceConfiguration {
 
 extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
     
-    func configureCameraDevice(captureSession: AVCaptureSession) {
+    func configureCameraDevice(captureSession: AVCaptureSession, cameraDevices: CameraDevices) {
         do {
-            if let dualCameraDevice = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) {
-                self.defaultVideoDevice = dualCameraDevice
-            } else if let dualWideCameraDevice = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) {
-                self.defaultVideoDevice = dualWideCameraDevice
-            } else if let builtInWideAngleCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
-                self.defaultVideoDevice = builtInWideAngleCamera
-            } else if let builtInWideAngleCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) {
-                self.defaultVideoDevice = builtInWideAngleCamera
+            switch cameraDevices {
+            case .builtInDualWideCamera:
+                if let dualCameraDevice = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) {
+                    self.defaultVideoDevice = dualCameraDevice
+                }
+            case .frontCamera:
+                let discoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDualCamera, .builtInTelephotoCamera, .builtInDualWideCamera], mediaType: .video, position: .front)
+                guard let frontCameraDevice = discoverySession.devices.filter( { $0.position == .front } ).first else { return }
+                self.defaultVideoDevice = frontCameraDevice
             }
             
             guard let videoDevice = defaultVideoDevice else {

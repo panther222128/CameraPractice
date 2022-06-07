@@ -9,19 +9,18 @@ import AVFoundation
 
 protocol CameraUseCase {
     func executeCheckAuthorization(completion: @escaping (Bool) -> Void)
-    func executeTakePhoto(previewView: PreviewView)
+    func executeTakePhoto()
+    func executePrepareToTakePhoto()
 }
 
 final class DefaultCameraUseCase {
     
     private let cameraRepository: CameraRepository
     private let authorizationManager: AuthorizationManager
-    private let cameraService: CameraService
     
-    init(cameraRepository: CameraRepository, authorizationManager: AuthorizationManager, cameraService: CameraService) {
+    init(cameraRepository: CameraRepository, authorizationManager: AuthorizationManager) {
         self.cameraRepository = cameraRepository
         self.authorizationManager = authorizationManager
-        self.cameraService = cameraService
     }
     
 }
@@ -46,8 +45,11 @@ extension DefaultCameraUseCase: CameraUseCase {
         }
     }
     
-    func executeTakePhoto(previewView: PreviewView) {
+    func executeTakePhoto() {
 
+    }
+    
+    func executePrepareToTakePhoto() {
     }
     
 }

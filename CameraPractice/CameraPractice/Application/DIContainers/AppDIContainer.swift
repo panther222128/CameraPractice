@@ -19,7 +19,7 @@ final class AppDIContainer {
     }()
     
     lazy var cameraService: CameraService = {
-        let cameraDeviceConfiguration: CameraDeviceConfigurable & AudioDeviceConfigurable = DefaultDeviceConfiguration()
+        let cameraDeviceConfiguration: DeviceConfigurable = DefaultDeviceConfiguration()
         let photoSettings: DefaultPhotoSettings = DefaultPhotoSettings()
         return DefaultCameraSerivce(deviceConfiguration: cameraDeviceConfiguration, photoSettings: photoSettings)
     }()

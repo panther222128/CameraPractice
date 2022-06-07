@@ -10,7 +10,8 @@ import Foundation
 protocol CameraViewModel {
     var isAuthorized: Observable<Bool?> { get }
 
-    func didPressTakePhotoButton(previewView: PreviewView)
+    func prepareToTakePhoto()
+    func didPressTakePhotoButton()
     func checkIsAuthorized()
 }
 
@@ -25,8 +26,12 @@ class DefaultCameraViewModel: CameraViewModel {
         self.isAuthorized = Observable(nil)
     }
     
-    func didPressTakePhotoButton(previewView: PreviewView) {
-        self.cameraUseCase.executeTakePhoto(previewView: previewView)
+    func prepareToTakePhoto() {
+        self.cameraUseCase.executePrepareToTakePhoto()
+    }
+    
+    func didPressTakePhotoButton() {
+        self.cameraUseCase.executeTakePhoto()
     }
     
     func checkIsAuthorized() {
