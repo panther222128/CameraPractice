@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>NSMicrophoneUsageDescription</key>
-	<string></string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Album access permission to save photos and videos</string>
+	<string>MIC</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo Album</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Camera permission for taking photos and videos</string>
+	<string>Camera</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

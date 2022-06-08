@@ -54,7 +54,7 @@ final class CameraViewController: UIViewController {
             guard let isAuthorized = isAuthorized else { return }
             if isAuthorized {
                 DispatchQueue.main.async {
-                    self.cameraService.prepareToUseCamera(at: self.cameraConverter.selectedSegmentIndex, presenter: self)
+                    self.cameraService.prepareToUseDevice(at: self.cameraConverter.selectedSegmentIndex, presenter: self)
                 }
             } else {
                 self.presentDeviceAccessAuthorizationStatusAlert()
@@ -137,15 +137,15 @@ extension CameraViewController {
         switch sender.selectedSegmentIndex {
         case 0:
             DispatchQueue.main.async {
-                self.cameraService.prepareToUseCamera(at: sender.selectedSegmentIndex, presenter: self)
+                self.cameraService.prepareToUseDevice(at: sender.selectedSegmentIndex, presenter: self)
             }
         case 1:
             DispatchQueue.main.async {
-                self.cameraService.prepareToUseCamera(at: sender.selectedSegmentIndex, presenter: self)
+                self.cameraService.prepareToUseDevice(at: sender.selectedSegmentIndex, presenter: self)
             }
         default:
             DispatchQueue.main.async {
-                self.cameraService.prepareToUseCamera(at: sender.selectedSegmentIndex, presenter: self)
+                self.cameraService.prepareToUseDevice(at: sender.selectedSegmentIndex, presenter: self)
             }
         }
     }
@@ -203,7 +203,7 @@ extension CameraViewController {
     }
     
     @objc func pressedTakePhotoButton() {
-        self.viewModel.didPressTakePhotoButton()
+        self.cameraService.capturePhoto()
     }
     
 }

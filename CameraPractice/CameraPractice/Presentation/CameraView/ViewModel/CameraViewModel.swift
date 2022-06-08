@@ -11,7 +11,6 @@ protocol CameraViewModel {
     var isDeviceAccessAuthorized: Observable<Bool?> { get }
     var isPhotoAlbumAccessAuthorized: Observable<Bool?> { get }
 
-    func didPressTakePhotoButton()
     func didCheckIsDeviceAccessAuthorized()
     func didCheckIsPhotoAlbumAccessAuthorized()
 }
@@ -29,10 +28,6 @@ class DefaultCameraViewModel: CameraViewModel {
         self.isPhotoAlbumAccessAuthorized = Observable(nil)
     }
     
-    func didPressTakePhotoButton() {
-        
-    }
-
     func didCheckIsDeviceAccessAuthorized() {
         self.cameraUseCase.checkDeviceAccessAuthorizationStatus { isAuthorized in
             switch isAuthorized {

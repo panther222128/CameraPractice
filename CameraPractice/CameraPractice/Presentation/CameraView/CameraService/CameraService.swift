@@ -9,18 +9,19 @@ import AVFoundation
 import UIKit
 
 protocol CameraService {
-    func prepareToUseCamera<T>(at index: Int, presenter: T) where T: UIViewController & AVCaptureVideoDataOutputSampleBufferDelegate 
-    func takePhoto()
+    func prepareToUseDevice<T>(at index: Int, presenter: T) where T: UIViewController & AVCaptureVideoDataOutputSampleBufferDelegate
+    func capturePhoto()
 }
 
 final class DefaultCameraSerivce {
     
-    private var captureSession: AVCaptureSession?
     private let deviceConfiguration: DeviceConfigurable
+    private var captureSession: AVCaptureSession?
     private var photoSettings: AVCapturePhotoSettings
     private var captureInput: AVCaptureInput?
     private var photoOutput: AVCapturePhotoOutput?
     private var videoOutput: AVCaptureVideoDataOutput?
+    private var inProgressPhotoCaptureDelegates = [Int64: PhotoCaptureProcessor]()
     
     init(deviceConfiguration: DeviceConfigurable, photoSettings: AVCapturePhotoSettings) {
         self.captureSession = nil
@@ -33,23 +34,38 @@ final class DefaultCameraSerivce {
 
 extension DefaultCameraSerivce: CameraService {
     
-    func prepareToUseCamera<T>(at index: Int, presenter: T) where T: UIViewController & AVCaptureVideoDataOutputSampleBufferDelegate {
+    func prepareToUseDevice<T>(at index: Int, presenter: T) where T: UIViewController & AVCaptureVideoDataOutputSampleBufferDelegate {
         DispatchQueue.main.async {
             self.startSession()
             self.configureSession()
             switch index {
             case 0:
-                self.configureDevice(cameraDevices: .builtInDualWideCamera)
+                self.configureCameraDevice(cameraDevices: .builtInDualWideCamera)
             case 1:
-                self.configureDevice(cameraDevices: .frontCamera)
+                self.configureCameraDevice(cameraDevices: .frontCamera)
             default:
-                self.configureDevice(cameraDevices: .builtInDualWideCamera)
+                self.configureCameraDevice(cameraDevices: .builtInDualWideCamera)
             }
+            self.configureAudioDevice()
             self.configureInput()
             self.configurePhotoOutput()
             self.configurePhotoSettings()
             self.configureVideoOutput(presenter: presenter)
         }
+    }
+    
+    func capturePhoto() {
+        let photoCaptureProcessor = PhotoCaptureProcessor(with: self.photoSettings) { photoCaptureProcessor in
+            DispatchQueue.main.async {
+                self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = nil
+            }
+        }
+
+        self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = photoCaptureProcessor
+
+        guard let photoOutput = self.photoOutput else { return }
+        
+        photoOutput.capturePhoto(with: self.photoSettings, delegate: photoCaptureProcessor)
     }
     
 }
@@ -83,9 +99,14 @@ extension DefaultCameraSerivce {
 
 extension DefaultCameraSerivce {
     
-    private func configureDevice(cameraDevices: CameraDevices) {
+    private func configureCameraDevice(cameraDevices: CameraDevices) {
         guard let captureSession = captureSession else { return }
         self.deviceConfiguration.configureCameraDevice(captureSession: captureSession, cameraDevices: cameraDevices)
+        captureSession.commitConfiguration()
+    }
+    
+    private func configureAudioDevice() {
+        guard let captureSession = captureSession else { return }
         self.deviceConfiguration.configureAudioDevice(captureSession: captureSession)
         captureSession.commitConfiguration()
     }
@@ -109,13 +130,11 @@ extension DefaultCameraSerivce {
     }
     
     private func configurePhotoOutput() {
+        self.photoOutput = AVCapturePhotoOutput()
         guard let captureSession = captureSession else { return }
         guard let photoOutput = photoOutput else { return }
         
         photoOutput.isHighResolutionCaptureEnabled = true
-        photoOutput.isLivePhotoCaptureEnabled = true
-        photoOutput.isDepthDataDeliveryEnabled = true
-        photoOutput.isPortraitEffectsMatteDeliveryEnabled = true
         
         if captureSession.canAddOutput(photoOutput) {
             captureSession.addOutput(photoOutput)
@@ -153,6 +172,14 @@ extension DefaultCameraSerivce {
         if self.deviceConfiguration.isDeviceFlashAvailable() {
             photoSettings.flashMode = .auto
         }
+        self.photoSettings.isHighResolutionPhotoEnabled = true
+        if let previewPhotoPixelFormatType = photoSettings.availablePreviewPhotoPixelFormatTypes.first {
+            self.photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: previewPhotoPixelFormatType]
+        }
+
+        self.photoSettings.isDepthDataDeliveryEnabled = photoOutput.isDepthDataDeliveryEnabled
+        self.photoSettings.isPortraitEffectsMatteDeliveryEnabled = photoOutput.isPortraitEffectsMatteDeliveryEnabled
+        self.photoSettings.photoQualityPrioritization = .balanced
     }
     
 }
