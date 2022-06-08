@@ -11,7 +11,7 @@ import SnapKit
 
 final class CameraViewController: UIViewController {
 
-    private var cameraService: StudioConfigurable!
+    private var studioConfiguration: StudioConfigurable!
     private var viewModel: CameraViewModel!
     
     private let context = CIContext()
@@ -32,6 +32,7 @@ final class CameraViewController: UIViewController {
     private let recordTimerLabel = UILabel()
     
     private var isPhotoMode = true
+    private var isRecordOn = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,7 +55,7 @@ final class CameraViewController: UIViewController {
             guard let isAuthorized = isAuthorized else { return }
             if isAuthorized {
                 DispatchQueue.main.async {
-                    self.cameraService.prepareToUseDevice(at: self.cameraConverter.selectedSegmentIndex, presenter: self)
+                    self.studioConfiguration.prepareToUseDevice(at: self.cameraConverter.selectedSegmentIndex, presenter: self)
                 }
             } else {
                 self.presentDeviceAccessAuthorizationStatusAlert()
@@ -76,7 +77,7 @@ final class CameraViewController: UIViewController {
     static func create(with viewModel: CameraViewModel, with cameraService: StudioConfigurable) -> CameraViewController {
         let viewController = CameraViewController()
         viewController.viewModel = viewModel
-        viewController.cameraService = cameraService
+        viewController.studioConfiguration = cameraService
         return viewController
     }
     
@@ -96,6 +97,14 @@ final class CameraViewController: UIViewController {
             authorizationAlert.addAction(addAuthorizationAlertAction)
             self.present(authorizationAlert, animated: true, completion: nil)
         }
+    }
+    
+}
+
+extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
+    
+    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+        
     }
     
 }
@@ -137,15 +146,15 @@ extension CameraViewController {
         switch sender.selectedSegmentIndex {
         case 0:
             DispatchQueue.main.async {
-                self.cameraService.prepareToUseDevice(at: sender.selectedSegmentIndex, presenter: self)
+                self.studioConfiguration.prepareToUseDevice(at: sender.selectedSegmentIndex, presenter: self)
             }
         case 1:
             DispatchQueue.main.async {
-                self.cameraService.prepareToUseDevice(at: sender.selectedSegmentIndex, presenter: self)
+                self.studioConfiguration.prepareToUseDevice(at: sender.selectedSegmentIndex, presenter: self)
             }
         default:
             DispatchQueue.main.async {
-                self.cameraService.prepareToUseDevice(at: sender.selectedSegmentIndex, presenter: self)
+                self.studioConfiguration.prepareToUseDevice(at: sender.selectedSegmentIndex, presenter: self)
             }
         }
     }
@@ -214,9 +223,17 @@ extension CameraViewController {
     }
     
     @objc func pressedCameraActionButton() {
-        guard let photoOutput = self.cameraService.photoOutput else { return }
-        guard let photoSettings = self.cameraService.photoSettings else { return }
-        self.viewModel.didCapturePhoto(photoSettings: photoSettings, photoOutput: photoOutput)
+        guard let photoOutput = self.studioConfiguration.photoOutput else { return }
+        guard let photoSettings = self.studioConfiguration.photoSettings else { return }
+        if self.isPhotoMode {
+            self.viewModel.didCapturePhoto(photoSettings: photoSettings, photoOutput: photoOutput)
+        } else {
+            self.isRecordOn = true
+            if self.isRecordOn {
+                self.viewModel.didStartRecord(deviceInput: <#T##AVCaptureDeviceInput#>, recorder: <#T##AVCaptureFileOutputRecordingDelegate#>)
+            }
+        }
+        
     }
     
 }

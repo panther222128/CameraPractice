@@ -15,6 +15,8 @@ protocol CameraViewModel {
     func didCheckIsDeviceAccessAuthorized()
     func didCheckIsPhotoAlbumAccessAuthorized()
     func didCapturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput)
+    func didStartRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T) where T: AVCaptureFileOutputRecordingDelegate
+    func didStopRecord()
 }
 
 class DefaultCameraViewModel: CameraViewModel {
@@ -54,6 +56,14 @@ class DefaultCameraViewModel: CameraViewModel {
     
     func didCapturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput) {
         self.cameraUseCase.capturePhoto(photoSettings: photoSettings, photoOutput: photoOutput)
+    }
+    
+    func didStartRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T) where T: AVCaptureFileOutputRecordingDelegate {
+        self.cameraUseCase.startRecord(deviceInput: deviceInput, recorder: recorder)
+    }
+    
+    func didStopRecord() {
+        self.cameraUseCase.stopRecord()
     }
     
 }

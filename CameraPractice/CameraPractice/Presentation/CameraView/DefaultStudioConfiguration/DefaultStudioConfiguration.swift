@@ -11,7 +11,7 @@ import UIKit
 protocol StudioConfigurable {
     var photoSettings: AVCapturePhotoSettings? { get }
     var photoOutput: AVCapturePhotoOutput? { get }
-    
+
     func prepareToUseDevice<T>(at index: Int, presenter: T) where T: UIViewController & AVCaptureVideoDataOutputSampleBufferDelegate
 }
 
@@ -25,6 +25,7 @@ final class DefaultStudioConfiguration: StudioConfigurable {
     private var captureSession: AVCaptureSession?
     private var captureInput: AVCaptureInput?
     private var videoOutput: AVCaptureVideoDataOutput?
+    
     init(deviceConfiguration: DeviceConfigurable, photoSettings: AVCapturePhotoSettings) {
         self.captureSession = nil
         self.captureInput = nil
