@@ -13,6 +13,7 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
 //        let apiDataTransferService: DataTransferService
         let authorizationManager: AuthorizationManager
         let cameraService: CameraService
+        let inProgressPhotoCaptureDelegates: [Int64 : PhotoCaptureProcessor]
     }
     
     private let dependencies: Dependencies
@@ -33,7 +34,7 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     }
     
     private func makeCameraSearchUseCase() -> CameraUseCase {
-        return DefaultCameraUseCase(cameraRepository: self.makeCameraRepository(), authorizationManager: self.dependencies.authorizationManager)
+        return DefaultCameraUseCase(cameraRepository: self.makeCameraRepository(), authorizationManager: self.dependencies.authorizationManager, inProgressPhotoCaptureDelegates: self.dependencies.inProgressPhotoCaptureDelegates)
     }
     
     private func makeCameraViewModel() -> CameraViewModel {

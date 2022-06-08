@@ -11,16 +11,19 @@ import Photos
 protocol CameraUseCase {
     func checkDeviceAccessAuthorizationStatus(completion: @escaping (Bool) -> Void)
     func checkPhotoAlbumAccessAuthorizationStatus(completion: @escaping (Bool) -> Void)
+    func capturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput)
 }
 
 final class DefaultCameraUseCase {
     
     private let cameraRepository: CameraRepository
     private let authorizationManager: AuthorizationManager
+    private var inProgressPhotoCaptureDelegates: [Int64: PhotoCaptureProcessor]
     
-    init(cameraRepository: CameraRepository, authorizationManager: AuthorizationManager) {
+    init(cameraRepository: CameraRepository, authorizationManager: AuthorizationManager, inProgressPhotoCaptureDelegates: [Int64: PhotoCaptureProcessor]) {
         self.cameraRepository = cameraRepository
         self.authorizationManager = authorizationManager
+        self.inProgressPhotoCaptureDelegates = inProgressPhotoCaptureDelegates
     }
     
 }
@@ -61,6 +64,18 @@ extension DefaultCameraUseCase: CameraUseCase {
                 }
             }
         }
+    }
+    
+    func capturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput) {
+        let photoCaptureProcessor = PhotoCaptureProcessor(with: photoSettings) { photoCaptureProcessor in
+            DispatchQueue.main.async {
+                self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = nil
+            }
+        }
+
+        self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = photoCaptureProcessor
+
+        photoOutput.capturePhoto(with: photoSettings, delegate: photoCaptureProcessor)
     }
 
 }

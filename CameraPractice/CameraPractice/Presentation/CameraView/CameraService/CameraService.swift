@@ -9,25 +9,30 @@ import AVFoundation
 import UIKit
 
 protocol CameraService {
+    var photoSettings: AVCapturePhotoSettings? { get }
+    var photoOutput: AVCapturePhotoOutput? { get }
+    
     func prepareToUseDevice<T>(at index: Int, presenter: T) where T: UIViewController & AVCaptureVideoDataOutputSampleBufferDelegate
-    func capturePhoto()
 }
 
 final class DefaultCameraSerivce {
     
     private let deviceConfiguration: DeviceConfigurable
-    private var captureSession: AVCaptureSession?
-    private var photoSettings: AVCapturePhotoSettings
-    private var captureInput: AVCaptureInput?
-    private var photoOutput: AVCapturePhotoOutput?
-    private var videoOutput: AVCaptureVideoDataOutput?
-    private var inProgressPhotoCaptureDelegates = [Int64: PhotoCaptureProcessor]()
     
-    init(deviceConfiguration: DeviceConfigurable, photoSettings: AVCapturePhotoSettings) {
+    var photoSettings: AVCapturePhotoSettings?
+    var photoOutput: AVCapturePhotoOutput?
+    
+    private var captureSession: AVCaptureSession?
+    private var captureInput: AVCaptureInput?
+    private var videoOutput: AVCaptureVideoDataOutput?
+    private var inProgressPhotoCaptureDelegates: [Int64: PhotoCaptureProcessor]
+    
+    init(deviceConfiguration: DeviceConfigurable, photoSettings: AVCapturePhotoSettings, inProgressPhotoCaptureDelegates: [Int64: PhotoCaptureProcessor]) {
         self.captureSession = nil
         self.captureInput = nil
         self.deviceConfiguration = deviceConfiguration
         self.photoSettings = photoSettings
+        self.inProgressPhotoCaptureDelegates = inProgressPhotoCaptureDelegates
     }
     
 }
@@ -53,21 +58,7 @@ extension DefaultCameraSerivce: CameraService {
             self.configureVideoOutput(presenter: presenter)
         }
     }
-    
-    func capturePhoto() {
-        let photoCaptureProcessor = PhotoCaptureProcessor(with: self.photoSettings) { photoCaptureProcessor in
-            DispatchQueue.main.async {
-                self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = nil
-            }
-        }
 
-        self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = photoCaptureProcessor
-
-        guard let photoOutput = self.photoOutput else { return }
-        
-        photoOutput.capturePhoto(with: self.photoSettings, delegate: photoCaptureProcessor)
-    }
-    
 }
 
 // MARK: - Session and previewview
@@ -112,15 +103,15 @@ extension DefaultCameraSerivce {
     }
     
     private func configureInput() {
-        guard let captureDevice = self.deviceConfiguration.defaultVideoDevice else { return }
+        guard let captureDevice = self.deviceConfiguration.defaultDevice else { return }
         guard let captureSession = captureSession else { return }
         do {
             self.captureInput = try AVCaptureDeviceInput(device: captureDevice)
             
-            guard let photoInput = self.captureInput else { return }
+            guard let captureInput = self.captureInput else { return }
             
-            if captureSession.canAddInput(photoInput) {
-                captureSession.addInput(photoInput)
+            if captureSession.canAddInput(captureInput) {
+                captureSession.addInput(captureInput)
             }
             captureSession.commitConfiguration()
         } catch {
@@ -169,17 +160,18 @@ extension DefaultCameraSerivce {
         if photoOutput.availablePhotoCodecTypes.contains(.hevc) {
             photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
         }
+        guard let photoSettings = self.photoSettings else { return }
         if self.deviceConfiguration.isDeviceFlashAvailable() {
             photoSettings.flashMode = .auto
         }
-        self.photoSettings.isHighResolutionPhotoEnabled = true
+        photoSettings.isHighResolutionPhotoEnabled = true
         if let previewPhotoPixelFormatType = photoSettings.availablePreviewPhotoPixelFormatTypes.first {
-            self.photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: previewPhotoPixelFormatType]
+            photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: previewPhotoPixelFormatType]
         }
 
-        self.photoSettings.isDepthDataDeliveryEnabled = photoOutput.isDepthDataDeliveryEnabled
-        self.photoSettings.isPortraitEffectsMatteDeliveryEnabled = photoOutput.isPortraitEffectsMatteDeliveryEnabled
-        self.photoSettings.photoQualityPrioritization = .balanced
+        photoSettings.isDepthDataDeliveryEnabled = photoOutput.isDepthDataDeliveryEnabled
+        photoSettings.isPortraitEffectsMatteDeliveryEnabled = photoOutput.isPortraitEffectsMatteDeliveryEnabled
+        photoSettings.photoQualityPrioritization = .balanced
     }
     
 }

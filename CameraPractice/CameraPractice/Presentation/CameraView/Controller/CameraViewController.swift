@@ -15,7 +15,7 @@ final class CameraViewController: UIViewController {
     private var viewModel: CameraViewModel!
     
     private let context = CIContext()
-    private let takePhotoButton = UIButton()
+    private let cameraActionButton = UIButton()
     private let cameraScreenView = UIImageView()
     private var pvConverter: UISegmentedControl = {
         let pv = ["Photo", "Video"]
@@ -39,7 +39,7 @@ final class CameraViewController: UIViewController {
         self.viewModel.didCheckIsPhotoAlbumAccessAuthorized()
         self.addSubviews()
         self.configureLayout()
-        self.configureTakePhotoButton()
+        self.configureCameraActionButton()
         self.addCameraConverterTarget()
         self.configureCameraConverter()
         self.addPVConverterTarget()
@@ -172,6 +172,7 @@ extension CameraViewController {
                 self.isPhotoMode = true
                 if self.isPhotoMode {
                     self.recordTimerLabel.isHidden = true
+                    self.convertCameraActionButtonText()
                 }
             }
         case 1:
@@ -179,6 +180,7 @@ extension CameraViewController {
                 self.isPhotoMode = false
                 if !self.isPhotoMode {
                     self.recordTimerLabel.isHidden = false
+                    self.convertCameraActionButtonText()
                 }
             }
         default:
@@ -186,6 +188,7 @@ extension CameraViewController {
                 self.isPhotoMode = true
                 if self.isPhotoMode {
                     self.recordTimerLabel.isHidden = true
+                    self.convertCameraActionButtonText()
                 }
             }
         }
@@ -197,13 +200,23 @@ extension CameraViewController {
 
 extension CameraViewController {
     
-    private func configureTakePhotoButton() {
-        self.takePhotoButton.setTitle("Take Photo", for: .normal)
-        self.takePhotoButton.addTarget(self, action: #selector(self.pressedTakePhotoButton), for: .touchUpInside)
+    private func configureCameraActionButton() {
+        self.cameraActionButton.setTitle("Take Photo", for: .normal)
+        self.cameraActionButton.addTarget(self, action: #selector(self.pressedCameraActionButton), for: .touchUpInside)
     }
     
-    @objc func pressedTakePhotoButton() {
-        self.cameraService.capturePhoto()
+    private func convertCameraActionButtonText() {
+        if self.isPhotoMode {
+            self.cameraActionButton.setTitle("Take Photo", for: .normal)
+        } else {
+            self.cameraActionButton.setTitle("Record Video", for: .normal)
+        }
+    }
+    
+    @objc func pressedCameraActionButton() {
+        guard let photoOutput = self.cameraService.photoOutput else { return }
+        guard let photoSettings = self.cameraService.photoSettings else { return }
+        self.viewModel.didCapturePhoto(photoSettings: photoSettings, photoOutput: photoOutput)
     }
     
 }
@@ -227,7 +240,7 @@ extension CameraViewController {
     
     private func addSubviews() {
         self.view.addSubview(self.cameraScreenView)
-        self.view.addSubview(self.takePhotoButton)
+        self.view.addSubview(self.cameraActionButton)
         self.view.addSubview(self.cameraConverter)
         self.view.addSubview(self.pvConverter)
         self.view.addSubview(self.recordTimerLabel)
@@ -237,7 +250,7 @@ extension CameraViewController {
         self.cameraScreenView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-        self.takePhotoButton.snp.makeConstraints {
+        self.cameraActionButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(self.view.snp.bottom).offset(-60)
         }
@@ -255,7 +268,7 @@ extension CameraViewController {
         }
         self.recordTimerLabel.snp.makeConstraints {
             $0.centerX.equalTo(self.view.snp.centerX)
-            $0.bottom.equalTo(self.takePhotoButton.snp.top).offset(-20)
+            $0.bottom.equalTo(self.cameraActionButton.snp.top).offset(-20)
         }
     }
     

@@ -8,7 +8,7 @@
 import AVFoundation
 
 protocol DeviceConfigurable: CameraDeviceConfigurable & AudioDeviceConfigurable {
-    var defaultVideoDevice: AVCaptureDevice? { get }
+    var defaultDevice: AVCaptureDevice? { get }
 }
 
 protocol CameraDeviceConfigurable {
@@ -27,15 +27,15 @@ enum CameraDevices {
 
 final class DefaultDeviceConfiguration: DeviceConfigurable {
     
-    var defaultVideoDevice: AVCaptureDevice?
-    @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
+    var defaultDevice: AVCaptureDevice?
+    @objc dynamic var deviceInput: AVCaptureDeviceInput!
     
     init() {
-        self.defaultVideoDevice = nil
+        self.defaultDevice = nil
     }
     
     func isDeviceFlashAvailable() -> Bool {
-        return self.videoDeviceInput.device.isFlashAvailable
+        return self.deviceInput.device.isFlashAvailable
     }
     
 }
@@ -49,24 +49,24 @@ extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
             switch cameraDevices {
             case .builtInDualWideCamera:
                 if let dualCameraDevice = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) {
-                    self.defaultVideoDevice = dualCameraDevice
+                    self.defaultDevice = dualCameraDevice
                 }
             case .frontCamera:
                 let discoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDualCamera, .builtInTelephotoCamera, .builtInDualWideCamera], mediaType: .video, position: .front)
                 guard let frontCameraDevice = discoverySession.devices.filter( { $0.position == .front } ).first else { return }
-                self.defaultVideoDevice = frontCameraDevice
+                self.defaultDevice = frontCameraDevice
             }
             
-            guard let videoDevice = defaultVideoDevice else {
+            guard let defaultDevice = defaultDevice else {
                 captureSession.commitConfiguration()
                 return
             }
             
-            let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
+            let deviceInput = try AVCaptureDeviceInput(device: defaultDevice)
             
-            if captureSession.canAddInput(videoDeviceInput) {
-                self.videoDeviceInput = videoDeviceInput
-                captureSession.addInput(videoDeviceInput)
+            if captureSession.canAddInput(deviceInput) {
+                self.deviceInput = deviceInput
+                captureSession.addInput(deviceInput)
             }
         } catch {
             captureSession.commitConfiguration()

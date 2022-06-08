@@ -149,7 +149,6 @@
 			isa = PBXGroup;
 			children = (
 				A0A096B82840ACE000BCB214 /* CameraUseCase.swift */,
-				A083B74428506C9600949ED4 /* PhotoCaptureProcessor.swift */,
 			);
 			path = UseCase;
 			sourceTree = "<group>";
@@ -248,6 +247,7 @@
 		A0DA208B2843643F00604A5D /* CameraService */ = {
 			isa = PBXGroup;
 			children = (
+				A083B74428506C9600949ED4 /* PhotoCaptureProcessor.swift */,
 				A0DA208C2843644E00604A5D /* CameraService.swift */,
 				A01287D5284456650068A093 /* DefaultDeviceConfiguration.swift */,
 			);

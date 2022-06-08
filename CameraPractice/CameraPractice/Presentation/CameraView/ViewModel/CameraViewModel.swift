@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AVFoundation
 
 protocol CameraViewModel {
     var isDeviceAccessAuthorized: Observable<Bool?> { get }
@@ -13,6 +14,7 @@ protocol CameraViewModel {
 
     func didCheckIsDeviceAccessAuthorized()
     func didCheckIsPhotoAlbumAccessAuthorized()
+    func didCapturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput)
 }
 
 class DefaultCameraViewModel: CameraViewModel {
@@ -48,6 +50,10 @@ class DefaultCameraViewModel: CameraViewModel {
                 self.isPhotoAlbumAccessAuthorized.value = false
             }
         }
+    }
+    
+    func didCapturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput) {
+        self.cameraUseCase.capturePhoto(photoSettings: photoSettings, photoOutput: photoOutput)
     }
     
 }

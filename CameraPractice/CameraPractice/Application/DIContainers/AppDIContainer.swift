@@ -21,11 +21,16 @@ final class AppDIContainer {
     lazy var cameraService: CameraService = {
         let cameraDeviceConfiguration: DeviceConfigurable = DefaultDeviceConfiguration()
         let photoSettings: AVCapturePhotoSettings = AVCapturePhotoSettings()
-        return DefaultCameraSerivce(deviceConfiguration: cameraDeviceConfiguration, photoSettings: photoSettings)
+        let inProgressPhotoCaptureDelegates: [Int64 : PhotoCaptureProcessor] = [Int64 : PhotoCaptureProcessor]()
+        return DefaultCameraSerivce(deviceConfiguration: cameraDeviceConfiguration, photoSettings: photoSettings, inProgressPhotoCaptureDelegates: inProgressPhotoCaptureDelegates)
+    }()
+    
+    lazy var inProgressPhotoCaptureDelegates: [Int64 : PhotoCaptureProcessor] = {
+       return [Int64 : PhotoCaptureProcessor]()
     }()
     
     func makeSceneDIContainer() -> SceneDIContainer {
-        let dependencies = SceneDIContainer.Dependencies(authorizationManager: authorizationManager, cameraService: cameraService)
+        let dependencies = SceneDIContainer.Dependencies(authorizationManager: authorizationManager, cameraService: cameraService, inProgressPhotoCaptureDelegates: inProgressPhotoCaptureDelegates)
         return SceneDIContainer(dependencies: dependencies)
     }
     
