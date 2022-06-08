@@ -8,14 +8,14 @@
 import AVFoundation
 import UIKit
 
-protocol CameraService {
+protocol StudioConfigurable {
     var photoSettings: AVCapturePhotoSettings? { get }
     var photoOutput: AVCapturePhotoOutput? { get }
     
     func prepareToUseDevice<T>(at index: Int, presenter: T) where T: UIViewController & AVCaptureVideoDataOutputSampleBufferDelegate
 }
 
-final class DefaultCameraSerivce {
+final class DefaultStudioConfiguration: StudioConfigurable {
     
     private let deviceConfiguration: DeviceConfigurable
     
@@ -25,19 +25,12 @@ final class DefaultCameraSerivce {
     private var captureSession: AVCaptureSession?
     private var captureInput: AVCaptureInput?
     private var videoOutput: AVCaptureVideoDataOutput?
-    private var inProgressPhotoCaptureDelegates: [Int64: PhotoCaptureProcessor]
-    
-    init(deviceConfiguration: DeviceConfigurable, photoSettings: AVCapturePhotoSettings, inProgressPhotoCaptureDelegates: [Int64: PhotoCaptureProcessor]) {
+    init(deviceConfiguration: DeviceConfigurable, photoSettings: AVCapturePhotoSettings) {
         self.captureSession = nil
         self.captureInput = nil
         self.deviceConfiguration = deviceConfiguration
         self.photoSettings = photoSettings
-        self.inProgressPhotoCaptureDelegates = inProgressPhotoCaptureDelegates
     }
-    
-}
-
-extension DefaultCameraSerivce: CameraService {
     
     func prepareToUseDevice<T>(at index: Int, presenter: T) where T: UIViewController & AVCaptureVideoDataOutputSampleBufferDelegate {
         DispatchQueue.main.async {
@@ -58,12 +51,12 @@ extension DefaultCameraSerivce: CameraService {
             self.configureVideoOutput(presenter: presenter)
         }
     }
-
+    
 }
 
 // MARK: - Session and previewview
 
-extension DefaultCameraSerivce {
+extension DefaultStudioConfiguration {
     
     private func startSession() {
         self.captureSession = AVCaptureSession()
@@ -88,7 +81,7 @@ extension DefaultCameraSerivce {
 
 // MARK: - Device and input, output
 
-extension DefaultCameraSerivce {
+extension DefaultStudioConfiguration {
     
     private func configureCameraDevice(cameraDevices: CameraDevices) {
         guard let captureSession = captureSession else { return }
@@ -153,7 +146,7 @@ extension DefaultCameraSerivce {
 
 // MARK: - PhotoSettings
 
-extension DefaultCameraSerivce {
+extension DefaultStudioConfiguration {
     
     private func configurePhotoSettings() {
         guard let photoOutput = photoOutput else { return }

@@ -25,7 +25,7 @@
 		A0A096BD2840AD1D00BCB214 /* DefaultCameraRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096BC2840AD1D00BCB214 /* DefaultCameraRepository.swift */; };
 		A0A096C02840AF5300BCB214 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096BF2840AF5300BCB214 /* Observable.swift */; };
 		A0A096C62840C08A00BCB214 /* AuthorizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096C52840C08A00BCB214 /* AuthorizationManager.swift */; };
-		A0DA208D2843644E00604A5D /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DA208C2843644E00604A5D /* CameraService.swift */; };
+		A0DA208D2843644E00604A5D /* DefaultStudioConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DA208C2843644E00604A5D /* DefaultStudioConfiguration.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,7 +49,7 @@
 		A0A096BC2840AD1D00BCB214 /* DefaultCameraRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultCameraRepository.swift; sourceTree = "<group>"; };
 		A0A096BF2840AF5300BCB214 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		A0A096C52840C08A00BCB214 /* AuthorizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationManager.swift; sourceTree = "<group>"; };
-		A0DA208C2843644E00604A5D /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
+		A0DA208C2843644E00604A5D /* DefaultStudioConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultStudioConfiguration.swift; sourceTree = "<group>"; };
 		BFB10BA060D23B295B40FEF6 /* libPods-CameraPractice.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CameraPractice.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF9C11EFDC1D3A534ECBAAC5 /* Pods-CameraPractice.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CameraPractice.debug.xcconfig"; path = "Target Support Files/Pods-CameraPractice/Pods-CameraPractice.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -66,6 +66,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A083B7482850989B00949ED4 /* DefaultDeviceConfiguration */ = {
+			isa = PBXGroup;
+			children = (
+				A01287D5284456650068A093 /* DefaultDeviceConfiguration.swift */,
+			);
+			path = DefaultDeviceConfiguration;
+			sourceTree = "<group>";
+		};
 		A0A0967D2840900B00BCB214 = {
 			isa = PBXGroup;
 			children = (
@@ -148,6 +156,7 @@
 		A0A096A22840908B00BCB214 /* UseCase */ = {
 			isa = PBXGroup;
 			children = (
+				A083B74428506C9600949ED4 /* PhotoCaptureProcessor.swift */,
 				A0A096B82840ACE000BCB214 /* CameraUseCase.swift */,
 			);
 			path = UseCase;
@@ -181,7 +190,7 @@
 		A0A096AD2840917500BCB214 /* CameraView */ = {
 			isa = PBXGroup;
 			children = (
-				A0DA208B2843643F00604A5D /* CameraService */,
+				A0DA208B2843643F00604A5D /* StudioConfiguration */,
 				A0A096C12840B9CD00BCB214 /* View */,
 				A0A096B32840ACA100BCB214 /* ViewModel */,
 				A0A096B22840AC9D00BCB214 /* Controller */,
@@ -244,14 +253,13 @@
 			path = AuthorizationManager;
 			sourceTree = "<group>";
 		};
-		A0DA208B2843643F00604A5D /* CameraService */ = {
+		A0DA208B2843643F00604A5D /* StudioConfiguration */ = {
 			isa = PBXGroup;
 			children = (
-				A083B74428506C9600949ED4 /* PhotoCaptureProcessor.swift */,
-				A0DA208C2843644E00604A5D /* CameraService.swift */,
-				A01287D5284456650068A093 /* DefaultDeviceConfiguration.swift */,
+				A0DA208C2843644E00604A5D /* DefaultStudioConfiguration.swift */,
+				A083B7482850989B00949ED4 /* DefaultDeviceConfiguration */,
 			);
-			path = CameraService;
+			path = StudioConfiguration;
 			sourceTree = "<group>";
 		};
 		C168D6BC77B8CFCD3D1FD9BC /* Pods */ = {
@@ -371,7 +379,7 @@
 				A0A0968A2840900B00BCB214 /* AppDelegate.swift in Sources */,
 				A0A096AA2840910500BCB214 /* AppDIContainer.swift in Sources */,
 				A0A096BD2840AD1D00BCB214 /* DefaultCameraRepository.swift in Sources */,
-				A0DA208D2843644E00604A5D /* CameraService.swift in Sources */,
+				A0DA208D2843644E00604A5D /* DefaultStudioConfiguration.swift in Sources */,
 				A0A096C02840AF5300BCB214 /* Observable.swift in Sources */,
 				A083B74528506C9600949ED4 /* PhotoCaptureProcessor.swift in Sources */,
 				A0A0968C2840900B00BCB214 /* SceneDelegate.swift in Sources */,

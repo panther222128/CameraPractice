@@ -12,7 +12,7 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     struct Dependencies {
 //        let apiDataTransferService: DataTransferService
         let authorizationManager: AuthorizationManager
-        let cameraService: CameraService
+        let cameraService: StudioConfigurable
         let inProgressPhotoCaptureDelegates: [Int64 : PhotoCaptureProcessor]
     }
     

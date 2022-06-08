@@ -11,7 +11,7 @@ import SnapKit
 
 final class CameraViewController: UIViewController {
 
-    private var cameraService: CameraService!
+    private var cameraService: StudioConfigurable!
     private var viewModel: CameraViewModel!
     
     private let context = CIContext()
@@ -73,7 +73,7 @@ final class CameraViewController: UIViewController {
         }
     }
     
-    static func create(with viewModel: CameraViewModel, with cameraService: CameraService) -> CameraViewController {
+    static func create(with viewModel: CameraViewModel, with cameraService: StudioConfigurable) -> CameraViewController {
         let viewController = CameraViewController()
         viewController.viewModel = viewModel
         viewController.cameraService = cameraService
