@@ -232,13 +232,14 @@ extension StudioViewController {
         if self.isPhotoMode {
             self.viewModel.didCapturePhoto(photoSettings: photoSettings, photoOutput: photoOutput)
         } else {
-            if self.isRecordOn {
+            if !self.isRecordOn {
+                self.isRecordOn = true
                 self.studioActionButton.setTitleColor(.red, for: .normal)
                 self.studioConfiguration.applyDevice()
                 self.viewModel.didStartRecord(deviceInput: self.studioConfiguration.deviceInput, recorder: self, deviceOrientation: self.studioConfiguration.deviceOrientaition)
             } else {
-                self.viewModel.didStopRecord()
                 self.isRecordOn = false
+                self.viewModel.didStopRecord()
                 self.studioActionButton.setTitleColor(.white, for: .normal)
             }
         }
