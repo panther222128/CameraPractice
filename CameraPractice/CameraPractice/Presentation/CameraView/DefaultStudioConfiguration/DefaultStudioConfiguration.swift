@@ -11,6 +11,7 @@ import UIKit
 protocol StudioConfigurable {
     var photoSettings: AVCapturePhotoSettings? { get }
     var photoOutput: AVCapturePhotoOutput? { get }
+    var deviceOrientaition: AVCaptureVideoOrientation { get }
     dynamic var deviceInput: AVCaptureDeviceInput! { get }
 
     func prepareToUseDevice<T>(at index: Int, presenter: T) where T: UIViewController & AVCaptureVideoDataOutputSampleBufferDelegate
@@ -23,6 +24,7 @@ final class DefaultStudioConfiguration: StudioConfigurable {
     
     var photoSettings: AVCapturePhotoSettings?
     var photoOutput: AVCapturePhotoOutput?
+    var deviceOrientaition: AVCaptureVideoOrientation = .portrait
     
     private var captureSession: AVCaptureSession?
     private var captureInput: AVCaptureInput?

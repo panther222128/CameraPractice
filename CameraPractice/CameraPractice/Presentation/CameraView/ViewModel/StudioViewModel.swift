@@ -15,7 +15,7 @@ protocol StudioViewModel {
     func didCheckIsDeviceAccessAuthorized()
     func didCheckIsPhotoAlbumAccessAuthorized()
     func didCapturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput)
-    func didStartRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T) where T: AVCaptureFileOutputRecordingDelegate
+    func didStartRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T, deviceOrientation: AVCaptureVideoOrientation) where T: AVCaptureFileOutputRecordingDelegate
     func didStopRecord()
     func didSaveRecordedMovie()
 }
@@ -59,8 +59,8 @@ class DefaultStudioViewModel: StudioViewModel {
         self.studioUseCase.capturePhoto(photoSettings: photoSettings, photoOutput: photoOutput)
     }
     
-    func didStartRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T) where T: AVCaptureFileOutputRecordingDelegate {
-        self.studioUseCase.startRecord(deviceInput: deviceInput, recorder: recorder)
+    func didStartRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T, deviceOrientation: AVCaptureVideoOrientation) where T: AVCaptureFileOutputRecordingDelegate {
+        self.studioUseCase.startRecord(deviceInput: deviceInput, recorder: recorder, deviceOrientation: deviceOrientation)
     }
     
     func didStopRecord() {

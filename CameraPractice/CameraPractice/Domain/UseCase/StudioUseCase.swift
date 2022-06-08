@@ -13,7 +13,7 @@ protocol StudioUseCase {
     func checkDeviceAccessAuthorizationStatus(completion: @escaping (Bool) -> Void)
     func checkPhotoAlbumAccessAuthorizationStatus(completion: @escaping (Bool) -> Void)
     func capturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput)
-    func startRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T) where T: AVCaptureFileOutputRecordingDelegate
+    func startRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T, deviceOrientation: AVCaptureVideoOrientation) where T: AVCaptureFileOutputRecordingDelegate
     func stopRecord()
     func saveRecordedMovie()
 }
@@ -84,9 +84,18 @@ extension DefaultStudioUseCase: StudioUseCase {
         photoOutput.capturePhoto(with: photoSettings, delegate: photoCaptureProcessor)
     }
     
-    func startRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T) where T: AVCaptureFileOutputRecordingDelegate {
+    func startRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T, deviceOrientation: AVCaptureVideoOrientation) where T: AVCaptureFileOutputRecordingDelegate {
         self.movieOutput = AVCaptureMovieFileOutput()
         guard let movieOutput = self.movieOutput else { return }
+        
+        let connection = movieOutput.connection(with: AVMediaType.video)
+        
+        guard let isVideoOrientationSupported = connection?.isVideoOrientationSupported else { return }
+        
+        if isVideoOrientationSupported {
+            connection?.videoOrientation = deviceOrientation
+        }
+        
         let device = deviceInput.device
         if device.isSmoothAutoFocusSupported {
             do {
