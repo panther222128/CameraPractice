@@ -9,14 +9,14 @@ import UIKit
 import AVFoundation
 import SnapKit
 
-final class CameraViewController: UIViewController {
-
+final class StudioViewController: UIViewController {
+    
     private var studioConfiguration: StudioConfigurable!
-    private var viewModel: CameraViewModel!
+    private var viewModel: StudioViewModel!
     
     private let context = CIContext()
-    private let cameraActionButton = UIButton()
-    private let cameraScreenView = UIImageView()
+    private let studioActionButton = UIButton()
+    private let captureOutputScreenView = UIImageView()
     private var pvConverter: UISegmentedControl = {
         let pv = ["Photo", "Video"]
         let pvConverter = UISegmentedControl(items: pv)
@@ -40,7 +40,7 @@ final class CameraViewController: UIViewController {
         self.viewModel.didCheckIsPhotoAlbumAccessAuthorized()
         self.addSubviews()
         self.configureLayout()
-        self.configureCameraActionButton()
+        self.configureStudioActionButton()
         self.addCameraConverterTarget()
         self.configureCameraConverter()
         self.addPVConverterTarget()
@@ -74,10 +74,10 @@ final class CameraViewController: UIViewController {
         }
     }
     
-    static func create(with viewModel: CameraViewModel, with cameraService: StudioConfigurable) -> CameraViewController {
-        let viewController = CameraViewController()
+    static func create(with viewModel: StudioViewModel, with studioConfiguration: StudioConfigurable) -> StudioViewController {
+        let viewController = StudioViewController()
         viewController.viewModel = viewModel
-        viewController.studioConfiguration = cameraService
+        viewController.studioConfiguration = studioConfiguration
         return viewController
     }
     
@@ -101,27 +101,31 @@ final class CameraViewController: UIViewController {
     
 }
 
-extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
+extension StudioViewController: AVCaptureFileOutputRecordingDelegate {
     
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        
+        if (error != nil) {
+            print("Error recording movie: \(error!.localizedDescription)")
+        } else {
+            self.viewModel.didSaveRecordedMovie()
+        }
     }
     
 }
 
 // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
 
-extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
+extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let videoPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer), let _ = CMSampleBufferGetFormatDescription(sampleBuffer) else { return }
         
         let cameraImage = CIImage(cvImageBuffer: videoPixelBuffer)
-        let cg = self.context.createCGImage(cameraImage, from: self.cameraScreenView.frame)!
+        let cg = self.context.createCGImage(cameraImage, from: self.captureOutputScreenView.frame)!
         
         DispatchQueue.main.async {
             let image = UIImage(cgImage: cg)
-            self.cameraScreenView.image = image
+            self.captureOutputScreenView.image = image
         }
     }
     
@@ -131,7 +135,7 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
 
 // MARK: - CameraConverter
 
-extension CameraViewController {
+extension StudioViewController {
     
     private func addCameraConverterTarget() {
         self.cameraConverter.addTarget(self, action: #selector(self.convertCamera), for: .valueChanged)
@@ -163,7 +167,7 @@ extension CameraViewController {
 
 // MARK: - PVConverter
 
-extension CameraViewController {
+extension StudioViewController {
     
     private func addPVConverterTarget() {
         self.pvConverter.addTarget(self, action: #selector(self.convertPV), for: .valueChanged)
@@ -181,7 +185,7 @@ extension CameraViewController {
                 self.isPhotoMode = true
                 if self.isPhotoMode {
                     self.recordTimerLabel.isHidden = true
-                    self.convertCameraActionButtonText()
+                    self.convertStudioActionButtonText()
                 }
             }
         case 1:
@@ -189,7 +193,7 @@ extension CameraViewController {
                 self.isPhotoMode = false
                 if !self.isPhotoMode {
                     self.recordTimerLabel.isHidden = false
-                    self.convertCameraActionButtonText()
+                    self.convertStudioActionButtonText()
                 }
             }
         default:
@@ -197,7 +201,7 @@ extension CameraViewController {
                 self.isPhotoMode = true
                 if self.isPhotoMode {
                     self.recordTimerLabel.isHidden = true
-                    self.convertCameraActionButtonText()
+                    self.convertStudioActionButtonText()
                 }
             }
         }
@@ -207,22 +211,22 @@ extension CameraViewController {
 
 // MARK: - Button
 
-extension CameraViewController {
+extension StudioViewController {
     
-    private func configureCameraActionButton() {
-        self.cameraActionButton.setTitle("Take Photo", for: .normal)
-        self.cameraActionButton.addTarget(self, action: #selector(self.pressedCameraActionButton), for: .touchUpInside)
+    private func configureStudioActionButton() {
+        self.studioActionButton.setTitle("Take Photo", for: .normal)
+        self.studioActionButton.addTarget(self, action: #selector(self.pressedStudioActionButton), for: .touchUpInside)
     }
     
-    private func convertCameraActionButtonText() {
+    private func convertStudioActionButtonText() {
         if self.isPhotoMode {
-            self.cameraActionButton.setTitle("Take Photo", for: .normal)
+            self.studioActionButton.setTitle("Take Photo", for: .normal)
         } else {
-            self.cameraActionButton.setTitle("Record Video", for: .normal)
+            self.studioActionButton.setTitle("Record Video", for: .normal)
         }
     }
     
-    @objc func pressedCameraActionButton() {
+    @objc func pressedStudioActionButton() {
         guard let photoOutput = self.studioConfiguration.photoOutput else { return }
         guard let photoSettings = self.studioConfiguration.photoSettings else { return }
         if self.isPhotoMode {
@@ -230,7 +234,13 @@ extension CameraViewController {
         } else {
             self.isRecordOn = true
             if self.isRecordOn {
-                self.viewModel.didStartRecord(deviceInput: <#T##AVCaptureDeviceInput#>, recorder: <#T##AVCaptureFileOutputRecordingDelegate#>)
+                self.studioActionButton.setTitleColor(.red, for: .normal)
+                self.studioConfiguration.applyDevice()
+                self.viewModel.didStartRecord(deviceInput: self.studioConfiguration.deviceInput, recorder: self)
+            } else {
+                self.viewModel.didStopRecord()
+                self.isRecordOn = false
+                self.studioActionButton.setTitleColor(.white, for: .normal)
             }
         }
         
@@ -240,7 +250,7 @@ extension CameraViewController {
 
 // MARK: - Label
 
-extension CameraViewController {
+extension StudioViewController {
     
     private func configureRecordTimerLabel() {
         self.recordTimerLabel.text = "00:00"
@@ -253,21 +263,21 @@ extension CameraViewController {
 
 // MARK: - Add subviews and layout
 
-extension CameraViewController {
+extension StudioViewController {
     
     private func addSubviews() {
-        self.view.addSubview(self.cameraScreenView)
-        self.view.addSubview(self.cameraActionButton)
+        self.view.addSubview(self.captureOutputScreenView)
+        self.view.addSubview(self.studioActionButton)
         self.view.addSubview(self.cameraConverter)
         self.view.addSubview(self.pvConverter)
         self.view.addSubview(self.recordTimerLabel)
     }
     
     private func configureLayout() {
-        self.cameraScreenView.snp.makeConstraints {
+        self.captureOutputScreenView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-        self.cameraActionButton.snp.makeConstraints {
+        self.studioActionButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(self.view.snp.bottom).offset(-60)
         }
@@ -285,7 +295,7 @@ extension CameraViewController {
         }
         self.recordTimerLabel.snp.makeConstraints {
             $0.centerX.equalTo(self.view.snp.centerX)
-            $0.bottom.equalTo(self.cameraActionButton.snp.top).offset(-20)
+            $0.bottom.equalTo(self.studioActionButton.snp.top).offset(-20)
         }
     }
     

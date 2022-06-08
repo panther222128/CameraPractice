@@ -9,6 +9,7 @@ import AVFoundation
 
 protocol DeviceConfigurable: CameraDeviceConfigurable & AudioDeviceConfigurable {
     var defaultDevice: AVCaptureDevice? { get }
+    dynamic var deviceInput: AVCaptureDeviceInput! { get }
 }
 
 protocol CameraDeviceConfigurable {

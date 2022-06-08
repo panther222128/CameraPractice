@@ -18,11 +18,11 @@
 		A0A096AA2840910500BCB214 /* AppDIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096A92840910500BCB214 /* AppDIContainer.swift */; };
 		A0A096AC2840911B00BCB214 /* AppFlowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096AB2840911B00BCB214 /* AppFlowCoordinator.swift */; };
 		A0A096AF2840918900BCB214 /* ViewFlowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096AE2840918900BCB214 /* ViewFlowCoordinator.swift */; };
-		A0A096B12840AC4F00BCB214 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096B02840AC4F00BCB214 /* CameraViewController.swift */; };
-		A0A096B52840ACAD00BCB214 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096B42840ACAD00BCB214 /* CameraViewModel.swift */; };
-		A0A096B92840ACE000BCB214 /* CameraUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096B82840ACE000BCB214 /* CameraUseCase.swift */; };
-		A0A096BB2840AD0100BCB214 /* CameraRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096BA2840AD0100BCB214 /* CameraRepository.swift */; };
-		A0A096BD2840AD1D00BCB214 /* DefaultCameraRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096BC2840AD1D00BCB214 /* DefaultCameraRepository.swift */; };
+		A0A096B12840AC4F00BCB214 /* StudioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096B02840AC4F00BCB214 /* StudioViewController.swift */; };
+		A0A096B52840ACAD00BCB214 /* StudioViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096B42840ACAD00BCB214 /* StudioViewModel.swift */; };
+		A0A096B92840ACE000BCB214 /* StudioUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096B82840ACE000BCB214 /* StudioUseCase.swift */; };
+		A0A096BB2840AD0100BCB214 /* StudioRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096BA2840AD0100BCB214 /* StudioRepository.swift */; };
+		A0A096BD2840AD1D00BCB214 /* DefaultStudioRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096BC2840AD1D00BCB214 /* DefaultStudioRepository.swift */; };
 		A0A096C02840AF5300BCB214 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096BF2840AF5300BCB214 /* Observable.swift */; };
 		A0A096C62840C08A00BCB214 /* AuthorizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096C52840C08A00BCB214 /* AuthorizationManager.swift */; };
 		A0DA208D2843644E00604A5D /* DefaultStudioConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DA208C2843644E00604A5D /* DefaultStudioConfiguration.swift */; };
@@ -42,11 +42,11 @@
 		A0A096A92840910500BCB214 /* AppDIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDIContainer.swift; sourceTree = "<group>"; };
 		A0A096AB2840911B00BCB214 /* AppFlowCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFlowCoordinator.swift; sourceTree = "<group>"; };
 		A0A096AE2840918900BCB214 /* ViewFlowCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewFlowCoordinator.swift; sourceTree = "<group>"; };
-		A0A096B02840AC4F00BCB214 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
-		A0A096B42840ACAD00BCB214 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
-		A0A096B82840ACE000BCB214 /* CameraUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraUseCase.swift; sourceTree = "<group>"; };
-		A0A096BA2840AD0100BCB214 /* CameraRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRepository.swift; sourceTree = "<group>"; };
-		A0A096BC2840AD1D00BCB214 /* DefaultCameraRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultCameraRepository.swift; sourceTree = "<group>"; };
+		A0A096B02840AC4F00BCB214 /* StudioViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudioViewController.swift; sourceTree = "<group>"; };
+		A0A096B42840ACAD00BCB214 /* StudioViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudioViewModel.swift; sourceTree = "<group>"; };
+		A0A096B82840ACE000BCB214 /* StudioUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudioUseCase.swift; sourceTree = "<group>"; };
+		A0A096BA2840AD0100BCB214 /* StudioRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudioRepository.swift; sourceTree = "<group>"; };
+		A0A096BC2840AD1D00BCB214 /* DefaultStudioRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultStudioRepository.swift; sourceTree = "<group>"; };
 		A0A096BF2840AF5300BCB214 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		A0A096C52840C08A00BCB214 /* AuthorizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationManager.swift; sourceTree = "<group>"; };
 		A0DA208C2843644E00604A5D /* DefaultStudioConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultStudioConfiguration.swift; sourceTree = "<group>"; };
@@ -157,7 +157,7 @@
 			isa = PBXGroup;
 			children = (
 				A083B74428506C9600949ED4 /* PhotoCaptureProcessor.swift */,
-				A0A096B82840ACE000BCB214 /* CameraUseCase.swift */,
+				A0A096B82840ACE000BCB214 /* StudioUseCase.swift */,
 			);
 			path = UseCase;
 			sourceTree = "<group>";
@@ -201,7 +201,7 @@
 		A0A096B22840AC9D00BCB214 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				A0A096B02840AC4F00BCB214 /* CameraViewController.swift */,
+				A0A096B02840AC4F00BCB214 /* StudioViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -209,7 +209,7 @@
 		A0A096B32840ACA100BCB214 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				A0A096B42840ACAD00BCB214 /* CameraViewModel.swift */,
+				A0A096B42840ACAD00BCB214 /* StudioViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -217,7 +217,7 @@
 		A0A096B62840ACCE00BCB214 /* Interface */ = {
 			isa = PBXGroup;
 			children = (
-				A0A096BA2840AD0100BCB214 /* CameraRepository.swift */,
+				A0A096BA2840AD0100BCB214 /* StudioRepository.swift */,
 			);
 			path = Interface;
 			sourceTree = "<group>";
@@ -225,7 +225,7 @@
 		A0A096B72840ACD200BCB214 /* Repository */ = {
 			isa = PBXGroup;
 			children = (
-				A0A096BC2840AD1D00BCB214 /* DefaultCameraRepository.swift */,
+				A0A096BC2840AD1D00BCB214 /* DefaultStudioRepository.swift */,
 			);
 			path = Repository;
 			sourceTree = "<group>";
@@ -375,20 +375,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A0A096BB2840AD0100BCB214 /* CameraRepository.swift in Sources */,
+				A0A096BB2840AD0100BCB214 /* StudioRepository.swift in Sources */,
 				A0A0968A2840900B00BCB214 /* AppDelegate.swift in Sources */,
 				A0A096AA2840910500BCB214 /* AppDIContainer.swift in Sources */,
-				A0A096BD2840AD1D00BCB214 /* DefaultCameraRepository.swift in Sources */,
+				A0A096BD2840AD1D00BCB214 /* DefaultStudioRepository.swift in Sources */,
 				A0DA208D2843644E00604A5D /* DefaultStudioConfiguration.swift in Sources */,
 				A0A096C02840AF5300BCB214 /* Observable.swift in Sources */,
 				A083B74528506C9600949ED4 /* PhotoCaptureProcessor.swift in Sources */,
 				A0A0968C2840900B00BCB214 /* SceneDelegate.swift in Sources */,
 				A0A096AF2840918900BCB214 /* ViewFlowCoordinator.swift in Sources */,
-				A0A096B12840AC4F00BCB214 /* CameraViewController.swift in Sources */,
+				A0A096B12840AC4F00BCB214 /* StudioViewController.swift in Sources */,
 				A0A096C62840C08A00BCB214 /* AuthorizationManager.swift in Sources */,
-				A0A096B52840ACAD00BCB214 /* CameraViewModel.swift in Sources */,
+				A0A096B52840ACAD00BCB214 /* StudioViewModel.swift in Sources */,
 				A0A096AC2840911B00BCB214 /* AppFlowCoordinator.swift in Sources */,
-				A0A096B92840ACE000BCB214 /* CameraUseCase.swift in Sources */,
+				A0A096B92840ACE000BCB214 /* StudioUseCase.swift in Sources */,
 				A0A096A8284090FD00BCB214 /* SceneDIContainer.swift in Sources */,
 				A01287D6284456650068A093 /* DefaultDeviceConfiguration.swift in Sources */,
 			);

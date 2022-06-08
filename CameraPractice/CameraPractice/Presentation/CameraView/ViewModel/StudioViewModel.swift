@@ -8,7 +8,7 @@
 import Foundation
 import AVFoundation
 
-protocol CameraViewModel {
+protocol StudioViewModel {
     var isDeviceAccessAuthorized: Observable<Bool?> { get }
     var isPhotoAlbumAccessAuthorized: Observable<Bool?> { get }
 
@@ -17,23 +17,24 @@ protocol CameraViewModel {
     func didCapturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput)
     func didStartRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T) where T: AVCaptureFileOutputRecordingDelegate
     func didStopRecord()
+    func didSaveRecordedMovie()
 }
 
-class DefaultCameraViewModel: CameraViewModel {
+class DefaultStudioViewModel: StudioViewModel {
     
-    private let cameraUseCase: CameraUseCase
+    private let studioUseCase: StudioUseCase
     
     let isDeviceAccessAuthorized: Observable<Bool?>
     let isPhotoAlbumAccessAuthorized: Observable<Bool?>
     
-    init(cameraUseCase: CameraUseCase) {
-        self.cameraUseCase = cameraUseCase
+    init(studioUseCase: StudioUseCase) {
+        self.studioUseCase = studioUseCase
         self.isDeviceAccessAuthorized = Observable(nil)
         self.isPhotoAlbumAccessAuthorized = Observable(nil)
     }
     
     func didCheckIsDeviceAccessAuthorized() {
-        self.cameraUseCase.checkDeviceAccessAuthorizationStatus { isAuthorized in
+        self.studioUseCase.checkDeviceAccessAuthorizationStatus { isAuthorized in
             switch isAuthorized {
             case true:
                 self.isDeviceAccessAuthorized.value = true
@@ -44,7 +45,7 @@ class DefaultCameraViewModel: CameraViewModel {
     }
     
     func didCheckIsPhotoAlbumAccessAuthorized() {
-        self.cameraUseCase.checkPhotoAlbumAccessAuthorizationStatus { isAuthorized in
+        self.studioUseCase.checkPhotoAlbumAccessAuthorizationStatus { isAuthorized in
             switch isAuthorized {
             case true:
                 self.isPhotoAlbumAccessAuthorized.value = true
@@ -55,15 +56,19 @@ class DefaultCameraViewModel: CameraViewModel {
     }
     
     func didCapturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput) {
-        self.cameraUseCase.capturePhoto(photoSettings: photoSettings, photoOutput: photoOutput)
+        self.studioUseCase.capturePhoto(photoSettings: photoSettings, photoOutput: photoOutput)
     }
     
     func didStartRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T) where T: AVCaptureFileOutputRecordingDelegate {
-        self.cameraUseCase.startRecord(deviceInput: deviceInput, recorder: recorder)
+        self.studioUseCase.startRecord(deviceInput: deviceInput, recorder: recorder)
     }
     
     func didStopRecord() {
-        self.cameraUseCase.stopRecord()
+        self.studioUseCase.stopRecord()
+    }
+    
+    func didSaveRecordedMovie() {
+        self.studioUseCase.saveRecordedMovie()
     }
     
 }

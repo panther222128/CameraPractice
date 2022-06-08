@@ -9,23 +9,24 @@ import AVFoundation
 import Photos
 import UIKit
 
-protocol CameraUseCase {
+protocol StudioUseCase {
     func checkDeviceAccessAuthorizationStatus(completion: @escaping (Bool) -> Void)
     func checkPhotoAlbumAccessAuthorizationStatus(completion: @escaping (Bool) -> Void)
     func capturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput)
     func startRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T) where T: AVCaptureFileOutputRecordingDelegate
     func stopRecord()
+    func saveRecordedMovie()
 }
 
-final class DefaultCameraUseCase {
+final class DefaultStudioUseCase {
     
-    private let cameraRepository: CameraRepository
+    private let cameraRepository: StudioRepository
     private let authorizationManager: AuthorizationManager
     private var inProgressPhotoCaptureDelegates: [Int64: PhotoCaptureProcessor]
     private var movieOutput: AVCaptureMovieFileOutput?
     private var outputUrl: URL?
     
-    init(cameraRepository: CameraRepository, authorizationManager: AuthorizationManager, inProgressPhotoCaptureDelegates: [Int64: PhotoCaptureProcessor]) {
+    init(cameraRepository: StudioRepository, authorizationManager: AuthorizationManager, inProgressPhotoCaptureDelegates: [Int64: PhotoCaptureProcessor]) {
         self.cameraRepository = cameraRepository
         self.authorizationManager = authorizationManager
         self.inProgressPhotoCaptureDelegates = inProgressPhotoCaptureDelegates
@@ -33,7 +34,7 @@ final class DefaultCameraUseCase {
     
 }
 
-extension DefaultCameraUseCase: CameraUseCase {
+extension DefaultStudioUseCase: StudioUseCase {
     
     func checkDeviceAccessAuthorizationStatus(completion: @escaping (Bool) -> Void) {
         self.authorizationManager.checkDeviceAuthorization { isAuthorized in
@@ -108,9 +109,15 @@ extension DefaultCameraUseCase: CameraUseCase {
         }
     }
     
+    func saveRecordedMovie() {
+        guard let outputUrl = self.outputUrl else { return }
+        let recordedMovieUrl = outputUrl as URL
+        UISaveVideoAtPathToSavedPhotosAlbum(recordedMovieUrl.path, nil, nil, nil)
+    }
+    
 }
 
-extension DefaultCameraUseCase {
+extension DefaultStudioUseCase {
     
     private func requestForDeviceAccess(completion: @escaping (Bool) -> Void) {
         AVCaptureDevice.requestAccess(for: .video, completionHandler: { isAuthorized in

@@ -12,7 +12,7 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     struct Dependencies {
 //        let apiDataTransferService: DataTransferService
         let authorizationManager: AuthorizationManager
-        let cameraService: StudioConfigurable
+        let studioConfiguration: StudioConfigurable
         let inProgressPhotoCaptureDelegates: [Int64 : PhotoCaptureProcessor]
     }
     
@@ -27,22 +27,22 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
         return ViewFlowCoordinator(navigationController: navigationController, dependencies: self)
     }
     
-    // MARK: - Camera
+    // MARK: - Studio
     
-    private func makeCameraRepository() -> CameraRepository {
-        return DefaultCameraRepository()
+    private func makeStudioRepository() -> StudioRepository {
+        return DefaultStudioRepository()
     }
     
-    private func makeCameraSearchUseCase() -> CameraUseCase {
-        return DefaultCameraUseCase(cameraRepository: self.makeCameraRepository(), authorizationManager: self.dependencies.authorizationManager, inProgressPhotoCaptureDelegates: self.dependencies.inProgressPhotoCaptureDelegates)
+    private func makeStudioUseCase() -> StudioUseCase {
+        return DefaultStudioUseCase(cameraRepository: self.makeStudioRepository(), authorizationManager: self.dependencies.authorizationManager, inProgressPhotoCaptureDelegates: self.dependencies.inProgressPhotoCaptureDelegates)
     }
     
-    private func makeCameraViewModel() -> CameraViewModel {
-        return DefaultCameraViewModel(cameraUseCase: self.makeCameraSearchUseCase())
+    private func makeStudioViewModel() -> StudioViewModel {
+        return DefaultStudioViewModel(studioUseCase: self.makeStudioUseCase())
     }
     
-    func makeCameraViewController() -> CameraViewController {
-        return CameraViewController.create(with: self.makeCameraViewModel(), with: self.dependencies.cameraService)
+    func makeStudioViewController() -> StudioViewController {
+        return StudioViewController.create(with: self.makeStudioViewModel(), with: self.dependencies.studioConfiguration)
     }
 
 }

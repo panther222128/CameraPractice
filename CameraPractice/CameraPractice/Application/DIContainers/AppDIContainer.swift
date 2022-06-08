@@ -29,7 +29,7 @@ final class AppDIContainer {
     }()
     
     func makeSceneDIContainer() -> SceneDIContainer {
-        let dependencies = SceneDIContainer.Dependencies(authorizationManager: authorizationManager, cameraService: studioConfiguration, inProgressPhotoCaptureDelegates: inProgressPhotoCaptureDelegates)
+        let dependencies = SceneDIContainer.Dependencies(authorizationManager: authorizationManager, studioConfiguration: studioConfiguration, inProgressPhotoCaptureDelegates: inProgressPhotoCaptureDelegates)
         return SceneDIContainer(dependencies: dependencies)
     }
     

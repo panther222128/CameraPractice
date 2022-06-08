@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class DefaultCameraRepository: CameraRepository {
+final class DefaultStudioRepository: StudioRepository {
     
     
     

@@ -8,7 +8,7 @@
 import UIKit
 
 protocol ViewFlowCoordinatorDependencies {
-    func makeCameraViewController() -> CameraViewController
+    func makeStudioViewController() -> StudioViewController
 }
 
 final class ViewFlowCoordinator {
@@ -16,7 +16,7 @@ final class ViewFlowCoordinator {
     private weak var navigationController: UINavigationController?
     private let dependencies: ViewFlowCoordinatorDependencies
     
-    private weak var cameraViewController: CameraViewController?
+    private weak var cameraViewController: StudioViewController?
     
     init(navigationController: UINavigationController, dependencies: ViewFlowCoordinatorDependencies) {
         self.navigationController = navigationController
@@ -24,7 +24,7 @@ final class ViewFlowCoordinator {
     }
     
     func start() {
-        let viewController = dependencies.makeCameraViewController()
+        let viewController = dependencies.makeStudioViewController()
         
         self.navigationController?.pushViewController(viewController, animated: true)
         self.cameraViewController = viewController

@@ -11,8 +11,10 @@ import UIKit
 protocol StudioConfigurable {
     var photoSettings: AVCapturePhotoSettings? { get }
     var photoOutput: AVCapturePhotoOutput? { get }
+    dynamic var deviceInput: AVCaptureDeviceInput! { get }
 
     func prepareToUseDevice<T>(at index: Int, presenter: T) where T: UIViewController & AVCaptureVideoDataOutputSampleBufferDelegate
+    func applyDevice()
 }
 
 final class DefaultStudioConfiguration: StudioConfigurable {
@@ -25,6 +27,8 @@ final class DefaultStudioConfiguration: StudioConfigurable {
     private var captureSession: AVCaptureSession?
     private var captureInput: AVCaptureInput?
     private var videoOutput: AVCaptureVideoDataOutput?
+    
+    @objc dynamic var deviceInput: AVCaptureDeviceInput!
     
     init(deviceConfiguration: DeviceConfigurable, photoSettings: AVCapturePhotoSettings) {
         self.captureSession = nil
@@ -51,6 +55,10 @@ final class DefaultStudioConfiguration: StudioConfigurable {
             self.configurePhotoSettings()
             self.configureVideoOutput(presenter: presenter)
         }
+    }
+    
+    func applyDevice() {
+        self.deviceInput = self.deviceConfiguration.deviceInput
     }
     
 }
