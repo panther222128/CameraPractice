@@ -9,6 +9,10 @@ import UIKit
 import AVFoundation
 import SnapKit
 
+protocol DataOutputSampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate & AVCaptureAudioDataOutputSampleBufferDelegate {
+    
+}
+
 final class StudioViewController: UIViewController {
     
     private var studioConfiguration: StudioConfigurable!
@@ -55,7 +59,7 @@ final class StudioViewController: UIViewController {
             guard let isAuthorized = isAuthorized else { return }
             if isAuthorized {
                 DispatchQueue.main.async {
-                    self.studioConfiguration.prepareToUseDevice(at: self.cameraConverter.selectedSegmentIndex, presenter: self)
+                    self.studioConfiguration.prepareToTakeAction(at: self.cameraConverter.selectedSegmentIndex, presenter: self)
                 }
             } else {
                 self.presentDeviceAccessAuthorizationStatusAlert()
@@ -101,6 +105,10 @@ final class StudioViewController: UIViewController {
     
 }
 
+extension StudioViewController: DataOutputSampleBufferDelegate {
+    
+}
+
 extension StudioViewController: AVCaptureFileOutputRecordingDelegate {
     
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
@@ -131,7 +139,9 @@ extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
     
 }
 
-
+extension StudioViewController: AVCaptureAudioDataOutputSampleBufferDelegate {
+    
+}
 
 // MARK: - CameraConverter
 
@@ -150,15 +160,15 @@ extension StudioViewController {
         switch sender.selectedSegmentIndex {
         case 0:
             DispatchQueue.main.async {
-                self.studioConfiguration.prepareToUseDevice(at: sender.selectedSegmentIndex, presenter: self)
+                self.studioConfiguration.prepareToTakeAction(at: sender.selectedSegmentIndex, presenter: self)
             }
         case 1:
             DispatchQueue.main.async {
-                self.studioConfiguration.prepareToUseDevice(at: sender.selectedSegmentIndex, presenter: self)
+                self.studioConfiguration.prepareToTakeAction(at: sender.selectedSegmentIndex, presenter: self)
             }
         default:
             DispatchQueue.main.async {
-                self.studioConfiguration.prepareToUseDevice(at: sender.selectedSegmentIndex, presenter: self)
+                self.studioConfiguration.prepareToTakeAction(at: sender.selectedSegmentIndex, presenter: self)
             }
         }
     }
@@ -235,12 +245,13 @@ extension StudioViewController {
             if !self.isRecordOn {
                 self.isRecordOn = true
                 self.studioActionButton.setTitleColor(.red, for: .normal)
-                self.studioConfiguration.applyDevice()
-                self.viewModel.didStartRecord(deviceInput: self.studioConfiguration.deviceInput, recorder: self, deviceOrientation: self.studioConfiguration.deviceOrientaition)
+                guard let movieFileOutput = self.studioConfiguration.movieFileOutput else { return }
+                self.viewModel.didStartRecord(movieDataOutput: movieFileOutput, recorder: self, deviceOrientation: self.studioConfiguration.deviceOrientaition)
             } else {
                 self.isRecordOn = false
-                self.viewModel.didStopRecord()
                 self.studioActionButton.setTitleColor(.white, for: .normal)
+                guard let movieFileOutput = self.studioConfiguration.movieFileOutput else { return }
+                self.viewModel.didStopRecord(movieFileOutput: movieFileOutput)
             }
         }
         

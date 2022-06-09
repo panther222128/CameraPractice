@@ -9,11 +9,9 @@ import AVFoundation
 
 protocol DeviceConfigurable: CameraDeviceConfigurable & AudioDeviceConfigurable {
     var defaultDevice: AVCaptureDevice? { get }
-    dynamic var deviceInput: AVCaptureDeviceInput! { get }
 }
 
 protocol CameraDeviceConfigurable {
-    func isDeviceFlashAvailable() -> Bool
     func configureCameraDevice(captureSession: AVCaptureSession, cameraDevices: CameraDevices)
 }
 
@@ -29,16 +27,11 @@ enum CameraDevices {
 final class DefaultDeviceConfiguration: DeviceConfigurable {
     
     var defaultDevice: AVCaptureDevice?
-    @objc dynamic var deviceInput: AVCaptureDeviceInput!
     
     init() {
         self.defaultDevice = nil
     }
-    
-    func isDeviceFlashAvailable() -> Bool {
-        return self.deviceInput.device.isFlashAvailable
-    }
-    
+
 }
 
 // MARK: - Camera device configuration
@@ -66,7 +59,6 @@ extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
             let deviceInput = try AVCaptureDeviceInput(device: defaultDevice)
             
             if captureSession.canAddInput(deviceInput) {
-                self.deviceInput = deviceInput
                 captureSession.addInput(deviceInput)
             }
         } catch {

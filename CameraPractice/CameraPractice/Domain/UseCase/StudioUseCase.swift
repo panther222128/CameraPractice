@@ -13,8 +13,8 @@ protocol StudioUseCase {
     func checkDeviceAccessAuthorizationStatus(completion: @escaping (Bool) -> Void)
     func checkPhotoAlbumAccessAuthorizationStatus(completion: @escaping (Bool) -> Void)
     func capturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput)
-    func startRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T, deviceOrientation: AVCaptureVideoOrientation) where T: AVCaptureFileOutputRecordingDelegate
-    func stopRecord()
+    func startRecord(movieFileOutput: AVCaptureMovieFileOutput, recorder: some AVCaptureFileOutputRecordingDelegate, deviceOrientation: AVCaptureVideoOrientation)
+    func stopRecord(movieFileOutput: AVCaptureMovieFileOutput)
     func saveRecordedMovie()
 }
 
@@ -23,7 +23,6 @@ final class DefaultStudioUseCase {
     private let cameraRepository: StudioRepository
     private let authorizationManager: AuthorizationManager
     private var inProgressPhotoCaptureDelegates: [Int64: PhotoCaptureProcessor]
-    private var movieOutput: AVCaptureMovieFileOutput?
     private var outputUrl: URL?
     
     init(cameraRepository: StudioRepository, authorizationManager: AuthorizationManager, inProgressPhotoCaptureDelegates: [Int64: PhotoCaptureProcessor]) {
@@ -84,37 +83,21 @@ extension DefaultStudioUseCase: StudioUseCase {
         photoOutput.capturePhoto(with: photoSettings, delegate: photoCaptureProcessor)
     }
     
-    func startRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T, deviceOrientation: AVCaptureVideoOrientation) where T: AVCaptureFileOutputRecordingDelegate {
-        self.movieOutput = AVCaptureMovieFileOutput()
-        guard let movieOutput = self.movieOutput else { return }
-        
-        let connection = movieOutput.connection(with: AVMediaType.video)
-        
-        guard let isVideoOrientationSupported = connection?.isVideoOrientationSupported else { return }
-        
-        if isVideoOrientationSupported {
-            connection?.videoOrientation = deviceOrientation
-        }
-        
-        let device = deviceInput.device
-        if device.isSmoothAutoFocusSupported {
-            do {
-                try device.lockForConfiguration()
-                device.isSmoothAutoFocusEnabled = false
-                device.unlockForConfiguration()
-            } catch {
-                print("Device error")
-            }
-        }
+    /* MARK: - Available from Swift 5.7
+     same
+     func startRecord(deviceInput: AVCaptureDeviceInput, recorder: some AVCaptureFileOutputRecordingDelegate, deviceOrientation: AVCaptureVideoOrientation) { ... }
+     func startRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T, deviceOrientation: AVCaptureVideoOrientation) where T: AVCaptureFileOutputRecordingDelegate { ... }
+     */
+    
+    func startRecord(movieFileOutput: AVCaptureMovieFileOutput, recorder: some AVCaptureFileOutputRecordingDelegate, deviceOrientation: AVCaptureVideoOrientation) {
         self.outputUrl = self.generateUrl()
         guard let outputUrl = self.outputUrl else { return }
-        movieOutput.startRecording(to: outputUrl, recordingDelegate: recorder)
+        movieFileOutput.startRecording(to: outputUrl, recordingDelegate: recorder)
     }
     
-    func stopRecord() {
-        guard let movieOutput = self.movieOutput else { return }
-        if movieOutput.isRecording {
-            movieOutput.stopRecording()
+    func stopRecord(movieFileOutput: AVCaptureMovieFileOutput) {
+        if movieFileOutput.isRecording {
+            movieFileOutput.stopRecording()
         }
     }
     

@@ -21,7 +21,7 @@ final class AppDIContainer {
     lazy var studioConfiguration: StudioConfigurable = {
         let cameraDeviceConfiguration: DeviceConfigurable = DefaultDeviceConfiguration()
         let photoSettings: AVCapturePhotoSettings = AVCapturePhotoSettings()
-        return DefaultStudioConfiguration(deviceConfiguration: cameraDeviceConfiguration, photoSettings: photoSettings)
+        return DefaultStudio(deviceConfiguration: cameraDeviceConfiguration, photoSettings: photoSettings)
     }()
     
     lazy var inProgressPhotoCaptureDelegates: [Int64 : PhotoCaptureProcessor] = {
