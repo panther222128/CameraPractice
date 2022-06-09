@@ -14,9 +14,9 @@ protocol StudioViewModel {
 
     func didCheckIsDeviceAccessAuthorized()
     func didCheckIsPhotoAlbumAccessAuthorized()
-    func didCapturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput)
-    func didStartRecord(movieDataOutput: AVCaptureMovieFileOutput, recorder: some AVCaptureFileOutputRecordingDelegate, deviceOrientation: AVCaptureVideoOrientation)
-    func didStopRecord(movieFileOutput: AVCaptureMovieFileOutput)
+    func didPressTakePhotoButton(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput)
+    func didPressRecordStartButton(movieDataOutput: AVCaptureMovieFileOutput, recorder: some AVCaptureFileOutputRecordingDelegate, deviceOrientation: AVCaptureVideoOrientation)
+    func didPressRecordStopButton(movieFileOutput: AVCaptureMovieFileOutput)
     func didSaveRecordedMovie()
 }
 
@@ -55,15 +55,15 @@ class DefaultStudioViewModel: StudioViewModel {
         }
     }
     
-    func didCapturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput) {
+    func didPressTakePhotoButton(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput) {
         self.studioUseCase.capturePhoto(photoSettings: photoSettings, photoOutput: photoOutput)
     }
     
-    func didStartRecord(movieDataOutput: AVCaptureMovieFileOutput, recorder: some AVCaptureFileOutputRecordingDelegate, deviceOrientation: AVCaptureVideoOrientation) {
+    func didPressRecordStartButton(movieDataOutput: AVCaptureMovieFileOutput, recorder: some AVCaptureFileOutputRecordingDelegate, deviceOrientation: AVCaptureVideoOrientation) {
         self.studioUseCase.startRecord(movieFileOutput: movieDataOutput, recorder: recorder, deviceOrientation: deviceOrientation)
     }
     
-    func didStopRecord(movieFileOutput: AVCaptureMovieFileOutput) {
+    func didPressRecordStopButton(movieFileOutput: AVCaptureMovieFileOutput) {
         self.studioUseCase.stopRecord(movieFileOutput: movieFileOutput)
     }
     

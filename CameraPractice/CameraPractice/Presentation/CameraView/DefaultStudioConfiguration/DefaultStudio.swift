@@ -11,10 +11,10 @@ import UIKit
 protocol StudioConfigurable {
     var photoSettings: AVCapturePhotoSettings? { get }
     var photoOutput: AVCapturePhotoOutput? { get }
-    var deviceOrientaition: AVCaptureVideoOrientation { get }
     var videoDataOutput: AVCaptureVideoDataOutput? { get }
     var audioDataOutput: AVCaptureAudioDataOutput? { get }
     var movieFileOutput: AVCaptureMovieFileOutput? { get }
+    var deviceOrientaition: AVCaptureVideoOrientation { get }
 
     func prepareToTakeAction(at index: Int, presenter: some UIViewController & DataOutputSampleBufferDelegate)
 }
@@ -25,10 +25,10 @@ final class DefaultStudio: StudioConfigurable {
     
     var photoSettings: AVCapturePhotoSettings?
     var photoOutput: AVCapturePhotoOutput?
-    var deviceOrientaition: AVCaptureVideoOrientation = .portrait
     var videoDataOutput: AVCaptureVideoDataOutput?
     var audioDataOutput: AVCaptureAudioDataOutput?
     var movieFileOutput: AVCaptureMovieFileOutput?
+    var deviceOrientaition: AVCaptureVideoOrientation = .portrait
     
     private var captureSession: AVCaptureSession?
     private var captureInput: AVCaptureInput?
@@ -61,9 +61,9 @@ final class DefaultStudio: StudioConfigurable {
             self.configureAudioDevice()
             self.configureInput()
             self.configurePhotoOutput()
-            self.configureMovieFileOutput(presenter: presenter)
             self.configureAudioDataOutput(presenter: presenter)
             self.configureVideoDataOutput(presenter: presenter)
+            self.configureMovieFileOutput()
         }
     }
 
@@ -217,12 +217,13 @@ extension DefaultStudio {
 
 extension DefaultStudio {
     
-    private func configureMovieFileOutput(presenter: some UIViewController & DataOutputSampleBufferDelegate) {
+    private func configureMovieFileOutput() {
+        guard let captureSession = self.captureSession else { return }
+        
         self.movieFileOutput = AVCaptureMovieFileOutput()
         
-        guard let captureSession = self.captureSession else { return }
         guard let movieFileOutput = self.movieFileOutput else { return }
-
+        
         if captureSession.canAddOutput(movieFileOutput) {
             captureSession.addOutput(movieFileOutput)
         }

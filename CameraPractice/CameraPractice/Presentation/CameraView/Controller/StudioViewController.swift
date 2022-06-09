@@ -103,6 +103,15 @@ final class StudioViewController: UIViewController {
         }
     }
     
+    private func presentServiceErrorAlert(errorMessage: String) {
+        DispatchQueue.main.async {
+            let authorizationAlert = UIAlertController(title: "오류 발생", message: "\(errorMessage)", preferredStyle: UIAlertController.Style.alert)
+            let addAuthorizationAlertAction = UIAlertAction(title: "OK", style: .default)
+            authorizationAlert.addAction(addAuthorizationAlertAction)
+            self.present(authorizationAlert, animated: true, completion: nil)
+        }
+    }
+    
 }
 
 extension StudioViewController: DataOutputSampleBufferDelegate {
@@ -113,7 +122,7 @@ extension StudioViewController: AVCaptureFileOutputRecordingDelegate {
     
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         if (error != nil) {
-            print("Error recording movie: \(error!.localizedDescription)")
+            self.presentServiceErrorAlert(errorMessage: error!.localizedDescription)
         } else {
             self.viewModel.didSaveRecordedMovie()
         }
@@ -123,7 +132,7 @@ extension StudioViewController: AVCaptureFileOutputRecordingDelegate {
 
 // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
 
-extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
+extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let videoPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer), let _ = CMSampleBufferGetFormatDescription(sampleBuffer) else { return }
@@ -136,10 +145,6 @@ extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
             self.captureOutputScreenView.image = image
         }
     }
-    
-}
-
-extension StudioViewController: AVCaptureAudioDataOutputSampleBufferDelegate {
     
 }
 
@@ -240,21 +245,20 @@ extension StudioViewController {
         guard let photoOutput = self.studioConfiguration.photoOutput else { return }
         guard let photoSettings = self.studioConfiguration.photoSettings else { return }
         if self.isPhotoMode {
-            self.viewModel.didCapturePhoto(photoSettings: photoSettings, photoOutput: photoOutput)
+            self.viewModel.didPressTakePhotoButton(photoSettings: photoSettings, photoOutput: photoOutput)
         } else {
             if !self.isRecordOn {
                 self.isRecordOn = true
                 self.studioActionButton.setTitleColor(.red, for: .normal)
                 guard let movieFileOutput = self.studioConfiguration.movieFileOutput else { return }
-                self.viewModel.didStartRecord(movieDataOutput: movieFileOutput, recorder: self, deviceOrientation: self.studioConfiguration.deviceOrientaition)
+                self.viewModel.didPressRecordStartButton(movieDataOutput: movieFileOutput, recorder: self, deviceOrientation: self.studioConfiguration.deviceOrientaition)
             } else {
                 self.isRecordOn = false
                 self.studioActionButton.setTitleColor(.white, for: .normal)
                 guard let movieFileOutput = self.studioConfiguration.movieFileOutput else { return }
-                self.viewModel.didStopRecord(movieFileOutput: movieFileOutput)
+                self.viewModel.didPressRecordStopButton(movieFileOutput: movieFileOutput)
             }
         }
-        
     }
     
 }
