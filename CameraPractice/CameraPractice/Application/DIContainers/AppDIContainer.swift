@@ -13,17 +13,9 @@ final class AppDIContainer {
 //        let apiDataNetwork = DefaultNetworkService()
 //        return DefaultDataTransferService(networkService: apiDataNetwork)
 //    }()
-    
-    lazy var authorizationManager: AuthorizationManager = {
-        return DefaultAuthorizationManager()
-    }()
-    
-    lazy var inProgressPhotoCaptureDelegates: [Int64 : PhotoCaptureProcessor] = {
-       return [Int64 : PhotoCaptureProcessor]()
-    }()
-    
+
     func makeSceneDIContainer() -> SceneDIContainer {
-        let dependencies = SceneDIContainer.Dependencies(authorizationManager: authorizationManager, inProgressPhotoCaptureDelegates: inProgressPhotoCaptureDelegates)
+        let dependencies = SceneDIContainer.Dependencies()
         return SceneDIContainer(dependencies: dependencies)
     }
     

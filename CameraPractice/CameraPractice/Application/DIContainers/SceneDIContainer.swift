@@ -10,15 +10,20 @@ import UIKit
 final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     
     struct Dependencies {
-//        let apiDataTransferService: DataTransferService
-        let authorizationManager: AuthorizationManager
-        let inProgressPhotoCaptureDelegates: [Int64 : PhotoCaptureProcessor]
     }
     
     private let dependencies: Dependencies
-//    lazy var locationSearchResultStorage: LocationSearchResultStorage = RealmLocationSearchResultStorage(maximumStorageLimit: 10)
+    
     lazy var deviceConfiguration: DeviceConfigurable = {
         return DefaultDeviceConfiguration()
+    }()
+    
+    lazy var inProgressPhotoCaptureDelegates: [Int64 : PhotoCaptureProcessor] = {
+       return [Int64 : PhotoCaptureProcessor]()
+    }()
+    
+    lazy var authorizationManager: AuthorizationManager = {
+        return DefaultAuthorizationManager()
     }()
     
     init(dependencies: Dependencies) {
@@ -29,14 +34,14 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
         return ViewFlowCoordinator(navigationController: navigationController, dependencies: self)
     }
     
-    // MARK: - Studio
+    // MARK: - StudioView
     
     private func makeStudioRepository() -> StudioRepository {
         return DefaultStudioRepository()
     }
     
     private func makeStudioUseCase() -> StudioUseCase {
-        return DefaultStudioUseCase(cameraRepository: self.makeStudioRepository(), authorizationManager: self.dependencies.authorizationManager, inProgressPhotoCaptureDelegates: self.dependencies.inProgressPhotoCaptureDelegates)
+        return DefaultStudioUseCase(cameraRepository: self.makeStudioRepository(), authorizationManager: self.authorizationManager, inProgressPhotoCaptureDelegates: self.inProgressPhotoCaptureDelegates)
     }
     
     private func makeStudioViewModel() -> StudioViewModel {

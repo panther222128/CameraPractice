@@ -38,8 +38,11 @@ class RecordTimer: RecordTimerConfigurable {
         guard let timer = self.timer else { return }
         timer.invalidate()
         self.timer = nil
+        self.timeProgressStatus = 0
         self.time.value = "00:00"
     }
+    
+    // Need to fix
     
     private func convertMinSec(of second: Int) -> String {
         if second / 60 > 0 {
