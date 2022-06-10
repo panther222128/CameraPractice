@@ -202,6 +202,7 @@
 		A0A096AD2840917500BCB214 /* CameraView */ = {
 			isa = PBXGroup;
 			children = (
+				A083B7482850989B00949ED4 /* DefaultDeviceConfiguration */,
 				A0DA208B2843643F00604A5D /* DefaultStudio */,
 				A0A096C12840B9CD00BCB214 /* View */,
 				A0A096B32840ACA100BCB214 /* ViewModel */,
@@ -271,7 +272,6 @@
 			children = (
 				A0303089285346C9008BB69D /* DefaultPhotoSettings.swift */,
 				A0DA208C2843644E00604A5D /* DefaultStudio.swift */,
-				A083B7482850989B00949ED4 /* DefaultDeviceConfiguration */,
 			);
 			path = DefaultStudio;
 			sourceTree = "<group>";
