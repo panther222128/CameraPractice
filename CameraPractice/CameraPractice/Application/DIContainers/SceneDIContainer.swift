@@ -10,7 +10,6 @@ import UIKit
 final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     
     struct Dependencies {
-        let deviceConfiguration: DeviceConfigurable
 //        let apiDataTransferService: DataTransferService
         let authorizationManager: AuthorizationManager
         let inProgressPhotoCaptureDelegates: [Int64 : PhotoCaptureProcessor]
@@ -18,6 +17,9 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     
     private let dependencies: Dependencies
 //    lazy var locationSearchResultStorage: LocationSearchResultStorage = RealmLocationSearchResultStorage(maximumStorageLimit: 10)
+    lazy var deviceConfiguration: DeviceConfigurable = {
+        return DefaultDeviceConfiguration()
+    }()
     
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
@@ -46,7 +48,7 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     }
     
     private func makeStudio() -> StudioConfigurable {
-        return DefaultStudio(deviceConfiguration: self.dependencies.deviceConfiguration, photoSettings: DefaultPhotoSettings())
+        return DefaultStudio(deviceConfiguration: self.deviceConfiguration, photoSettings: DefaultPhotoSettings())
     }
     
     func makeStudioViewController() -> StudioViewController {
