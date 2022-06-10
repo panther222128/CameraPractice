@@ -42,8 +42,8 @@ extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
         do {
             switch cameraDevices {
             case .builtInDualWideCamera:
-                if let dualCameraDevice = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) {
-                    self.defaultDevice = dualCameraDevice
+                if let dualWideCamera = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) {
+                    self.defaultDevice = dualWideCamera
                 }
             case .frontCamera:
                 let discoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDualCamera, .builtInTelephotoCamera, .builtInDualWideCamera], mediaType: .video, position: .front)
