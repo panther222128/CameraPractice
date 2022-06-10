@@ -26,11 +26,11 @@ final class StudioViewController: UIViewController {
     private let context = CIContext()
     private let studioActionButton = UIButton()
     private let captureOutputScreenView = UIImageView()
-    private var pmConverter: UISegmentedControl = {
-        let pm = ["Photo", "Movie"]
-        let pmConverter = UISegmentedControl(items: pm)
-        pmConverter.selectedSegmentIndex = 0
-        return pmConverter
+    private var outputConverter: UISegmentedControl = {
+        let outputs = ["Photo", "Movie"]
+        let outputConverter = UISegmentedControl(items: outputs)
+        outputConverter.selectedSegmentIndex = 0
+        return outputConverter
     }()
     private var cameraConverter: UISegmentedControl = {
         let cameras = ["Default", "Front"]
@@ -52,8 +52,8 @@ final class StudioViewController: UIViewController {
         self.configureStudioActionButton()
         self.addCameraConverterTarget()
         self.configureCameraConverter()
-        self.addPMConverterTarget()
-        self.configurePMConverter()
+        self.addOutputConverterTarget()
+        self.configureOutputConverter()
         self.configureRecordTimerLabel()
         self.bind()
     }
@@ -201,20 +201,20 @@ extension StudioViewController {
     
 }
 
-// MARK: - PMConverter
+// MARK: - OutputConverter
 
 extension StudioViewController {
     
-    private func addPMConverterTarget() {
-        self.pmConverter.addTarget(self, action: #selector(self.convertPM), for: .valueChanged)
+    private func addOutputConverterTarget() {
+        self.outputConverter.addTarget(self, action: #selector(self.convertOutput), for: .valueChanged)
     }
     
-    private func configurePMConverter() {
-        self.pmConverter.layer.borderWidth = 2
-        self.pmConverter.layer.borderColor = UIColor.systemPink.cgColor
+    private func configureOutputConverter() {
+        self.outputConverter.layer.borderWidth = 2
+        self.outputConverter.layer.borderColor = UIColor.systemPink.cgColor
     }
     
-    @objc func convertPM(sender: UISegmentedControl) {
+    @objc func convertOutput(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
             DispatchQueue.main.async {
@@ -309,7 +309,7 @@ extension StudioViewController {
         self.view.addSubview(self.captureOutputScreenView)
         self.view.addSubview(self.studioActionButton)
         self.view.addSubview(self.cameraConverter)
-        self.view.addSubview(self.pmConverter)
+        self.view.addSubview(self.outputConverter)
         self.view.addSubview(self.recordTimerLabel)
     }
     
@@ -327,7 +327,7 @@ extension StudioViewController {
             $0.trailing.equalTo(self.view.snp.trailing).offset(-100)
             $0.height.equalTo(38)
         }
-        self.pmConverter.snp.makeConstraints {
+        self.outputConverter.snp.makeConstraints {
             $0.leading.equalTo(self.view.snp.leading).offset(100)
             $0.top.equalTo(self.cameraConverter.snp.bottom).offset(4)
             $0.trailing.equalTo(self.view.snp.trailing).offset(-100)
