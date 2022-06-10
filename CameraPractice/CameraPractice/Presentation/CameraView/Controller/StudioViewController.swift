@@ -276,7 +276,7 @@ extension StudioViewController {
                 self.recordTimer.start()
                 self.studioActionButton.setTitleColor(.red, for: .normal)
                 guard let movieFileOutput = self.studioConfiguration.movieFileOutput else { return }
-                self.viewModel.didPressRecordStartButton(movieDataOutput: movieFileOutput, recorder: self, deviceOrientation: self.studioConfiguration.deviceOrientaition)
+                self.viewModel.didPressRecordStartButton(movieFileOutput: movieFileOutput, recorder: self, deviceOrientation: self.studioConfiguration.deviceOrientaition)
             } else {
                 self.isRecordOn = false
                 self.recordTimer.stop()
