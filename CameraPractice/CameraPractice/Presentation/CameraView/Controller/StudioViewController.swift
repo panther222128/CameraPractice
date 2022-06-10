@@ -64,7 +64,7 @@ final class StudioViewController: UIViewController {
             guard let isAuthorized = isAuthorized else { return }
             if isAuthorized {
                 DispatchQueue.main.async {
-                    self.studioConfiguration.setDevice(at: 0, presenter: self)
+                    self.studioConfiguration.configureEnvironment(at: 0, presenter: self)
                     self.studioConfiguration.configurePhotoInputOutput(presenter: self)
                 }
             } else {
@@ -171,7 +171,7 @@ extension StudioViewController {
         switch sender.selectedSegmentIndex {
         case 0:
             DispatchQueue.main.async {
-                self.studioConfiguration.setDevice(at: sender.selectedSegmentIndex, presenter: self)
+                self.studioConfiguration.configureEnvironment(at: sender.selectedSegmentIndex, presenter: self)
                 if self.isPhotoMode {
                     self.studioConfiguration.configurePhotoInputOutput(presenter: self)
                 } else {
@@ -180,7 +180,7 @@ extension StudioViewController {
             }
         case 1:
             DispatchQueue.main.async {
-                self.studioConfiguration.setDevice(at: sender.selectedSegmentIndex, presenter: self)
+                self.studioConfiguration.configureEnvironment(at: sender.selectedSegmentIndex, presenter: self)
                 if self.isPhotoMode {
                     self.studioConfiguration.configurePhotoInputOutput(presenter: self)
                 } else {
@@ -189,7 +189,7 @@ extension StudioViewController {
             }
         default:
             DispatchQueue.main.async {
-                self.studioConfiguration.setDevice(at: sender.selectedSegmentIndex, presenter: self)
+                self.studioConfiguration.configureEnvironment(at: sender.selectedSegmentIndex, presenter: self)
                 if self.isPhotoMode {
                     self.studioConfiguration.configurePhotoInputOutput(presenter: self)
                 } else {

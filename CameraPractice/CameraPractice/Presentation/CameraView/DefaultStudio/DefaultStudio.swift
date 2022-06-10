@@ -16,7 +16,7 @@ protocol StudioConfigurable {
     var movieFileOutput: AVCaptureMovieFileOutput? { get }
     var deviceOrientaition: AVCaptureVideoOrientation { get }
     
-    func setDevice(at index: Int, presenter: some UIViewController & DataOutputSampleBufferDelegate)
+    func configureEnvironment(at index: Int, presenter: some UIViewController & DataOutputSampleBufferDelegate)
     func configurePhotoInputOutput(presenter: some UIViewController & DataOutputSampleBufferDelegate)
     func configureMovieInputOutput(presenter: some UIViewController & DataOutputSampleBufferDelegate)
     
@@ -44,7 +44,7 @@ final class DefaultStudio: StudioConfigurable {
         self.photoSettings = photoSettings
     }
     
-    func setDevice(at index: Int, presenter: some UIViewController & DataOutputSampleBufferDelegate) {
+    func configureEnvironment(at index: Int, presenter: some UIViewController & DataOutputSampleBufferDelegate) {
         switch index {
         case 0:
             self.captureSessionBeginConfiguration()
