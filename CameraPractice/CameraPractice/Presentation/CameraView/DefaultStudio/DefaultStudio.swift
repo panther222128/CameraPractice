@@ -100,6 +100,14 @@ final class DefaultStudio: StudioConfigurable {
         self.configureVideoDataOutput(presenter: presenter)
     }
     
+    func invalidateStudio() {
+        self.photoSettings = nil
+        self.photoOutput = nil
+        self.videoDataOutput = nil
+        self.audioDataOutput = nil
+        self.movieFileOutput = nil
+    }
+    
 }
 
 // MARK: - Session
@@ -266,20 +274,6 @@ extension DefaultStudio {
         }
         
         captureSession.commitConfiguration()
-    }
-    
-}
-
-// MARK: - Invalidate studio
-
-extension DefaultStudio {
-    
-    func invalidateStudio() {
-        self.photoSettings = nil
-        self.photoOutput = nil
-        self.videoDataOutput = nil
-        self.audioDataOutput = nil
-        self.movieFileOutput = nil
     }
     
 }
