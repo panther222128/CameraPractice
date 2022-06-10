@@ -24,8 +24,7 @@ protocol StudioViewModel {
 class DefaultStudioViewModel: StudioViewModel {
     
     private let studioUseCase: StudioUseCase
-    private let recordTimer: RecordTimerConfigurable = RecordTimer()
-    
+
     let isDeviceAccessAuthorized: Observable<Bool?>
     let isPhotoAlbumAccessAuthorized: Observable<Bool?>
     

@@ -43,7 +43,7 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
         
         // Retrieve the photo orientation and apply it to the matte image.
         if let orientation = photo.metadata[String(kCGImagePropertyOrientation)] as? UInt32,
-           let exifOrientation = CGImagePropertyOrientation(rawValue: orientation) {
+            let exifOrientation = CGImagePropertyOrientation(rawValue: orientation) {
             // Apply the Exif orientation to the matte image.
             segmentationMatte = segmentationMatte.applyingExifOrientation(exifOrientation)
         }
@@ -68,9 +68,9 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
         guard let perceptualColorSpace = CGColorSpace(name: CGColorSpace.sRGB) else { return }
         
         // Create a new CIImage from the matte's underlying CVPixelBuffer.
-        let ciImage = CIImage( cvImageBuffer: segmentationMatte.mattingImage,
-                               options: [imageOption: true,
-                                         .colorSpace: perceptualColorSpace])
+        let ciImage = CIImage(cvImageBuffer: segmentationMatte.mattingImage,
+                              options: [imageOption: true,
+                                        .colorSpace: perceptualColorSpace])
         
         // Get the HEIF representation of this image.
         guard let imageData = context.heifRepresentation(of: ciImage,

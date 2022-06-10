@@ -10,9 +10,9 @@ import UIKit
 final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     
     struct Dependencies {
+        let deviceConfiguration: DeviceConfigurable
 //        let apiDataTransferService: DataTransferService
         let authorizationManager: AuthorizationManager
-        let studioConfiguration: StudioConfigurable
         let inProgressPhotoCaptureDelegates: [Int64 : PhotoCaptureProcessor]
     }
     
@@ -41,8 +41,16 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
         return DefaultStudioViewModel(studioUseCase: self.makeStudioUseCase())
     }
     
+    private func makeRecordTimer() -> RecordTimerConfigurable {
+        return RecordTimer()
+    }
+    
+    private func makeStudio() -> StudioConfigurable {
+        return DefaultStudio(deviceConfiguration: self.dependencies.deviceConfiguration, photoSettings: DefaultPhotoSettings())
+    }
+    
     func makeStudioViewController() -> StudioViewController {
-        return StudioViewController.create(with: self.makeStudioViewModel(), with: self.dependencies.studioConfiguration)
+        return StudioViewController.create(with: self.makeStudioViewModel(), with: self.makeStudio(), with: self.makeRecordTimer())
     }
 
 }

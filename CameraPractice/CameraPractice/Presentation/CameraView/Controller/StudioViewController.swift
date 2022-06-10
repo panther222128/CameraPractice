@@ -13,10 +13,15 @@ protocol DataOutputSampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDel
     
 }
 
+extension StudioViewController: DataOutputSampleBufferDelegate {
+    
+}
+
 final class StudioViewController: UIViewController {
     
     private var studioConfiguration: StudioConfigurable!
     private var viewModel: StudioViewModel!
+    private var recordTimer: RecordTimerConfigurable!
     
     private let context = CIContext()
     private let studioActionButton = UIButton()
@@ -37,8 +42,6 @@ final class StudioViewController: UIViewController {
     
     private var isPhotoMode = true
     private var isRecordOn = false
-    
-    private let recordTimer: RecordTimerConfigurable = RecordTimer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -84,10 +87,11 @@ final class StudioViewController: UIViewController {
         }
     }
     
-    static func create(with viewModel: StudioViewModel, with studioConfiguration: StudioConfigurable) -> StudioViewController {
+    static func create(with viewModel: StudioViewModel, with studioConfiguration: StudioConfigurable, with recordTimer: RecordTimerConfigurable) -> StudioViewController {
         let viewController = StudioViewController()
         viewController.viewModel = viewModel
         viewController.studioConfiguration = studioConfiguration
+        viewController.recordTimer = recordTimer
         return viewController
     }
     
@@ -120,10 +124,6 @@ final class StudioViewController: UIViewController {
     
 }
 
-extension StudioViewController: DataOutputSampleBufferDelegate {
-    
-}
-
 extension StudioViewController: AVCaptureFileOutputRecordingDelegate {
     
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
@@ -144,10 +144,10 @@ extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate, AV
         guard let videoPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer), let _ = CMSampleBufferGetFormatDescription(sampleBuffer) else { return }
         
         let cameraImage = CIImage(cvImageBuffer: videoPixelBuffer)
-        let cg = self.context.createCGImage(cameraImage, from: self.captureOutputScreenView.frame)!
+        let cgImage = self.context.createCGImage(cameraImage, from: self.captureOutputScreenView.frame)!
         
         DispatchQueue.main.async {
-            let image = UIImage(cgImage: cg)
+            let image = UIImage(cgImage: cgImage)
             self.captureOutputScreenView.image = image
         }
     }
