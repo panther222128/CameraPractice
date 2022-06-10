@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		9B2373B708CEDE453110E580 /* libPods-CameraPractice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB10BA060D23B295B40FEF6 /* libPods-CameraPractice.a */; };
 		A01287D6284456650068A093 /* DefaultDeviceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01287D5284456650068A093 /* DefaultDeviceConfiguration.swift */; };
+		A030308828532604008BB69D /* RecordTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A030308728532604008BB69D /* RecordTimer.swift */; };
 		A083B74528506C9600949ED4 /* PhotoCaptureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A083B74428506C9600949ED4 /* PhotoCaptureProcessor.swift */; };
 		A0A0968A2840900B00BCB214 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096892840900B00BCB214 /* AppDelegate.swift */; };
 		A0A0968C2840900B00BCB214 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A0968B2840900B00BCB214 /* SceneDelegate.swift */; };
@@ -31,6 +32,7 @@
 /* Begin PBXFileReference section */
 		5B5CA06E605C74C1EE2DEB64 /* Pods-CameraPractice.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CameraPractice.release.xcconfig"; path = "Target Support Files/Pods-CameraPractice/Pods-CameraPractice.release.xcconfig"; sourceTree = "<group>"; };
 		A01287D5284456650068A093 /* DefaultDeviceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDeviceConfiguration.swift; sourceTree = "<group>"; };
+		A030308728532604008BB69D /* RecordTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTimer.swift; sourceTree = "<group>"; };
 		A083B74428506C9600949ED4 /* PhotoCaptureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureProcessor.swift; sourceTree = "<group>"; };
 		A0A096862840900B00BCB214 /* CameraPractice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CameraPractice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A0A096892840900B00BCB214 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -66,6 +68,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A0303086285325FC008BB69D /* RecordTimer */ = {
+			isa = PBXGroup;
+			children = (
+				A030308728532604008BB69D /* RecordTimer.swift */,
+			);
+			path = RecordTimer;
+			sourceTree = "<group>";
+		};
 		A083B7482850989B00949ED4 /* DefaultDeviceConfiguration */ = {
 			isa = PBXGroup;
 			children = (
@@ -190,7 +200,7 @@
 		A0A096AD2840917500BCB214 /* CameraView */ = {
 			isa = PBXGroup;
 			children = (
-				A0DA208B2843643F00604A5D /* DefaultStudioConfiguration */,
+				A0DA208B2843643F00604A5D /* DefaultStudio */,
 				A0A096C12840B9CD00BCB214 /* View */,
 				A0A096B32840ACA100BCB214 /* ViewModel */,
 				A0A096B22840AC9D00BCB214 /* Controller */,
@@ -209,6 +219,7 @@
 		A0A096B32840ACA100BCB214 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				A0303086285325FC008BB69D /* RecordTimer */,
 				A0A096B42840ACAD00BCB214 /* StudioViewModel.swift */,
 			);
 			path = ViewModel;
@@ -253,13 +264,13 @@
 			path = AuthorizationManager;
 			sourceTree = "<group>";
 		};
-		A0DA208B2843643F00604A5D /* DefaultStudioConfiguration */ = {
+		A0DA208B2843643F00604A5D /* DefaultStudio */ = {
 			isa = PBXGroup;
 			children = (
 				A0DA208C2843644E00604A5D /* DefaultStudio.swift */,
 				A083B7482850989B00949ED4 /* DefaultDeviceConfiguration */,
 			);
-			path = DefaultStudioConfiguration;
+			path = DefaultStudio;
 			sourceTree = "<group>";
 		};
 		C168D6BC77B8CFCD3D1FD9BC /* Pods */ = {
@@ -391,6 +402,7 @@
 				A0A096B92840ACE000BCB214 /* StudioUseCase.swift in Sources */,
 				A0A096A8284090FD00BCB214 /* SceneDIContainer.swift in Sources */,
 				A01287D6284456650068A093 /* DefaultDeviceConfiguration.swift in Sources */,
+				A030308828532604008BB69D /* RecordTimer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -65,6 +65,14 @@ extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
             captureSession.commitConfiguration()
             return
         }
+        
+        do {
+            guard let defaultDevice = self.defaultDevice else { return }
+            try defaultDevice.lockForConfiguration()
+        } catch {
+            print("Cannot lock for configuration")
+        }
+        
         captureSession.commitConfiguration()
     }
     

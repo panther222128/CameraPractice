@@ -12,8 +12,9 @@ protocol StudioViewModel {
     var isDeviceAccessAuthorized: Observable<Bool?> { get }
     var isPhotoAlbumAccessAuthorized: Observable<Bool?> { get }
 
-    func didCheckIsDeviceAccessAuthorized()
-    func didCheckIsPhotoAlbumAccessAuthorized()
+    func checkDeviceAccessAuthorizationStatus()
+    func checkPhotoAlbumAccessAuthorized()
+    
     func didPressTakePhotoButton(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput)
     func didPressRecordStartButton(movieDataOutput: AVCaptureMovieFileOutput, recorder: some AVCaptureFileOutputRecordingDelegate, deviceOrientation: AVCaptureVideoOrientation)
     func didPressRecordStopButton(movieFileOutput: AVCaptureMovieFileOutput)
@@ -23,6 +24,7 @@ protocol StudioViewModel {
 class DefaultStudioViewModel: StudioViewModel {
     
     private let studioUseCase: StudioUseCase
+    private let recordTimer: RecordTimerConfigurable = RecordTimer()
     
     let isDeviceAccessAuthorized: Observable<Bool?>
     let isPhotoAlbumAccessAuthorized: Observable<Bool?>
@@ -33,7 +35,7 @@ class DefaultStudioViewModel: StudioViewModel {
         self.isPhotoAlbumAccessAuthorized = Observable(nil)
     }
     
-    func didCheckIsDeviceAccessAuthorized() {
+    func checkDeviceAccessAuthorizationStatus() {
         self.studioUseCase.checkDeviceAccessAuthorizationStatus { isAuthorized in
             switch isAuthorized {
             case true:
@@ -44,7 +46,7 @@ class DefaultStudioViewModel: StudioViewModel {
         }
     }
     
-    func didCheckIsPhotoAlbumAccessAuthorized() {
+    func checkPhotoAlbumAccessAuthorized() {
         self.studioUseCase.checkPhotoAlbumAccessAuthorizationStatus { isAuthorized in
             switch isAuthorized {
             case true:

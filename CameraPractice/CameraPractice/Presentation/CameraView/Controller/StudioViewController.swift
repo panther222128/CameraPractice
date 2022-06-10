@@ -21,11 +21,11 @@ final class StudioViewController: UIViewController {
     private let context = CIContext()
     private let studioActionButton = UIButton()
     private let captureOutputScreenView = UIImageView()
-    private var pvConverter: UISegmentedControl = {
-        let pv = ["Photo", "Video"]
-        let pvConverter = UISegmentedControl(items: pv)
-        pvConverter.selectedSegmentIndex = 0
-        return pvConverter
+    private var pmConverter: UISegmentedControl = {
+        let pm = ["Photo", "Movie"]
+        let pmConverter = UISegmentedControl(items: pm)
+        pmConverter.selectedSegmentIndex = 0
+        return pmConverter
     }()
     private var cameraConverter: UISegmentedControl = {
         let cameras = ["Default", "Front"]
@@ -38,17 +38,19 @@ final class StudioViewController: UIViewController {
     private var isPhotoMode = true
     private var isRecordOn = false
     
+    private let recordTimer: RecordTimerConfigurable = RecordTimer()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.viewModel.didCheckIsDeviceAccessAuthorized()
-        self.viewModel.didCheckIsPhotoAlbumAccessAuthorized()
+        self.viewModel.checkDeviceAccessAuthorizationStatus()
+        self.viewModel.checkPhotoAlbumAccessAuthorized()
         self.addSubviews()
         self.configureLayout()
         self.configureStudioActionButton()
         self.addCameraConverterTarget()
         self.configureCameraConverter()
-        self.addPVConverterTarget()
-        self.configurePVConverter()
+        self.addPMConverterTarget()
+        self.configurePMConverter()
         self.configureRecordTimerLabel()
         self.bind()
     }
@@ -59,7 +61,8 @@ final class StudioViewController: UIViewController {
             guard let isAuthorized = isAuthorized else { return }
             if isAuthorized {
                 DispatchQueue.main.async {
-                    self.studioConfiguration.prepareToTakeAction(at: self.cameraConverter.selectedSegmentIndex, presenter: self)
+                    self.studioConfiguration.setDevice(at: 0, presenter: self)
+                    self.studioConfiguration.configurePhotoInputOutput(presenter: self)
                 }
             } else {
                 self.presentDeviceAccessAuthorizationStatusAlert()
@@ -75,6 +78,9 @@ final class StudioViewController: UIViewController {
             } else {
                 self.presentPhotoAlbumAccessAuthorizationStatusAlert()
             }
+        }
+        self.recordTimer.time.bind { [weak self] timeProgressStatus in
+            self?.recordTimerLabel.text = timeProgressStatus
         }
     }
     
@@ -165,35 +171,50 @@ extension StudioViewController {
         switch sender.selectedSegmentIndex {
         case 0:
             DispatchQueue.main.async {
-                self.studioConfiguration.prepareToTakeAction(at: sender.selectedSegmentIndex, presenter: self)
+                self.studioConfiguration.setDevice(at: sender.selectedSegmentIndex, presenter: self)
+                if self.isPhotoMode {
+                    self.studioConfiguration.configurePhotoInputOutput(presenter: self)
+                } else {
+                    self.studioConfiguration.configureMovieInputOutput(presenter: self)
+                }
             }
         case 1:
             DispatchQueue.main.async {
-                self.studioConfiguration.prepareToTakeAction(at: sender.selectedSegmentIndex, presenter: self)
+                self.studioConfiguration.setDevice(at: sender.selectedSegmentIndex, presenter: self)
+                if self.isPhotoMode {
+                    self.studioConfiguration.configurePhotoInputOutput(presenter: self)
+                } else {
+                    self.studioConfiguration.configureMovieInputOutput(presenter: self)
+                }
             }
         default:
             DispatchQueue.main.async {
-                self.studioConfiguration.prepareToTakeAction(at: sender.selectedSegmentIndex, presenter: self)
+                self.studioConfiguration.setDevice(at: sender.selectedSegmentIndex, presenter: self)
+                if self.isPhotoMode {
+                    self.studioConfiguration.configurePhotoInputOutput(presenter: self)
+                } else {
+                    self.studioConfiguration.configureMovieInputOutput(presenter: self)
+                }
             }
         }
     }
     
 }
 
-// MARK: - PVConverter
+// MARK: - PMConverter
 
 extension StudioViewController {
     
-    private func addPVConverterTarget() {
-        self.pvConverter.addTarget(self, action: #selector(self.convertPV), for: .valueChanged)
+    private func addPMConverterTarget() {
+        self.pmConverter.addTarget(self, action: #selector(self.convertPM), for: .valueChanged)
     }
     
-    private func configurePVConverter() {
-        self.pvConverter.layer.borderWidth = 2
-        self.pvConverter.layer.borderColor = UIColor.systemPink.cgColor
+    private func configurePMConverter() {
+        self.pmConverter.layer.borderWidth = 2
+        self.pmConverter.layer.borderColor = UIColor.systemPink.cgColor
     }
     
-    @objc func convertPV(sender: UISegmentedControl) {
+    @objc func convertPM(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
             DispatchQueue.main.async {
@@ -201,6 +222,7 @@ extension StudioViewController {
                 if self.isPhotoMode {
                     self.recordTimerLabel.isHidden = true
                     self.convertStudioActionButtonText()
+                    self.studioConfiguration.configurePhotoInputOutput(presenter: self)
                 }
             }
         case 1:
@@ -209,6 +231,7 @@ extension StudioViewController {
                 if !self.isPhotoMode {
                     self.recordTimerLabel.isHidden = false
                     self.convertStudioActionButtonText()
+                    self.studioConfiguration.configureMovieInputOutput(presenter: self)
                 }
             }
         default:
@@ -217,6 +240,7 @@ extension StudioViewController {
                 if self.isPhotoMode {
                     self.recordTimerLabel.isHidden = true
                     self.convertStudioActionButtonText()
+                    self.studioConfiguration.configurePhotoInputOutput(presenter: self)
                 }
             }
         }
@@ -249,11 +273,13 @@ extension StudioViewController {
         } else {
             if !self.isRecordOn {
                 self.isRecordOn = true
+                self.recordTimer.start()
                 self.studioActionButton.setTitleColor(.red, for: .normal)
                 guard let movieFileOutput = self.studioConfiguration.movieFileOutput else { return }
                 self.viewModel.didPressRecordStartButton(movieDataOutput: movieFileOutput, recorder: self, deviceOrientation: self.studioConfiguration.deviceOrientaition)
             } else {
                 self.isRecordOn = false
+                self.recordTimer.stop()
                 self.studioActionButton.setTitleColor(.white, for: .normal)
                 guard let movieFileOutput = self.studioConfiguration.movieFileOutput else { return }
                 self.viewModel.didPressRecordStopButton(movieFileOutput: movieFileOutput)
@@ -268,7 +294,6 @@ extension StudioViewController {
 extension StudioViewController {
     
     private func configureRecordTimerLabel() {
-        self.recordTimerLabel.text = "00:00"
         self.recordTimerLabel.textColor = .white
         self.recordTimerLabel.textAlignment = .center
         self.recordTimerLabel.isHidden = true
@@ -284,7 +309,7 @@ extension StudioViewController {
         self.view.addSubview(self.captureOutputScreenView)
         self.view.addSubview(self.studioActionButton)
         self.view.addSubview(self.cameraConverter)
-        self.view.addSubview(self.pvConverter)
+        self.view.addSubview(self.pmConverter)
         self.view.addSubview(self.recordTimerLabel)
     }
     
@@ -302,7 +327,7 @@ extension StudioViewController {
             $0.trailing.equalTo(self.view.snp.trailing).offset(-100)
             $0.height.equalTo(38)
         }
-        self.pvConverter.snp.makeConstraints {
+        self.pmConverter.snp.makeConstraints {
             $0.leading.equalTo(self.view.snp.leading).offset(100)
             $0.top.equalTo(self.cameraConverter.snp.bottom).offset(4)
             $0.trailing.equalTo(self.view.snp.trailing).offset(-100)
