@@ -55,6 +55,7 @@ final class StudioViewController: UIViewController {
         self.addOutputConverterTarget()
         self.configureOutputConverter()
         self.configureRecordTimerLabel()
+        self.configureCaptureOutputScreenView()
         self.bind()
     }
     
@@ -341,5 +342,12 @@ extension StudioViewController {
     
 }
 
+// MARK: - ImageView
 
-
+extension StudioViewController {
+    
+    private func configureCaptureOutputScreenView() {
+        self.captureOutputScreenView.contentMode = .scaleAspectFit
+    }
+    
+}

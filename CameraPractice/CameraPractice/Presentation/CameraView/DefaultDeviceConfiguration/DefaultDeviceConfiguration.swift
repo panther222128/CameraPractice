@@ -52,7 +52,6 @@ extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
             }
             
             guard let defaultDevice = defaultDevice else {
-                captureSession.commitConfiguration()
                 return
             }
             
@@ -62,7 +61,6 @@ extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
                 captureSession.addInput(deviceInput)
             }
         } catch {
-            captureSession.commitConfiguration()
             return
         }
         
@@ -73,7 +71,6 @@ extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
             print("Cannot lock for configuration")
         }
         
-        captureSession.commitConfiguration()
     }
     
 }
@@ -94,7 +91,6 @@ extension DefaultDeviceConfiguration: AudioDeviceConfigurable {
         } catch {
             print("Could not create audio device input: \(error)")
         }
-        captureSession.commitConfiguration()
     }
     
 }

@@ -101,6 +101,7 @@ final class DefaultStudio: StudioConfigurable {
     }
     
     func invalidateStudio() {
+        self.stopSession()
         self.photoSettings = nil
         self.photoOutput = nil
         self.videoDataOutput = nil
