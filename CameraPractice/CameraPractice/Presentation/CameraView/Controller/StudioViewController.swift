@@ -50,6 +50,7 @@ final class StudioViewController: UIViewController {
         self.addSubviews()
         self.configureLayout()
         self.configureStudioActionButton()
+        self.configureCaptureOutputScreenView()
         self.addCameraConverterTarget()
         self.configureCameraConverter()
         self.addOutputConverterTarget()
@@ -298,6 +299,16 @@ extension StudioViewController {
         self.recordTimerLabel.textColor = .white
         self.recordTimerLabel.textAlignment = .center
         self.recordTimerLabel.isHidden = true
+    }
+    
+}
+
+// MARK: - ImageView
+
+extension StudioViewController {
+    
+    private func configureCaptureOutputScreenView() {
+        self.captureOutputScreenView.contentMode = .scaleAspectFit
     }
     
 }
