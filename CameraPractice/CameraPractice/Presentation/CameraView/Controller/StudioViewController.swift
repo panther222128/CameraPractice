@@ -56,7 +56,6 @@ final class StudioViewController: UIViewController {
         self.addOutputConverterTarget()
         self.configureOutputConverter()
         self.configureRecordTimerLabel()
-        self.configureCaptureOutputScreenView()
         self.bind()
     }
     
