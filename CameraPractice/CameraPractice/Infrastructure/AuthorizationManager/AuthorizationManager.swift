@@ -25,11 +25,15 @@ final class DefaultAuthorizationManager: AuthorizationManager {
     }
     
     func checkPhotoAlbumAuthorization(completion: @escaping (Bool) -> Void) {
-        switch PHPhotoLibrary.authorizationStatus(for: .readWrite) {
-        case .authorized:
-            completion(true)
-        default:
-            completion(false)
+        if #available(iOS 14, *) {
+            switch PHPhotoLibrary.authorizationStatus(for: .readWrite) {
+            case .authorized:
+                completion(true)
+            default:
+                completion(false)
+            }
+        } else {
+            // Fallback on earlier versions
         }
     }
     

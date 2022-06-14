@@ -58,8 +58,6 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
             imageOption = .auxiliarySemanticSegmentationSkinMatte
         case .teeth:
             imageOption = .auxiliarySemanticSegmentationTeethMatte
-        case .glasses:
-            imageOption = .auxiliarySemanticSegmentationGlassesMatte
         default:
             print("This semantic segmentation type is not supported!")
             return

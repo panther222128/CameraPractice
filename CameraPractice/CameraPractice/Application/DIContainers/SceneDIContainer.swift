@@ -44,8 +44,8 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
         return DefaultStudioUseCase(cameraRepository: self.makeStudioRepository(), authorizationManager: self.authorizationManager, inProgressPhotoCaptureDelegates: self.inProgressPhotoCaptureDelegates)
     }
     
-    private func makeStudioViewModel() -> StudioViewModel {
-        return DefaultStudioViewModel(studioUseCase: self.makeStudioUseCase())
+    private func makeStudioViewModel(action: StudioViewModelAction) -> StudioViewModel {
+        return DefaultStudioViewModel(studioUseCase: self.makeStudioUseCase(), action: action)
     }
     
     private func makeRecordTimer() -> RecordTimerConfigurable {
@@ -56,8 +56,44 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
         return DefaultStudio(deviceConfiguration: self.deviceConfiguration, photoSettings: DefaultPhotoSettings())
     }
     
-    func makeStudioViewController() -> StudioViewController {
-        return StudioViewController.create(with: self.makeStudioViewModel(), with: self.makeStudio(), with: self.makeRecordTimer())
+    func makeStudioViewController(action: StudioViewModelAction) -> StudioViewController {
+        return StudioViewController.create(with: self.makeStudioViewModel(action: action), with: self.makeStudio(), with: self.makeRecordTimer())
     }
 
+    // MARK: - MediaPicker
+    
+    private func makeMediaPickerRepository() -> MediaPickerRepository {
+        return DefaultMediaPickerRepository()
+    }
+    
+    private func makeMediaPickerUseCase() -> MediaPickerUseCase {
+        return DefaultMediaPickerUseCase()
+    }
+    
+    private func makeMediaPickerViewModel(mediaPickerViewModelAction: MediaPickerViewModelAction) -> MediaPickerViewModel {
+        return DefaultMediaPickerViewModel(mediaPickerViewModelAction: mediaPickerViewModelAction)
+    }
+
+    func makeMediaPickerViewController(action: MediaPickerViewModelAction) -> MediaPickerViewController {
+        return MediaPickerViewController.create(with: self.makeMediaPickerViewModel(mediaPickerViewModelAction: action))
+    }
+    
+    // MARK: - Playback
+    
+    private func makePlaybackRepository() -> PlaybackRepository {
+        return DefaultPlaybackRepository()
+    }
+    
+    private func makePlaybackUseCase() -> PlaybackUseCase {
+        return DefaultPlaybackUseCase()
+    }
+    
+    private func makePlaybackViewModel() -> PlaybackViewModel {
+        return DefaultPlaybackViewModel()
+    }
+    
+    func makePlaybackViewController() -> PlaybackViewController {
+        return PlaybackViewController.create(with: self.makePlaybackViewModel())
+    }
+    
 }

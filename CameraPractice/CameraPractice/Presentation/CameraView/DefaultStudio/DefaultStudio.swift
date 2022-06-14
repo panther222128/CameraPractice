@@ -118,7 +118,10 @@ extension DefaultStudio {
     private func startSession() {
         self.captureSession = AVCaptureSession()
         guard let captureSession = captureSession else { return }
-        captureSession.startRunning()
+        DispatchQueue.global(qos: .background).async {
+            captureSession.startRunning()
+        }
+        
     }
     
     private func captureSessionBeginConfiguration() {
@@ -254,7 +257,6 @@ extension DefaultStudio {
         
         photoSettings.isDepthDataDeliveryEnabled = photoOutput.isDepthDataDeliveryEnabled
         photoSettings.isPortraitEffectsMatteDeliveryEnabled = photoOutput.isPortraitEffectsMatteDeliveryEnabled
-        photoSettings.photoQualityPrioritization = .balanced
     }
     
 }

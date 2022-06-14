@@ -8,6 +8,10 @@
 import Foundation
 import AVFoundation
 
+struct StudioViewModelAction {
+    let presentMediaPickerView: (() -> Void)
+}
+
 protocol StudioViewModel {
     var isDeviceAccessAuthorized: Observable<Bool?> { get }
     var isPhotoAlbumAccessAuthorized: Observable<Bool?> { get }
@@ -19,19 +23,22 @@ protocol StudioViewModel {
     func didPressRecordStartButton(movieFileOutput: AVCaptureMovieFileOutput, recorder: some AVCaptureFileOutputRecordingDelegate, deviceOrientation: AVCaptureVideoOrientation)
     func didPressRecordStopButton(movieFileOutput: AVCaptureMovieFileOutput)
     func didSaveRecordedMovie()
+    func didPressPresentMediaPickerViewButton()
 }
 
 class DefaultStudioViewModel: StudioViewModel {
     
     private let studioUseCase: StudioUseCase
-
+    private let action: StudioViewModelAction
+    
     let isDeviceAccessAuthorized: Observable<Bool?>
     let isPhotoAlbumAccessAuthorized: Observable<Bool?>
     
-    init(studioUseCase: StudioUseCase) {
+    init(studioUseCase: StudioUseCase, action: StudioViewModelAction) {
         self.studioUseCase = studioUseCase
         self.isDeviceAccessAuthorized = Observable(nil)
         self.isPhotoAlbumAccessAuthorized = Observable(nil)
+        self.action = action
     }
     
     func checkDeviceAccessAuthorizationStatus() {
@@ -70,6 +77,10 @@ class DefaultStudioViewModel: StudioViewModel {
     
     func didSaveRecordedMovie() {
         self.studioUseCase.saveRecordedMovie()
+    }
+    
+    func didPressPresentMediaPickerViewButton() {
+        self.action.presentMediaPickerView()
     }
     
 }

@@ -8,7 +8,9 @@
 import UIKit
 
 protocol ViewFlowCoordinatorDependencies {
-    func makeStudioViewController() -> StudioViewController
+    func makeStudioViewController(action: StudioViewModelAction) -> StudioViewController
+    func makeMediaPickerViewController(action: MediaPickerViewModelAction) -> MediaPickerViewController
+    func makePlaybackViewController() -> PlaybackViewController
 }
 
 final class ViewFlowCoordinator {
@@ -24,10 +26,22 @@ final class ViewFlowCoordinator {
     }
     
     func start() {
-        let viewController = dependencies.makeStudioViewController()
+        let action = StudioViewModelAction(presentMediaPickerView: self.showMediaPickerView)
+        let viewController = dependencies.makeStudioViewController(action: action)
         
         self.navigationController?.pushViewController(viewController, animated: true)
         self.cameraViewController = viewController
+    }
+    
+    private func showMediaPickerView() {
+        let action = MediaPickerViewModelAction(showPlaybackView: self.showPlaybackView)
+        let viewController = dependencies.makeMediaPickerViewController(action: action)
+        self.navigationController?.present(viewController, animated: true)
+    }
+    
+    private func showPlaybackView(of image: UIImage) {
+        let viewController = dependencies.makePlaybackViewController()
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
     
 }

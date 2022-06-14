@@ -122,13 +122,17 @@ extension DefaultStudioUseCase {
     }
     
     private func requestForPhotoAlbumAccess(completion: @escaping (Bool) -> Void) {
-        PHPhotoLibrary.requestAuthorization(for: .readWrite) { authorizationStatus in
-            switch authorizationStatus {
-            case .authorized:
-                completion(true)
-            default:
-                completion(false)
+        if #available(iOS 14, *) {
+            PHPhotoLibrary.requestAuthorization(for: .readWrite) { authorizationStatus in
+                switch authorizationStatus {
+                case .authorized:
+                    completion(true)
+                default:
+                    completion(false)
+                }
             }
+        } else {
+            // Fallback on earlier versions
         }
     }
     

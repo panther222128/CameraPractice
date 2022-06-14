@@ -25,6 +25,7 @@ final class StudioViewController: UIViewController {
     
     private let context = CIContext()
     private let studioActionButton = UIButton()
+    private let presentMediaPickerViewButton = UIButton()
     private let captureOutputScreenView = UIImageView()
     private var outputConverter: UISegmentedControl = {
         let outputs = ["Photo", "Movie"]
@@ -56,6 +57,8 @@ final class StudioViewController: UIViewController {
         self.addOutputConverterTarget()
         self.configureOutputConverter()
         self.configureRecordTimerLabel()
+        self.configureGoToMediaPickerButton()
+        
         self.bind()
     }
     
@@ -255,7 +258,7 @@ extension StudioViewController {
     
     private func configureStudioActionButton() {
         self.studioActionButton.setTitle("Take Photo", for: .normal)
-        self.studioActionButton.addTarget(self, action: #selector(self.pressedStudioActionButton), for: .touchUpInside)
+        self.studioActionButton.addTarget(self, action: #selector(self.pressedStudioActionButtonAction), for: .touchUpInside)
     }
     
     private func convertStudioActionButtonText() {
@@ -266,7 +269,7 @@ extension StudioViewController {
         }
     }
     
-    @objc func pressedStudioActionButton() {
+    @objc func pressedStudioActionButtonAction() {
         guard let photoOutput = self.studioConfiguration.photoOutput else { return }
         guard let photoSettings = self.studioConfiguration.photoSettings else { return }
         if self.isPhotoMode {
@@ -286,6 +289,15 @@ extension StudioViewController {
                 self.viewModel.didPressRecordStopButton(movieFileOutput: movieFileOutput)
             }
         }
+    }
+    
+    private func configureGoToMediaPickerButton() {
+        self.presentMediaPickerViewButton.setTitle("Image", for: .normal)
+        self.presentMediaPickerViewButton.addTarget(self, action: #selector(self.presentMediaPickverViewButtonAction), for: .touchUpInside)
+    }
+    
+    @objc func presentMediaPickverViewButtonAction() {
+        self.viewModel.didPressPresentMediaPickerViewButton()
     }
     
 }
@@ -322,6 +334,7 @@ extension StudioViewController {
         self.view.addSubview(self.cameraConverter)
         self.view.addSubview(self.outputConverter)
         self.view.addSubview(self.recordTimerLabel)
+        self.view.addSubview(self.presentMediaPickerViewButton)
     }
     
     private func configureLayout() {
@@ -348,16 +361,10 @@ extension StudioViewController {
             $0.centerX.equalTo(self.view.snp.centerX)
             $0.bottom.equalTo(self.studioActionButton.snp.top).offset(-20)
         }
-    }
-    
-}
-
-// MARK: - ImageView
-
-extension StudioViewController {
-    
-    private func configureCaptureOutputScreenView() {
-        self.captureOutputScreenView.contentMode = .scaleAspectFit
+        self.presentMediaPickerViewButton.snp.makeConstraints {
+            $0.top.trailing.equalTo(self.view.safeAreaLayoutGuide)
+            $0.height.equalTo(24)
+        }
     }
     
 }
