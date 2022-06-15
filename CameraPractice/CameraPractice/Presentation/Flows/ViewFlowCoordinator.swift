@@ -36,10 +36,10 @@ final class ViewFlowCoordinator {
     private func showMediaPickerView() {
         let action = MediaPickerViewModelAction(showPlaybackView: self.showPlaybackView)
         let viewController = dependencies.makeMediaPickerViewController(action: action)
-        self.navigationController?.present(viewController, animated: true)
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    private func showPlaybackView(of image: UIImage) {
+    private func showPlaybackView(at index: Int) {
         let viewController = dependencies.makePlaybackViewController()
         self.navigationController?.pushViewController(viewController, animated: true)
     }

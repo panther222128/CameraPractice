@@ -15,6 +15,7 @@
 		A03B439C285847520050B656 /* PlaybackRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03B439B285847520050B656 /* PlaybackRepository.swift */; };
 		A03B43A3285885200050B656 /* MediaScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03B43A2285885200050B656 /* MediaScreenView.swift */; };
 		A083B74528506C9600949ED4 /* PhotoCaptureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A083B74428506C9600949ED4 /* PhotoCaptureProcessor.swift */; };
+		A085168C2859A6BF0034D662 /* AssetsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A085168B2859A6BF0034D662 /* AssetsCollectionViewCell.swift */; };
 		A08F070F2857346E005AE166 /* MediaPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08F070E2857346E005AE166 /* MediaPickerViewController.swift */; };
 		A08F071428573A8A005AE166 /* MediaPickerUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08F071328573A8A005AE166 /* MediaPickerUseCase.swift */; };
 		A08F071728573ABA005AE166 /* MediaPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08F071628573ABA005AE166 /* MediaPickerViewModel.swift */; };
@@ -50,6 +51,7 @@
 		A03B439B285847520050B656 /* PlaybackRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackRepository.swift; sourceTree = "<group>"; };
 		A03B43A2285885200050B656 /* MediaScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaScreenView.swift; sourceTree = "<group>"; };
 		A083B74428506C9600949ED4 /* PhotoCaptureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureProcessor.swift; sourceTree = "<group>"; };
+		A085168B2859A6BF0034D662 /* AssetsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsCollectionViewCell.swift; sourceTree = "<group>"; };
 		A08F070E2857346E005AE166 /* MediaPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPickerViewController.swift; sourceTree = "<group>"; };
 		A08F071328573A8A005AE166 /* MediaPickerUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPickerUseCase.swift; sourceTree = "<group>"; };
 		A08F071628573ABA005AE166 /* MediaPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPickerViewModel.swift; sourceTree = "<group>"; };
@@ -116,9 +118,18 @@
 			path = DefaultDeviceConfiguration;
 			sourceTree = "<group>";
 		};
+		A085168A2859A69D0034D662 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				A085168B2859A6BF0034D662 /* AssetsCollectionViewCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		A08F070C28573440005AE166 /* MediaPickerView */ = {
 			isa = PBXGroup;
 			children = (
+				A085168A2859A69D0034D662 /* View */,
 				A08F071528573AAA005AE166 /* ViewModel */,
 				A08F070D2857344D005AE166 /* Controller */,
 			);
@@ -521,6 +532,7 @@
 				A030308A285346C9008BB69D /* DefaultPhotoSettings.swift in Sources */,
 				A0A096B12840AC4F00BCB214 /* StudioViewController.swift in Sources */,
 				A08F071728573ABA005AE166 /* MediaPickerViewModel.swift in Sources */,
+				A085168C2859A6BF0034D662 /* AssetsCollectionViewCell.swift in Sources */,
 				A08F071928573B18005AE166 /* DefaultMediaPickerRepository.swift in Sources */,
 				A0F4462028572D4700932C21 /* PlaybackUseCase.swift in Sources */,
 				A0A096C62840C08A00BCB214 /* AuthorizationManager.swift in Sources */,
@@ -598,7 +610,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -653,7 +665,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -679,7 +691,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -711,7 +723,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

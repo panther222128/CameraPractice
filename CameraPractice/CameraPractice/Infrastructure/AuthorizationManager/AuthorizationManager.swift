@@ -14,7 +14,7 @@ protocol AuthorizationManager {
 }
 
 final class DefaultAuthorizationManager: AuthorizationManager {
-
+    
     func checkDeviceAuthorization(completion: @escaping (Bool) -> Void) {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
@@ -25,15 +25,11 @@ final class DefaultAuthorizationManager: AuthorizationManager {
     }
     
     func checkPhotoAlbumAuthorization(completion: @escaping (Bool) -> Void) {
-        if #available(iOS 14, *) {
-            switch PHPhotoLibrary.authorizationStatus(for: .readWrite) {
-            case .authorized:
-                completion(true)
-            default:
-                completion(false)
-            }
-        } else {
-            // Fallback on earlier versions
+        switch PHPhotoLibrary.authorizationStatus(for: .readWrite) {
+        case .authorized:
+            completion(true)
+        default:
+            completion(false)
         }
     }
     

@@ -6,13 +6,12 @@
 //
 
 import Foundation
+import Photos
 
 protocol MediaPickerUseCase {
     
 }
 
 final class DefaultMediaPickerUseCase: MediaPickerUseCase {
-    
-    
-    
+
 }

@@ -21,6 +21,8 @@ class PlaybackViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.configureView()
+        self.addSubviews()
         self.configureLayout()
         self.configureMovieActionButtion()
         self.configureShowEditViewButton()
@@ -39,14 +41,22 @@ class PlaybackViewController: UIViewController {
 extension PlaybackViewController {
     
     private func addSubviews() {
+        self.view.addSubview(self.mediaScreenView)
         self.view.addSubview(self.movieActionButton)
         self.view.addSubview(self.showEditViewButton)
     }
     
     private func configureLayout() {
+        self.mediaScreenView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
         self.movieActionButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(self.view.snp.bottom).offset(-60)
+        }
+        self.showEditViewButton.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview()
+            $0.top.equalTo(self.view.snp.top).offset(120)
         }
     }
     
@@ -58,7 +68,7 @@ extension PlaybackViewController {
 
     private func configureMovieActionButtion() {
         self.movieActionButton.addTarget(self, action: #selector(self.movieActionButtonAction), for: .touchUpInside)
-        self.movieActionButton.setTitleColor(.white, for: .normal)
+        self.movieActionButton.setTitleColor(.black, for: .normal)
         if self.isPlayingMovie {
             self.movieActionButton.setTitle("Pause", for: .normal)
         } else {
@@ -72,12 +82,20 @@ extension PlaybackViewController {
     
     private func configureShowEditViewButton() {
         self.showEditViewButton.addTarget(self, action: #selector(self.showEditViewButtonAction), for: .touchUpInside)
-        self.showEditViewButton.setTitleColor(.white, for: .normal)
+        self.showEditViewButton.setTitleColor(.black, for: .normal)
         self.showEditViewButton.setTitle("Edit", for: .normal)
     }
     
     @objc func showEditViewButtonAction() {
         
+    }
+    
+}
+
+extension PlaybackViewController {
+    
+    private func configureView() {
+        self.view.backgroundColor = .white
     }
     
 }
