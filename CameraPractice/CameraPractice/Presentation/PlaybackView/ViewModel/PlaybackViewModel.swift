@@ -8,15 +8,14 @@
 import UIKit
 
 protocol PlaybackViewModel {
-    var image: Observable<UIImage?> { get }
 }
 
 final class DefaultPlaybackViewModel: PlaybackViewModel {
     
-    let image: Observable<UIImage?>
+    let assetIndex: Int
     
-    init() {
-        self.image = Observable(nil)
+    init(assetIndex: Int) {
+        self.assetIndex = assetIndex
     }
     
 }

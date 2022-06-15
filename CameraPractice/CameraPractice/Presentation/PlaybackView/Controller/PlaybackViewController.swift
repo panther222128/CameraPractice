@@ -14,6 +14,7 @@ class PlaybackViewController: UIViewController {
     private var viewModel: PlaybackViewModel!
     
     private let mediaScreenView = MediaScreenView()
+    private let imageScreenView = UIImageView()
     private let movieActionButton = UIButton()
     private let showEditViewButton = UIButton()
     

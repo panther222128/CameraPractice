@@ -10,7 +10,7 @@ import UIKit
 protocol ViewFlowCoordinatorDependencies {
     func makeStudioViewController(action: StudioViewModelAction) -> StudioViewController
     func makeMediaPickerViewController(action: MediaPickerViewModelAction) -> MediaPickerViewController
-    func makePlaybackViewController() -> PlaybackViewController
+    func makePlaybackViewController(assetIndex: Int) -> PlaybackViewController
 }
 
 final class ViewFlowCoordinator {
@@ -39,8 +39,8 @@ final class ViewFlowCoordinator {
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    private func showPlaybackView(at index: Int) {
-        let viewController = dependencies.makePlaybackViewController()
+    private func showPlaybackView(at assetIndex: Int) {
+        let viewController = dependencies.makePlaybackViewController(assetIndex: assetIndex)
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     

@@ -88,12 +88,12 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
         return DefaultPlaybackUseCase()
     }
     
-    private func makePlaybackViewModel() -> PlaybackViewModel {
-        return DefaultPlaybackViewModel()
+    private func makePlaybackViewModel(assetIndex: Int) -> PlaybackViewModel {
+        return DefaultPlaybackViewModel(assetIndex: assetIndex)
     }
     
-    func makePlaybackViewController() -> PlaybackViewController {
-        return PlaybackViewController.create(with: self.makePlaybackViewModel())
+    func makePlaybackViewController(assetIndex: Int) -> PlaybackViewController {
+        return PlaybackViewController.create(with: self.makePlaybackViewModel(assetIndex: assetIndex))
     }
     
 }

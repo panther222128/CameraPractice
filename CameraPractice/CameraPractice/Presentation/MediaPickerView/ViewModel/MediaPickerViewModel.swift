@@ -52,8 +52,8 @@ final class DefaultMediaPickerViewModel: MediaPickerViewModel {
         self.phCachingImageManager.startCachingImages(for: allAssets, targetSize: size, contentMode: .aspectFill, options: nil)
     }
     
-    func didSelectItem(at index: Int) {
-        self.mediaPickerViewModelAction.showPlaybackView(index)
+    func didSelectItem(at assetIndex: Int) {
+        self.mediaPickerViewModelAction.showPlaybackView(assetIndex)
     }
 
 }
