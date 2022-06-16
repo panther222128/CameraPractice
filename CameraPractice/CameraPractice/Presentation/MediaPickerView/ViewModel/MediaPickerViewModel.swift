@@ -44,14 +44,7 @@ final class DefaultMediaPickerViewModel: MediaPickerViewModel {
         let asset = phAssetsRequestResult.object(at: index)
         self.phCachingImageManager.requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: nil, resultHandler: completion)
     }
-    
-    func startCacheAssets(size: CGSize) {
-        guard let phAssetsRequestResult = self.phAssetsRequestResult.value else { return }
-        let count = phAssetsRequestResult.count
-        let allAssets = phAssetsRequestResult.objects(at: IndexSet(integersIn: 0..<count))
-        self.phCachingImageManager.startCachingImages(for: allAssets, targetSize: size, contentMode: .aspectFill, options: nil)
-    }
-    
+
     func didSelectItem(at assetIndex: Int) {
         self.mediaPickerViewModelAction.showPlaybackView(assetIndex)
     }
