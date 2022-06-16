@@ -14,19 +14,25 @@ class AssetScreenViewController: UIViewController {
 
     private var viewModel: AssetScreenViewModel!
     
+    // MARK: - Views
     private let imageScreenView = UIImageView()
+    private let movieScreenView = UIView()
     private let movieActionButton = UIButton()
     private let showEditViewButton = UIButton()
     
+    // MARK: - Media
+    private let avPlayer = AVPlayer()
+    private var avPlayerLayer: AVPlayerLayer?
     private var phAssetMediaType: PHAssetMediaType?
+    
     private var isPlayingMovie = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.bind()
+        self.requestAsset()
         self.addSubviews()
         self.configureLayout()
-        self.requestAsset()
         self.configureView()
         self.configureMovieActionButtion()
         self.configureShowEditViewButton()
@@ -47,6 +53,8 @@ class AssetScreenViewController: UIViewController {
     
 }
 
+// MARK: - Request asset
+
 extension AssetScreenViewController {
     
     private func requestAsset() {
@@ -60,7 +68,15 @@ extension AssetScreenViewController {
             }
         case .video:
             self.viewModel.requestVideo { video, error in
-                
+                guard let video = video else { return }
+                self.avPlayer.replaceCurrentItem(with: video)
+                let avPlayerLayer = AVPlayerLayer(player: self.avPlayer)
+                avPlayerLayer.frame = self.movieScreenView.frame
+                avPlayerLayer.videoGravity = .resizeAspect
+                self.avPlayerLayer = avPlayerLayer
+                guard let avPlayerLayer = self.avPlayerLayer else { return }
+                self.movieScreenView.layer.addSublayer(avPlayerLayer)
+                self.avPlayer.play()
             }
         default:
             self.viewModel.requestImage(size: CGSize(width: self.view.frame.width, height: self.view.frame.height)) { image, error in
@@ -80,15 +96,13 @@ extension AssetScreenViewController {
 
 extension AssetScreenViewController {
 
-    // MARK: - edit needed
-    
     private func addSubviews() {
         if let phAssetMediaType = self.phAssetMediaType {
             switch phAssetMediaType {
             case .image:
                 self.view.addSubview(self.imageScreenView)
             case .video:
-                self.view.addSubview(self.mediaScreenView)
+                self.view.addSubview(self.movieScreenView)
             default:
                 self.view.addSubview(self.imageScreenView)
             }
@@ -105,7 +119,7 @@ extension AssetScreenViewController {
                 $0.edges.equalToSuperview()
             }
         case .video:
-            self.mediaScreenView.snp.makeConstraints {
+            self.movieScreenView.snp.makeConstraints {
                 $0.edges.equalToSuperview()
             }
         default:
