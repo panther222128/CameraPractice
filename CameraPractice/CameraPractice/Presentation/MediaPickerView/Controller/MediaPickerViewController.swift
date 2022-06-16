@@ -100,7 +100,8 @@ extension MediaPickerViewController: UICollectionViewDataSource {
 extension MediaPickerViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.viewModel.didSelectItem(at: indexPath.row)
+        guard let asset = self.viewModel.phAssetsRequestResult.value else { return }
+        self.viewModel.didSelectItem(at: indexPath.row, isPhoto: asset[indexPath.row].mediaType == .image)
     }
     
 }

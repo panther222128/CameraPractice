@@ -9,7 +9,7 @@ import UIKit
 import Photos
 
 struct MediaPickerViewModelAction {
-    let showPlaybackView: ((Int) -> Void)
+    let showPlaybackView: ((Int, Bool) -> Void)
 }
 
 protocol MediaPickerViewModel {
@@ -17,20 +17,21 @@ protocol MediaPickerViewModel {
     
     func fetchAssetCollection()
     func requestImage(at index: Int, size: CGSize, completion: @escaping ((UIImage?, [AnyHashable: Any]?) -> Void))
-    func didSelectItem(at index: Int)
+    func didSelectItem(at assetIndex: Int, isPhoto: Bool)
 }
 
 final class DefaultMediaPickerViewModel: MediaPickerViewModel {
     
     private let mediaPickerViewModelAction: MediaPickerViewModelAction
-    private let phCachingImageManager = PHCachingImageManager()
+    private let phCachingImageManager: PHCachingImageManager
+    private let options: PHImageRequestOptions
     
     let phAssetsRequestResult: Observable<PHFetchResult<PHAsset>?>
-    let options: PHImageRequestOptions
     
     init(mediaPickerViewModelAction: MediaPickerViewModelAction) {
         self.mediaPickerViewModelAction = mediaPickerViewModelAction
         self.phAssetsRequestResult = Observable(nil)
+        self.phCachingImageManager = PHCachingImageManager()
         self.options = PHImageRequestOptions()
     }
     
@@ -45,8 +46,8 @@ final class DefaultMediaPickerViewModel: MediaPickerViewModel {
         self.phCachingImageManager.requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: nil, resultHandler: completion)
     }
 
-    func didSelectItem(at assetIndex: Int) {
-        self.mediaPickerViewModelAction.showPlaybackView(assetIndex)
+    func didSelectItem(at assetIndex: Int, isPhoto: Bool) {
+        self.mediaPickerViewModelAction.showPlaybackView(assetIndex, isPhoto)
     }
 
 }
