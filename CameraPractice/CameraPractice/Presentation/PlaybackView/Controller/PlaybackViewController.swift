@@ -18,6 +18,7 @@ class PlaybackViewController: UIViewController {
     private let movieActionButton = UIButton()
     private let showEditViewButton = UIButton()
     
+    private var isPhoto: Bool?
     private var isPlayingMovie = true
     
     override func viewDidLoad() {
