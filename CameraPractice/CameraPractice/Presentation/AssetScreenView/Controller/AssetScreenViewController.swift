@@ -141,7 +141,7 @@ extension AssetScreenViewController {
 
     private func configureMovieActionButtion() {
         self.movieActionButton.addTarget(self, action: #selector(self.movieActionButtonAction), for: .touchUpInside)
-        self.movieActionButton.setTitleColor(.white, for: .normal)
+        self.movieActionButton.setTitleColor(.systemPink , for: .normal)
         if self.isPlayingMovie {
             self.movieActionButton.setTitle("Pause", for: .normal)
         } else {
@@ -155,7 +155,7 @@ extension AssetScreenViewController {
     
     private func configureShowEditViewButton() {
         self.showEditViewButton.addTarget(self, action: #selector(self.showEditViewButtonAction), for: .touchUpInside)
-        self.showEditViewButton.setTitleColor(.white, for: .normal)
+        self.showEditViewButton.setTitleColor(.systemPink, for: .normal)
         self.showEditViewButton.setTitle("Edit", for: .normal)
     }
     
