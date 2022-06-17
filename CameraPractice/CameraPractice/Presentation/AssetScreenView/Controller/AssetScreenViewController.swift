@@ -86,10 +86,6 @@ extension AssetScreenViewController {
         }
     }
     
-    private func configureScreen() {
-        
-    }
-    
 }
 
 // MARK: - AddSubviews and Layout
@@ -164,7 +160,11 @@ extension AssetScreenViewController {
     }
     
     @objc func showEditViewButtonAction() {
-        
+        self.viewModel.didAddOverlay { asset in
+            if let asset = asset {
+                
+            }
+        }
     }
     
 }

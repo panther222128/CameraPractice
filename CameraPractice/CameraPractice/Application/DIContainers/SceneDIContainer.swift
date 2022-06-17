@@ -84,12 +84,16 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
         return DefaultPlaybackRepository()
     }
     
-    private func makePlaybackUseCase() -> PlaybackUseCase {
-        return DefaultPlaybackUseCase()
+    private func makeAssetEditor() -> AssetEditor {
+        return DefaultAssetEditor()
+    }
+    
+    private func makePlaybackUseCase() -> AssetScreenUseCase {
+        return DefaultAssetScreenUseCase(assetEditor: self.makeAssetEditor())
     }
     
     private func makePlaybackViewModel(assetIndex: Int) -> AssetScreenViewModel {
-        return DefaultAssetScreenViewModel(assetIndex: assetIndex)
+        return DefaultAssetScreenViewModel(assetScreenUseCase: self.makePlaybackUseCase(), assetIndex: assetIndex)
     }
     
     func makePlaybackViewController(assetIndex: Int) -> AssetScreenViewController {

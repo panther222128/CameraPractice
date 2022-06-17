@@ -35,9 +35,10 @@
 		A0A096BD2840AD1D00BCB214 /* DefaultStudioRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096BC2840AD1D00BCB214 /* DefaultStudioRepository.swift */; };
 		A0A096C02840AF5300BCB214 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096BF2840AF5300BCB214 /* Observable.swift */; };
 		A0A096C62840C08A00BCB214 /* AuthorizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096C52840C08A00BCB214 /* AuthorizationManager.swift */; };
+		A0BE9E58285C4FF8001B9240 /* AssetEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0BE9E57285C4FF8001B9240 /* AssetEditor.swift */; };
 		A0DA208D2843644E00604A5D /* DefaultStudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DA208C2843644E00604A5D /* DefaultStudio.swift */; };
 		A0F4461B28572C3C00932C21 /* AssetScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F4461A28572C3C00932C21 /* AssetScreenViewController.swift */; };
-		A0F4462028572D4700932C21 /* PlaybackUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F4461F28572D4700932C21 /* PlaybackUseCase.swift */; };
+		A0F4462028572D4700932C21 /* AssetScreenUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F4461F28572D4700932C21 /* AssetScreenUseCase.swift */; };
 		A0F4462228572D5000932C21 /* AssetScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F4462128572D5000932C21 /* AssetScreenViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -72,9 +73,10 @@
 		A0A096BC2840AD1D00BCB214 /* DefaultStudioRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultStudioRepository.swift; sourceTree = "<group>"; };
 		A0A096BF2840AF5300BCB214 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		A0A096C52840C08A00BCB214 /* AuthorizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationManager.swift; sourceTree = "<group>"; };
+		A0BE9E57285C4FF8001B9240 /* AssetEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetEditor.swift; sourceTree = "<group>"; };
 		A0DA208C2843644E00604A5D /* DefaultStudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultStudio.swift; sourceTree = "<group>"; };
 		A0F4461A28572C3C00932C21 /* AssetScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetScreenViewController.swift; sourceTree = "<group>"; };
-		A0F4461F28572D4700932C21 /* PlaybackUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackUseCase.swift; sourceTree = "<group>"; };
+		A0F4461F28572D4700932C21 /* AssetScreenUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetScreenUseCase.swift; sourceTree = "<group>"; };
 		A0F4462128572D5000932C21 /* AssetScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetScreenViewModel.swift; sourceTree = "<group>"; };
 		BFB10BA060D23B295B40FEF6 /* libPods-CameraPractice.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CameraPractice.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF9C11EFDC1D3A534ECBAAC5 /* Pods-CameraPractice.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CameraPractice.debug.xcconfig"; path = "Target Support Files/Pods-CameraPractice/Pods-CameraPractice.debug.xcconfig"; sourceTree = "<group>"; };
@@ -235,8 +237,8 @@
 			isa = PBXGroup;
 			children = (
 				A0F4461C28572D2200932C21 /* StudioUseCase */,
-				A0F4461D28572D2A00932C21 /* PlaybackUseCase */,
 				A08F071228573A75005AE166 /* MediaPickerUseCase */,
+				A0F4461D28572D2A00932C21 /* PlaybackUseCase */,
 			);
 			path = UseCase;
 			sourceTree = "<group>";
@@ -338,6 +340,14 @@
 			path = AuthorizationManager;
 			sourceTree = "<group>";
 		};
+		A0BE9E56285C4FD4001B9240 /* AssetEditor */ = {
+			isa = PBXGroup;
+			children = (
+				A0BE9E57285C4FF8001B9240 /* AssetEditor.swift */,
+			);
+			path = AssetEditor;
+			sourceTree = "<group>";
+		};
 		A0DA208B2843643F00604A5D /* DefaultStudio */ = {
 			isa = PBXGroup;
 			children = (
@@ -376,7 +386,8 @@
 		A0F4461D28572D2A00932C21 /* PlaybackUseCase */ = {
 			isa = PBXGroup;
 			children = (
-				A0F4461F28572D4700932C21 /* PlaybackUseCase.swift */,
+				A0BE9E56285C4FD4001B9240 /* AssetEditor */,
+				A0F4461F28572D4700932C21 /* AssetScreenUseCase.swift */,
 			);
 			path = PlaybackUseCase;
 			sourceTree = "<group>";
@@ -513,6 +524,7 @@
 				A0DA208D2843644E00604A5D /* DefaultStudio.swift in Sources */,
 				A08F071428573A8A005AE166 /* MediaPickerUseCase.swift in Sources */,
 				A08F070F2857346E005AE166 /* MediaPickerViewController.swift in Sources */,
+				A0BE9E58285C4FF8001B9240 /* AssetEditor.swift in Sources */,
 				A0A096C02840AF5300BCB214 /* Observable.swift in Sources */,
 				A083B74528506C9600949ED4 /* PhotoCaptureProcessor.swift in Sources */,
 				A0A0968C2840900B00BCB214 /* SceneDelegate.swift in Sources */,
@@ -523,7 +535,7 @@
 				A08F071728573ABA005AE166 /* MediaPickerViewModel.swift in Sources */,
 				A085168C2859A6BF0034D662 /* AssetsCollectionViewCell.swift in Sources */,
 				A08F071928573B18005AE166 /* DefaultMediaPickerRepository.swift in Sources */,
-				A0F4462028572D4700932C21 /* PlaybackUseCase.swift in Sources */,
+				A0F4462028572D4700932C21 /* AssetScreenUseCase.swift in Sources */,
 				A0A096C62840C08A00BCB214 /* AuthorizationManager.swift in Sources */,
 				A0A096B52840ACAD00BCB214 /* StudioViewModel.swift in Sources */,
 				A0A096AC2840911B00BCB214 /* AppFlowCoordinator.swift in Sources */,

@@ -13,7 +13,7 @@ class MediaPickerViewController: UIViewController {
     
     private var viewModel: MediaPickerViewModel!
     
-    lazy var assetsCollectionView: UICollectionView = {
+    lazy var assetCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         
@@ -22,11 +22,10 @@ class MediaPickerViewController: UIViewController {
         return assetsCollectionView
     }()
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.assetsCollectionView.dataSource = self
-        self.assetsCollectionView.delegate = self
+        self.assetCollectionView.dataSource = self
+        self.assetCollectionView.delegate = self
         self.registerCellID()
         self.addSubviews()
         self.configureLayout()
@@ -44,7 +43,7 @@ class MediaPickerViewController: UIViewController {
         self.viewModel.phAssetsRequestResult.bind { [weak self] assets in
             guard let self = self else { return }
             DispatchQueue.main.async {
-                self.assetsCollectionView.reloadData()
+                self.assetCollectionView.reloadData()
             }
         }
     }
@@ -62,17 +61,17 @@ class MediaPickerViewController: UIViewController {
 extension MediaPickerViewController {
     
     private func addSubviews() {
-        self.view.addSubview(self.assetsCollectionView)
+        self.view.addSubview(self.assetCollectionView)
     }
     
     private func configureLayout() {
-        self.assetsCollectionView.snp.makeConstraints {
+        self.assetCollectionView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
     }
     
     private func registerCellID() {
-        self.assetsCollectionView.register(AssetsCollectionViewCell.self, forCellWithReuseIdentifier: "AssetsCollectionViewCellID")
+        self.assetCollectionView.register(AssetsCollectionViewCell.self, forCellWithReuseIdentifier: "AssetsCollectionViewCellID")
     }
     
 }
@@ -100,8 +99,7 @@ extension MediaPickerViewController: UICollectionViewDataSource {
 extension MediaPickerViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let asset = self.viewModel.phAssetsRequestResult.value else { return }
-        self.viewModel.didSelectItem(at: indexPath.row, isPhoto: asset[indexPath.row].mediaType == .image)
+        self.viewModel.didSelectItem(at: indexPath.row)
     }
     
 }

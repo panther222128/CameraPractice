@@ -39,7 +39,7 @@ final class ViewFlowCoordinator {
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    private func showPlaybackView(at assetIndex: Int, isPhoto: Bool) {
+    private func showPlaybackView(at assetIndex: Int) {
         let viewController = dependencies.makePlaybackViewController(assetIndex: assetIndex)
         self.navigationController?.pushViewController(viewController, animated: true)
     }
