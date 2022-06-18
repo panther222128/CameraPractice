@@ -64,7 +64,8 @@ final class DefaultAssetScreenViewModel: AssetScreenViewModel {
     func didAddOverlay(completion: @escaping (AVAsset?) -> Void) {
         guard let phAssetsRequestResult = self.phAssetsRequestResult.value else { return }
         let asset = phAssetsRequestResult.object(at: self.assetIndex)
-        self.phImageManager.requestAVAsset(forVideo: asset, options: nil) { asset, audioMix, error in
+        self.phImageManager.requestAVAsset(forVideo: asset, options: nil) { [weak self] asset, audioMix, error in
+            guard let self = self else { return }
             if let asset = asset {
                 completion(asset)
                 self.assetScreenUseCase.addOverlay(to: asset) { url in

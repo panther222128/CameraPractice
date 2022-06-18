@@ -62,12 +62,14 @@ extension AssetScreenViewController {
         self.viewModel.checkAssetMediaType()
         switch self.phAssetMediaType {
         case .image:
-            self.viewModel.requestImage(size: CGSize(width: self.view.frame.width, height: self.view.frame.height)) { image, error in
+            self.viewModel.requestImage(size: CGSize(width: self.view.frame.width, height: self.view.frame.height)) { [weak self] image, error in
+                guard let self = self else { return }
                 guard let image = image else { return }
                 self.imageScreenView.image = image
             }
         case .video:
             self.viewModel.requestVideo { video, error in
+                guard let self = self else { return }
                 guard let video = video else { return }
                 self.avPlayer.replaceCurrentItem(with: video)
                 let avPlayerLayer = AVPlayerLayer(player: self.avPlayer)
@@ -80,6 +82,7 @@ extension AssetScreenViewController {
             }
         default:
             self.viewModel.requestImage(size: CGSize(width: self.view.frame.width, height: self.view.frame.height)) { image, error in
+                guard let self = self else { return }
                 guard let image = image else { return }
                 self.imageScreenView.image = image
             }
