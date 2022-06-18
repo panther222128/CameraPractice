@@ -51,6 +51,14 @@ class AssetScreenViewController: UIViewController {
         }
     }
     
+    private func showOverlaySuccessAlert() {
+        
+    }
+    
+    private func showErrorAlert() {
+        
+    }
+    
 }
 
 // MARK: - Request asset
@@ -159,13 +167,16 @@ extension AssetScreenViewController {
     private func configureShowEditViewButton() {
         self.showEditViewButton.addTarget(self, action: #selector(self.showEditViewButtonAction), for: .touchUpInside)
         self.showEditViewButton.setTitleColor(.systemPink, for: .normal)
-        self.showEditViewButton.setTitle("Edit", for: .normal)
+        self.showEditViewButton.setTitle("Image Overlay", for: .normal)
     }
     
     @objc func showEditViewButtonAction() {
-        self.viewModel.didAddOverlay { asset in
-            if let asset = asset {
-                
+        self.viewModel.didAddOverlay { result in
+            switch result {
+            case .success(let asset):
+                self.showOverlaySuccessAlert()
+            case .failure(let error):
+                self.showErrorAlert()
             }
         }
     }
