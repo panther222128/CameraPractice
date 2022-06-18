@@ -10,7 +10,7 @@ import Photos
 import UIKit
 
 protocol AssetScreenUseCase {
-    func addOverlay(to asset: AVAsset, completion: @escaping (URL?) -> Void)
+    func addOverlay(to asset: AVAsset, completion: @escaping (Result<URL?, Error>) -> Void)
     func saveRecordedMovie(outputUrl: URL?)
 }
 
@@ -22,12 +22,13 @@ final class DefaultAssetScreenUseCase: AssetScreenUseCase {
         self.assetEditor = assetEditor
     }
     
-    func addOverlay(to asset: AVAsset, completion: @escaping (URL?) -> Void) {
-        self.assetEditor.addOverlay(to: asset) { url in
-            if let url = url {
-                completion(url)
-            } else {
-                completion(nil)
+    func addOverlay(to asset: AVAsset, completion: @escaping (Result<URL?, Error>) -> Void) {
+        self.assetEditor.addOverlay(to: asset) { result in
+            switch result {
+            case .success(let url):
+                completion(.success(url))
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
     }

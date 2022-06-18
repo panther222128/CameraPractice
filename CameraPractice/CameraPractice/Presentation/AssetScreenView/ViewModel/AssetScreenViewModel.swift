@@ -16,7 +16,7 @@ protocol AssetScreenViewModel {
     func checkAssetMediaType()
     func requestImage(size: CGSize, completion: @escaping ((UIImage?, [AnyHashable: Any]?) -> Void))
     func requestVideo(completion: @escaping ((AVPlayerItem?, [AnyHashable: Any]?) -> Void))
-    func didAddOverlay(completion: @escaping (AVAsset?) -> Void)
+    func didAddOverlay(completion: @escaping (Result<AVAsset?, Error>) -> Void)
 }
 
 final class DefaultAssetScreenViewModel: AssetScreenViewModel {
@@ -61,20 +61,22 @@ final class DefaultAssetScreenViewModel: AssetScreenViewModel {
         self.phImageManager.requestPlayerItem(forVideo: asset, options: nil, resultHandler: completion)
     }
     
-    func didAddOverlay(completion: @escaping (AVAsset?) -> Void) {
+    func didAddOverlay(completion: @escaping (Result<AVAsset?, Error>) -> Void) {
         guard let phAssetsRequestResult = self.phAssetsRequestResult.value else { return }
         let asset = phAssetsRequestResult.object(at: self.assetIndex)
         self.phImageManager.requestAVAsset(forVideo: asset, options: nil) { [weak self] asset, audioMix, error in
             guard let self = self else { return }
             if let asset = asset {
-                completion(asset)
-                self.assetScreenUseCase.addOverlay(to: asset) { url in
-                    if let url = url {
-                        self.didSaveMovie(outputUrl: url)
-                    } else {
-                        
+                self.assetScreenUseCase.addOverlay(to: asset) { result in
+                    switch result {
+                    case .success(let url):
+                        self.assetScreenUseCase.saveRecordedMovie(outputUrl: url)
+                        completion(.success(asset))
+                    case .failure(let error):
+                        completion(.failure(error))
                     }
                 }
+                completion(.success(asset))
             }
         }
     }

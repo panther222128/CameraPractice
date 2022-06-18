@@ -8,21 +8,28 @@
 import AVFoundation
 import UIKit
 
+enum AssetEditorError: Error {
+    case addMutableTrackError
+    case assetTrackError
+    case insertTimeRangeError
+    case exportError
+}
+
 protocol AssetEditor {
-    func addOverlay(to asset: AVAsset, completion: @escaping (URL?) -> Void)
+    func addOverlay(to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void)
 }
 
 final class DefaultAssetEditor: AssetEditor {
     
-    func addOverlay(to asset: AVAsset, completion: @escaping (URL?) -> Void) {
+    func addOverlay(to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
         let composition = AVMutableComposition()
         
         guard let compositionTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else {
-            completion(nil)
+            completion(.failure(.addMutableTrackError))
             return
         }
         guard let assetTrack = asset.tracks(withMediaType: .video).first else {
-            completion(nil)
+            completion(.failure(.assetTrackError))
             return
         }
         
@@ -33,7 +40,7 @@ final class DefaultAssetEditor: AssetEditor {
                 try compositionAudioTrack.insertTimeRange(timeRange, of: audioAssetTrack, at: .zero)
             }
         } catch {
-            completion(nil)
+            completion(.failure(.insertTimeRangeError))
             return
         }
         
@@ -70,11 +77,12 @@ final class DefaultAssetEditor: AssetEditor {
         let layerInstruction = compositionLayerInstruction(for: compositionTrack, assetTrack: assetTrack)
         instruction.layerInstructions = [layerInstruction]
         
-        self.export(composition: composition, videoComposition: videoComposition) { url in
-            if let url = url {
-                completion(url)
-            } else {
-                completion(nil)
+        self.export(composition: composition, videoComposition: videoComposition) { result in
+            switch result {
+            case .success(let url):
+                completion(.success(url))
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
     }
@@ -83,9 +91,9 @@ final class DefaultAssetEditor: AssetEditor {
 
 extension DefaultAssetEditor {
     
-    private func export(composition: AVMutableComposition, videoComposition: AVMutableVideoComposition, completion: @escaping (URL?) -> Void) {
+    private func export(composition: AVMutableComposition, videoComposition: AVMutableVideoComposition, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
         guard let export = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetHighestQuality) else {
-            completion(nil)
+            completion(.failure(.exportError))
             return
         }
         let videoName = UUID().uuidString
@@ -98,9 +106,9 @@ extension DefaultAssetEditor {
             DispatchQueue.main.async {
                 switch export.status {
                 case .completed:
-                    completion(exportURL)
+                    completion(.success(exportURL))
                 default:
-                    completion(nil)
+                    completion(.failure(.exportError))
                     break
                 }
             }
