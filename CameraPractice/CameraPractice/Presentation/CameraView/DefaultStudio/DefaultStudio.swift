@@ -121,7 +121,6 @@ extension DefaultStudio {
         DispatchQueue.global(qos: .background).async {
             captureSession.startRunning()
         }
-        
     }
     
     private func captureSessionBeginConfiguration() {
