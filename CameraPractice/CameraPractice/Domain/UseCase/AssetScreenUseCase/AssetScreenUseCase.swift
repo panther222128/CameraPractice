@@ -23,7 +23,7 @@ final class DefaultAssetScreenUseCase: AssetScreenUseCase {
     }
     
     func addOverlay(to asset: AVAsset, completion: @escaping (Result<URL?, Error>) -> Void) {
-        self.assetEditor.addOverlay(to: asset) { result in
+        self.assetEditor.addImageOverlay(to: asset) { result in
             switch result {
             case .success(let url):
                 completion(.success(url))

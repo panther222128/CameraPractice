@@ -46,6 +46,7 @@ final class StudioViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.bind()
         self.viewModel.checkDeviceAccessAuthorizationStatus()
         self.viewModel.checkPhotoAlbumAccessAuthorized()
         self.addSubviews()
@@ -58,8 +59,6 @@ final class StudioViewController: UIViewController {
         self.configureOutputConverter()
         self.configureRecordTimerLabel()
         self.configureGoToMediaPickerButton()
-        
-        self.bind()
     }
     
     private func bind() {
