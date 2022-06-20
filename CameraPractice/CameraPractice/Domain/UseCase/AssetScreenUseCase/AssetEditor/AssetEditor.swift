@@ -27,6 +27,7 @@ enum AssetEditorError: Error {
 protocol AssetEditor {
     func addOverlay(to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void)
     func addImageOverlay(to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void)
+    func invalidateAssetEditor()
 }
 
 final class DefaultAssetEditor: AssetEditor {
@@ -47,108 +48,6 @@ final class DefaultAssetEditor: AssetEditor {
         self.outputLayer = nil
         self.mutableVideoComposition = nil
         self.mutableVideoCompositionInstruction = nil
-    }
-    
-    private func instantiateMutableComposition() {
-        self.mutableComposition = AVMutableComposition()
-    }
-    
-    private func addMutableTrack() -> Result<AVMutableCompositionTrack, AssetEditorError> {
-        guard let mutableComposition = self.mutableComposition else {
-            return .failure(.instantiateMutableCompositionError)
-        }
-        guard let mutableCompositionTrack = mutableComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else {
-            return .failure(.addMutableTrackError)
-        }
-        return .success(mutableCompositionTrack)
-    }
-    
-    private func getAssetTrack(from asset: AVAsset) -> Result<AVAssetTrack, AssetEditorError> {
-        guard let assetTrack = asset.tracks(withMediaType: .video).first else {
-            return .failure(.assetTrackError)
-        }
-        self.assetTrack = assetTrack
-        return .success(assetTrack)
-    }
-    
-    private func insertTimeRangeToMutableCompositionTrack(asset: AVAsset, mutableComposition: AVMutableComposition, mutableCompositionTrack: AVMutableCompositionTrack) -> Result<AVAssetTrack, AssetEditorError> {
-        do {
-            let timeRange = CMTimeRange(start: .zero, duration: asset.duration)
-            guard let assetTrack = self.assetTrack else {
-                return .failure(.assetTrackError)
-            }
-            try mutableCompositionTrack.insertTimeRange(timeRange, of: assetTrack, at: .zero)
-            if let audioAssetTrack = asset.tracks(withMediaType: .audio).first, let compositionAudioTrack = mutableComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid) {
-                try compositionAudioTrack.insertTimeRange(timeRange, of: audioAssetTrack, at: .zero)
-                return .success(audioAssetTrack)
-            } else {
-                return .failure(.insertTimeRangeError)
-            }
-        } catch {
-            return .failure(.insertTimeRangeError)
-        }
-    }
-    
-    private func setVideoLayer(size: CGSize) -> Result<CALayer, AssetEditorError> {
-        self.videoLayer = CALayer()
-        guard let videoLayer = self.videoLayer else {
-            return .failure(.setVideoLayerError)
-        }
-        videoLayer.frame = CGRect(origin: .zero, size: size)
-        return .success(videoLayer)
-    }
-    
-    private func setOverlayLayer(size: CGSize) -> Result<CALayer, AssetEditorError> {
-        self.overlayLayer = CALayer()
-        guard let overlayLayer = self.overlayLayer else {
-            return .failure(.setOverlayLayerError)
-        }
-        overlayLayer.frame = CGRect(origin: .zero, size: size)
-        return .success(overlayLayer)
-    }
-    
-    private func setOutputLayer(videoLayer: CALayer, overlayLayer: CALayer, size: CGSize) -> Result<CALayer, AssetEditorError> {
-        self.outputLayer = CALayer()
-        guard let outputLayer = self.outputLayer else {
-            return .failure(.setOutputLayerError)
-        }
-        outputLayer.frame = CGRect(origin: .zero, size: size)
-        outputLayer.addSublayer(videoLayer)
-        outputLayer.addSublayer(overlayLayer)
-        return .success(outputLayer)
-    }
-    
-    private func setMutableVideoComposition(size: CGSize, videoLayer: CALayer, outputLayer: CALayer) -> Result<AVMutableVideoComposition, AssetEditorError> {
-        self.mutableVideoComposition = AVMutableVideoComposition()
-        guard let mutableVideoComposition = self.mutableVideoComposition else {
-            return .failure(.mutableVideoCompositionError)
-        }
-        mutableVideoComposition.renderSize = size
-        mutableVideoComposition.frameDuration = CMTime(value: 1, timescale: 30)
-        mutableVideoComposition.animationTool = AVVideoCompositionCoreAnimationTool(postProcessingAsVideoLayer: videoLayer, in: outputLayer)
-        return .success(mutableVideoComposition)
-    }
-    
-    private func setInstructions(mutableComposition: AVMutableComposition, mutableVideoComposition: AVMutableVideoComposition, compositionTrack: AVMutableCompositionTrack) -> Result<AVMutableVideoCompositionInstruction, AssetEditorError> {
-        self.mutableVideoCompositionInstruction = AVMutableVideoCompositionInstruction()
-        guard let mutableVideoCompositionInstruction = self.mutableVideoCompositionInstruction else {
-            return .failure(.setInstructionError)
-        }
-        mutableVideoCompositionInstruction.timeRange = CMTimeRange(start: .zero, duration: mutableComposition.duration)
-        mutableVideoComposition.instructions = [mutableVideoCompositionInstruction]
-        
-        guard let assetTrack = self.assetTrack else {
-            return .failure(.assetTrackError)
-        }
-        
-        let layerInstruction = compositionLayerInstruction(for: compositionTrack, assetTrack: assetTrack)
-        mutableVideoCompositionInstruction.layerInstructions = [layerInstruction]
-        
-        return .success(mutableVideoCompositionInstruction)
-    }
-    
-    private func setPreferredTransform(of compositionTrack: AVMutableCompositionTrack, to assetTrack: AVAssetTrack) {
-        compositionTrack.preferredTransform = assetTrack.preferredTransform
     }
     
     func addImageOverlay(to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
@@ -301,33 +200,121 @@ final class DefaultAssetEditor: AssetEditor {
         }
     }
     
-    private func export(composition: AVMutableComposition, videoComposition: AVMutableVideoComposition, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
-        guard let export = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetHighestQuality) else {
-            completion(.failure(.exportError))
-            return
-        }
-        let videoName = UUID().uuidString
-        let exportURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(videoName).appendingPathExtension("mp4")
-        export.videoComposition = videoComposition
-        export.outputFileType = .mp4
-        export.outputURL = exportURL
-        
-        export.exportAsynchronously {
-            DispatchQueue.main.async {
-                switch export.status {
-                case .completed:
-                    completion(.success(exportURL))
-                default:
-                    completion(.failure(.exportError))
-                    break
-                }
-            }
-        }
+    func invalidateAssetEditor() {
+        self.mutableComposition = nil
+        self.assetTrack = nil
+        self.videoLayer = nil
+        self.overlayLayer = nil
+        self.outputLayer = nil
+        self.mutableVideoComposition = nil
+        self.mutableVideoCompositionInstruction = nil
     }
     
 }
 
 extension DefaultAssetEditor {
+    
+    private func instantiateMutableComposition() {
+        self.mutableComposition = AVMutableComposition()
+    }
+    
+    private func addMutableTrack() -> Result<AVMutableCompositionTrack, AssetEditorError> {
+        guard let mutableComposition = self.mutableComposition else {
+            return .failure(.instantiateMutableCompositionError)
+        }
+        guard let mutableCompositionTrack = mutableComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else {
+            return .failure(.addMutableTrackError)
+        }
+        return .success(mutableCompositionTrack)
+    }
+    
+    private func getAssetTrack(from asset: AVAsset) -> Result<AVAssetTrack, AssetEditorError> {
+        guard let assetTrack = asset.tracks(withMediaType: .video).first else {
+            return .failure(.assetTrackError)
+        }
+        self.assetTrack = assetTrack
+        return .success(assetTrack)
+    }
+    
+    private func insertTimeRangeToMutableCompositionTrack(asset: AVAsset, mutableComposition: AVMutableComposition, mutableCompositionTrack: AVMutableCompositionTrack) -> Result<AVAssetTrack, AssetEditorError> {
+        do {
+            let timeRange = CMTimeRange(start: .zero, duration: asset.duration)
+            guard let assetTrack = self.assetTrack else {
+                return .failure(.assetTrackError)
+            }
+            try mutableCompositionTrack.insertTimeRange(timeRange, of: assetTrack, at: .zero)
+            if let audioAssetTrack = asset.tracks(withMediaType: .audio).first, let compositionAudioTrack = mutableComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid) {
+                try compositionAudioTrack.insertTimeRange(timeRange, of: audioAssetTrack, at: .zero)
+                return .success(audioAssetTrack)
+            } else {
+                return .failure(.insertTimeRangeError)
+            }
+        } catch {
+            return .failure(.insertTimeRangeError)
+        }
+    }
+    
+    private func setVideoLayer(size: CGSize) -> Result<CALayer, AssetEditorError> {
+        self.videoLayer = CALayer()
+        guard let videoLayer = self.videoLayer else {
+            return .failure(.setVideoLayerError)
+        }
+        videoLayer.frame = CGRect(origin: .zero, size: size)
+        return .success(videoLayer)
+    }
+    
+    private func setOverlayLayer(size: CGSize) -> Result<CALayer, AssetEditorError> {
+        self.overlayLayer = CALayer()
+        guard let overlayLayer = self.overlayLayer else {
+            return .failure(.setOverlayLayerError)
+        }
+        overlayLayer.frame = CGRect(origin: .zero, size: size)
+        return .success(overlayLayer)
+    }
+    
+    private func setOutputLayer(videoLayer: CALayer, overlayLayer: CALayer, size: CGSize) -> Result<CALayer, AssetEditorError> {
+        self.outputLayer = CALayer()
+        guard let outputLayer = self.outputLayer else {
+            return .failure(.setOutputLayerError)
+        }
+        outputLayer.frame = CGRect(origin: .zero, size: size)
+        outputLayer.addSublayer(videoLayer)
+        outputLayer.addSublayer(overlayLayer)
+        return .success(outputLayer)
+    }
+    
+    private func setMutableVideoComposition(size: CGSize, videoLayer: CALayer, outputLayer: CALayer) -> Result<AVMutableVideoComposition, AssetEditorError> {
+        self.mutableVideoComposition = AVMutableVideoComposition()
+        guard let mutableVideoComposition = self.mutableVideoComposition else {
+            return .failure(.mutableVideoCompositionError)
+        }
+        mutableVideoComposition.renderSize = size
+        mutableVideoComposition.frameDuration = CMTime(value: 1, timescale: 30)
+        mutableVideoComposition.animationTool = AVVideoCompositionCoreAnimationTool(postProcessingAsVideoLayer: videoLayer, in: outputLayer)
+        return .success(mutableVideoComposition)
+    }
+    
+    private func setInstructions(mutableComposition: AVMutableComposition, mutableVideoComposition: AVMutableVideoComposition, compositionTrack: AVMutableCompositionTrack) -> Result<AVMutableVideoCompositionInstruction, AssetEditorError> {
+        self.mutableVideoCompositionInstruction = AVMutableVideoCompositionInstruction()
+        guard let mutableVideoCompositionInstruction = self.mutableVideoCompositionInstruction else {
+            return .failure(.setInstructionError)
+        }
+        mutableVideoCompositionInstruction.timeRange = CMTimeRange(start: .zero, duration: mutableComposition.duration)
+        mutableVideoComposition.instructions = [mutableVideoCompositionInstruction]
+        
+        guard let assetTrack = self.assetTrack else {
+            return .failure(.assetTrackError)
+        }
+        
+        let layerInstruction = compositionLayerInstruction(for: compositionTrack, assetTrack: assetTrack)
+        mutableVideoCompositionInstruction.layerInstructions = [layerInstruction]
+        
+        return .success(mutableVideoCompositionInstruction)
+    }
+    
+    private func setPreferredTransform(of compositionTrack: AVMutableCompositionTrack, to assetTrack: AVAssetTrack) {
+        compositionTrack.preferredTransform = assetTrack.preferredTransform
+    }
     
     private func orientation(from transform: CGAffineTransform) -> (orientation: UIImage.Orientation, isPortrait: Bool) {
         var assetOrientation = UIImage.Orientation.up
@@ -367,6 +354,30 @@ extension DefaultAssetEditor {
         instruction.setTransform(transform, at: .zero)
         
         return instruction
+    }
+    
+    private func export(composition: AVMutableComposition, videoComposition: AVMutableVideoComposition, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
+        guard let export = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetHighestQuality) else {
+            completion(.failure(.exportError))
+            return
+        }
+        let videoName = UUID().uuidString
+        let exportURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(videoName).appendingPathExtension("mp4")
+        export.videoComposition = videoComposition
+        export.outputFileType = .mp4
+        export.outputURL = exportURL
+        
+        export.exportAsynchronously {
+            DispatchQueue.main.async {
+                switch export.status {
+                case .completed:
+                    completion(.success(exportURL))
+                default:
+                    completion(.failure(.exportError))
+                    break
+                }
+            }
+        }
     }
     
 }

@@ -33,6 +33,12 @@ class MediaPickerViewController: UIViewController {
         self.bind()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        DispatchQueue.main.async {
+            self.assetCollectionView.reloadData()
+        }
+    }
+    
     static func create(with viewModel: MediaPickerViewModel) -> MediaPickerViewController {
         let viewController = MediaPickerViewController()
         viewController.viewModel = viewModel
