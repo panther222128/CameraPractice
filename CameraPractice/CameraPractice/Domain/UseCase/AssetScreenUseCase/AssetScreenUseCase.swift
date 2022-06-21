@@ -26,7 +26,6 @@ final class DefaultAssetScreenUseCase: AssetScreenUseCase {
         self.assetEditor.addImageOverlay(to: asset) { result in
             switch result {
             case .success(let url):
-                self.assetEditor.invalidateAssetEditor()
                 completion(.success(url))
             case .failure(let error):
                 completion(.failure(error))
