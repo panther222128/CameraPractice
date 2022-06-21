@@ -76,7 +76,7 @@ extension AssetScreenViewController {
                 self.imageScreenView.image = image
             }
         case .video:
-            self.viewModel.requestVideo { video, error in
+            self.viewModel.requestVideo { [weak self] video, error in
                 guard let self = self else { return }
                 guard let video = video else { return }
                 self.moviePlayer.replaceCurrentItem(with: video)
@@ -89,7 +89,7 @@ extension AssetScreenViewController {
                 self.moviePlayer.play()
             }
         default:
-            self.viewModel.requestImage(size: CGSize(width: self.view.frame.width, height: self.view.frame.height)) { image, error in
+            self.viewModel.requestImage(size: CGSize(width: self.view.frame.width, height: self.view.frame.height)) { [weak self] image, error in
                 guard let self = self else { return }
                 guard let image = image else { return }
                 self.imageScreenView.image = image
@@ -171,7 +171,8 @@ extension AssetScreenViewController {
     }
     
     @objc func showEditViewButtonAction() {
-        self.viewModel.didAddOverlay(of: UIImage(named: "bg")) { result in
+        self.viewModel.didAddOverlay(of: UIImage(named: "bg")) { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(_):
                 self.showOverlaySuccessAlert()
