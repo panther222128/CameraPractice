@@ -13,6 +13,12 @@
 		A030308A285346C9008BB69D /* DefaultPhotoSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0303089285346C9008BB69D /* DefaultPhotoSettings.swift */; };
 		A03B439A2858473B0050B656 /* DefaultPlaybackRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03B43992858473B0050B656 /* DefaultPlaybackRepository.swift */; };
 		A03B439C285847520050B656 /* PlaybackRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03B439B285847520050B656 /* PlaybackRepository.swift */; };
+		A07F58F22861CE23000220E7 /* MovieTrimViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F58F12861CE23000220E7 /* MovieTrimViewModel.swift */; };
+		A07F58F42861CE35000220E7 /* MovieTrimViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F58F32861CE35000220E7 /* MovieTrimViewController.swift */; };
+		A07F58F72861D050000220E7 /* TrimTimeRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F58F62861D050000220E7 /* TrimTimeRange.swift */; };
+		A07F58FA2861D144000220E7 /* MovieTrimUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F58F92861D144000220E7 /* MovieTrimUseCase.swift */; };
+		A07F58FE2861D2BA000220E7 /* DefaultMovieTrimRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F58FD2861D2BA000220E7 /* DefaultMovieTrimRepository.swift */; };
+		A07F59002861D2D3000220E7 /* MovieTrimRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F58FF2861D2D3000220E7 /* MovieTrimRepository.swift */; };
 		A083B74528506C9600949ED4 /* PhotoCaptureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A083B74428506C9600949ED4 /* PhotoCaptureProcessor.swift */; };
 		A085168C2859A6BF0034D662 /* AssetsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A085168B2859A6BF0034D662 /* AssetsCollectionViewCell.swift */; };
 		A08F070F2857346E005AE166 /* MediaPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08F070E2857346E005AE166 /* MediaPickerViewController.swift */; };
@@ -36,6 +42,7 @@
 		A0A096C02840AF5300BCB214 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096BF2840AF5300BCB214 /* Observable.swift */; };
 		A0A096C62840C08A00BCB214 /* AuthorizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096C52840C08A00BCB214 /* AuthorizationManager.swift */; };
 		A0BE9E58285C4FF8001B9240 /* AssetEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0BE9E57285C4FF8001B9240 /* AssetEditor.swift */; };
+		A0C135F72861D8EB00BFB841 /* MovieTrimEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F58FC2861D19E000220E7 /* MovieTrimEditor.swift */; };
 		A0DA208D2843644E00604A5D /* DefaultStudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DA208C2843644E00604A5D /* DefaultStudio.swift */; };
 		A0F4461B28572C3C00932C21 /* AssetScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F4461A28572C3C00932C21 /* AssetScreenViewController.swift */; };
 		A0F4462028572D4700932C21 /* AssetScreenUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F4461F28572D4700932C21 /* AssetScreenUseCase.swift */; };
@@ -49,6 +56,13 @@
 		A0303089285346C9008BB69D /* DefaultPhotoSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultPhotoSettings.swift; sourceTree = "<group>"; };
 		A03B43992858473B0050B656 /* DefaultPlaybackRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultPlaybackRepository.swift; sourceTree = "<group>"; };
 		A03B439B285847520050B656 /* PlaybackRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackRepository.swift; sourceTree = "<group>"; };
+		A07F58F12861CE23000220E7 /* MovieTrimViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTrimViewModel.swift; sourceTree = "<group>"; };
+		A07F58F32861CE35000220E7 /* MovieTrimViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTrimViewController.swift; sourceTree = "<group>"; };
+		A07F58F62861D050000220E7 /* TrimTimeRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrimTimeRange.swift; sourceTree = "<group>"; };
+		A07F58F92861D144000220E7 /* MovieTrimUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTrimUseCase.swift; sourceTree = "<group>"; };
+		A07F58FC2861D19E000220E7 /* MovieTrimEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTrimEditor.swift; sourceTree = "<group>"; };
+		A07F58FD2861D2BA000220E7 /* DefaultMovieTrimRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultMovieTrimRepository.swift; sourceTree = "<group>"; };
+		A07F58FF2861D2D3000220E7 /* MovieTrimRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTrimRepository.swift; sourceTree = "<group>"; };
 		A083B74428506C9600949ED4 /* PhotoCaptureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureProcessor.swift; sourceTree = "<group>"; };
 		A085168B2859A6BF0034D662 /* AssetsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsCollectionViewCell.swift; sourceTree = "<group>"; };
 		A08F070E2857346E005AE166 /* MediaPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPickerViewController.swift; sourceTree = "<group>"; };
@@ -100,6 +114,56 @@
 				A030308728532604008BB69D /* RecordTimer.swift */,
 			);
 			path = RecordTimer;
+			sourceTree = "<group>";
+		};
+		A07F58EE2861CDF0000220E7 /* MovieTrimView */ = {
+			isa = PBXGroup;
+			children = (
+				A07F58EF2861CE0F000220E7 /* ViewModel */,
+				A07F58F02861CE14000220E7 /* Controller */,
+			);
+			path = MovieTrimView;
+			sourceTree = "<group>";
+		};
+		A07F58EF2861CE0F000220E7 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				A07F58F12861CE23000220E7 /* MovieTrimViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		A07F58F02861CE14000220E7 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				A07F58F32861CE35000220E7 /* MovieTrimViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		A07F58F52861D030000220E7 /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				A07F58F62861D050000220E7 /* TrimTimeRange.swift */,
+			);
+			path = Entity;
+			sourceTree = "<group>";
+		};
+		A07F58F82861D137000220E7 /* MovieTrimUseCase */ = {
+			isa = PBXGroup;
+			children = (
+				A07F58FB2861D195000220E7 /* AssetEditor */,
+				A07F58F92861D144000220E7 /* MovieTrimUseCase.swift */,
+			);
+			path = MovieTrimUseCase;
+			sourceTree = "<group>";
+		};
+		A07F58FB2861D195000220E7 /* AssetEditor */ = {
+			isa = PBXGroup;
+			children = (
+				A07F58FC2861D19E000220E7 /* MovieTrimEditor.swift */,
+			);
+			path = AssetEditor;
 			sourceTree = "<group>";
 		};
 		A083B7482850989B00949ED4 /* DefaultDeviceConfiguration */ = {
@@ -201,6 +265,7 @@
 				A0A096AD2840917500BCB214 /* CameraView */,
 				A08F070C28573440005AE166 /* MediaPickerView */,
 				A0F4461628572B5100932C21 /* AssetScreenView */,
+				A07F58EE2861CDF0000220E7 /* MovieTrimView */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -227,6 +292,7 @@
 		A0A096A12840907000BCB214 /* Domain */ = {
 			isa = PBXGroup;
 			children = (
+				A07F58F52861D030000220E7 /* Entity */,
 				A0A096B62840ACCE00BCB214 /* Interface */,
 				A0A096A22840908B00BCB214 /* UseCase */,
 			);
@@ -239,6 +305,7 @@
 				A0F4461C28572D2200932C21 /* StudioUseCase */,
 				A08F071228573A75005AE166 /* MediaPickerUseCase */,
 				A0F4461D28572D2A00932C21 /* AssetScreenUseCase */,
+				A07F58F82861D137000220E7 /* MovieTrimUseCase */,
 			);
 			path = UseCase;
 			sourceTree = "<group>";
@@ -303,6 +370,7 @@
 				A0A096BA2840AD0100BCB214 /* StudioRepository.swift */,
 				A08F071A28573B27005AE166 /* MediaPickerRepository.swift */,
 				A03B439B285847520050B656 /* PlaybackRepository.swift */,
+				A07F58FF2861D2D3000220E7 /* MovieTrimRepository.swift */,
 			);
 			path = Interface;
 			sourceTree = "<group>";
@@ -313,6 +381,7 @@
 				A0A096BC2840AD1D00BCB214 /* DefaultStudioRepository.swift */,
 				A08F071828573B18005AE166 /* DefaultMediaPickerRepository.swift */,
 				A03B43992858473B0050B656 /* DefaultPlaybackRepository.swift */,
+				A07F58FD2861D2BA000220E7 /* DefaultMovieTrimRepository.swift */,
 			);
 			path = Repository;
 			sourceTree = "<group>";
@@ -513,6 +582,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A07F58F72861D050000220E7 /* TrimTimeRange.swift in Sources */,
 				A08F071B28573B27005AE166 /* MediaPickerRepository.swift in Sources */,
 				A0A096BB2840AD0100BCB214 /* StudioRepository.swift in Sources */,
 				A03B439C285847520050B656 /* PlaybackRepository.swift in Sources */,
@@ -523,20 +593,26 @@
 				A0A096BD2840AD1D00BCB214 /* DefaultStudioRepository.swift in Sources */,
 				A0DA208D2843644E00604A5D /* DefaultStudio.swift in Sources */,
 				A08F071428573A8A005AE166 /* MediaPickerUseCase.swift in Sources */,
+				A07F58FE2861D2BA000220E7 /* DefaultMovieTrimRepository.swift in Sources */,
 				A08F070F2857346E005AE166 /* MediaPickerViewController.swift in Sources */,
 				A0BE9E58285C4FF8001B9240 /* AssetEditor.swift in Sources */,
 				A0A096C02840AF5300BCB214 /* Observable.swift in Sources */,
 				A083B74528506C9600949ED4 /* PhotoCaptureProcessor.swift in Sources */,
 				A0A0968C2840900B00BCB214 /* SceneDelegate.swift in Sources */,
+				A0C135F72861D8EB00BFB841 /* MovieTrimEditor.swift in Sources */,
 				A0A096AF2840918900BCB214 /* ViewFlowCoordinator.swift in Sources */,
 				A03B439A2858473B0050B656 /* DefaultPlaybackRepository.swift in Sources */,
 				A030308A285346C9008BB69D /* DefaultPhotoSettings.swift in Sources */,
 				A0A096B12840AC4F00BCB214 /* StudioViewController.swift in Sources */,
+				A07F58FA2861D144000220E7 /* MovieTrimUseCase.swift in Sources */,
+				A07F58F42861CE35000220E7 /* MovieTrimViewController.swift in Sources */,
 				A08F071728573ABA005AE166 /* MediaPickerViewModel.swift in Sources */,
+				A07F59002861D2D3000220E7 /* MovieTrimRepository.swift in Sources */,
 				A085168C2859A6BF0034D662 /* AssetsCollectionViewCell.swift in Sources */,
 				A08F071928573B18005AE166 /* DefaultMediaPickerRepository.swift in Sources */,
 				A0F4462028572D4700932C21 /* AssetScreenUseCase.swift in Sources */,
 				A0A096C62840C08A00BCB214 /* AuthorizationManager.swift in Sources */,
+				A07F58F22861CE23000220E7 /* MovieTrimViewModel.swift in Sources */,
 				A0A096B52840ACAD00BCB214 /* StudioViewModel.swift in Sources */,
 				A0A096AC2840911B00BCB214 /* AppFlowCoordinator.swift in Sources */,
 				A0A096B92840ACE000BCB214 /* StudioUseCase.swift in Sources */,

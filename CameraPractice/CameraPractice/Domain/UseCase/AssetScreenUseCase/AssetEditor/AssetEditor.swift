@@ -14,10 +14,13 @@ enum AssetEditorError: Error {
     case exportError
     case mutableCompositionTrackError
     case mutableCompositionError
+    
+    case trimTimeRangeError
 }
 
 protocol AssetEditor {
     func addImageOverlay(of image: UIImage?, to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void)
+    func trimMovie(of asset: AVAsset, from startTime: Float, to endTime: Float, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) 
 }
 
 final class DefaultAssetEditor: AssetEditor {
@@ -77,6 +80,25 @@ final class DefaultAssetEditor: AssetEditor {
             }
         case .failure(let error):
             completion(.failure(error))
+        }
+    }
+    
+    func trimMovie(of asset: AVAsset, from startTime: Float, to endTime: Float, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
+        self.getAssetTrack(from: asset)
+        if (endTime - startTime) <= 0 {
+            completion(.failure(.trimTimeRangeError))
+        }
+        let startTime = CMTime(seconds: Double(startTime), preferredTimescale: 1000)
+        let endTime = CMTime(seconds: Double(endTime), preferredTimescale: 1000)
+        let timeRange = CMTimeRange(start: startTime, end: endTime)
+        
+        self.exportTrimmedAsset(from: asset, timeRange: timeRange) { result in
+            switch result {
+            case .success(let url):
+                completion(.success(url))
+            case .failure(let error):
+                completion(.failure(error))
+            }
         }
     }
 
@@ -191,19 +213,19 @@ extension DefaultAssetEditor {
     }
     
     private func export(composition: AVMutableComposition, videoComposition: AVMutableVideoComposition, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
-        guard let export = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetHighestQuality) else {
+        guard let exportSession = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetHighestQuality) else {
             completion(.failure(.exportError))
             return
         }
         let videoName = UUID().uuidString
         let exportURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(videoName).appendingPathExtension("mp4")
-        export.videoComposition = videoComposition
-        export.outputFileType = .mp4
-        export.outputURL = exportURL
+        exportSession.videoComposition = videoComposition
+        exportSession.outputFileType = .mp4
+        exportSession.outputURL = exportURL
         
-        export.exportAsynchronously {
+        exportSession.exportAsynchronously {
             DispatchQueue.main.async {
-                switch export.status {
+                switch exportSession.status {
                 case .completed:
                     completion(.success(exportURL))
                 default:
@@ -214,4 +236,27 @@ extension DefaultAssetEditor {
         }
     }
     
+    private func exportTrimmedAsset(from asset: AVAsset, timeRange: CMTimeRange, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
+        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality) else {
+            completion(.failure(.exportError))
+            return
+        }
+        let videoName = UUID().uuidString
+        let exportURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(videoName).appendingPathExtension("mp4")
+        exportSession.outputFileType = .mp4
+        exportSession.outputURL = exportURL
+        exportSession.timeRange = timeRange
+        
+        exportSession.exportAsynchronously {
+            DispatchQueue.main.async {
+                switch exportSession.status {
+                case .completed:
+                    completion(.success(exportURL))
+                default:
+                    completion(.failure(.exportError))
+                    break
+                }
+            }
+        }
+    }
 }

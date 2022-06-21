@@ -17,15 +17,13 @@ class AssetScreenViewController: UIViewController {
     // MARK: - Views
     private let imageScreenView = UIImageView()
     private let movieScreenView = UIView()
-    private let movieActionButton = UIButton()
+    private let showTrimViewButton = UIButton()
     private let showEditViewButton = UIButton()
     
     // MARK: - Media
     private let moviePlayer = AVPlayer()
     private var moviePlayerLayer: AVPlayerLayer?
     private var assetMediaType: PHAssetMediaType?
-    
-    private var isPlayingMovie = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +32,7 @@ class AssetScreenViewController: UIViewController {
         self.addSubviews()
         self.configureLayout()
         self.configureView()
-        self.configureMovieActionButtion()
+        self.configureShowTrimViewButtion()
         self.configureShowEditViewButton()
     }
     
@@ -45,7 +43,7 @@ class AssetScreenViewController: UIViewController {
     }
     
     private func bind() {
-        self.viewModel.phAssetMediaType.bind { [weak self] assetMediaType in
+        self.viewModel.assetMediaType.bind { [weak self] assetMediaType in
             guard let self = self else { return }
             self.assetMediaType = assetMediaType
         }
@@ -114,13 +112,13 @@ extension AssetScreenViewController {
                 self.view.addSubview(self.imageScreenView)
             }
         }
-        self.view.addSubview(self.movieActionButton)
+        self.view.addSubview(self.showTrimViewButton)
         self.view.addSubview(self.showEditViewButton)
     }
     
     private func configureLayout() {
-        guard let phAssetMediaType = self.assetMediaType else { return }
-        switch phAssetMediaType {
+        guard let assetMediaType = self.assetMediaType else { return }
+        switch assetMediaType {
         case .image:
             self.imageScreenView.snp.makeConstraints {
                 $0.edges.equalToSuperview()
@@ -134,7 +132,7 @@ extension AssetScreenViewController {
                 $0.edges.equalToSuperview()
             }
         }
-        self.movieActionButton.snp.makeConstraints {
+        self.showTrimViewButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(self.view.snp.bottom).offset(-60)
         }
@@ -150,18 +148,14 @@ extension AssetScreenViewController {
 
 extension AssetScreenViewController {
 
-    private func configureMovieActionButtion() {
-        self.movieActionButton.addTarget(self, action: #selector(self.movieActionButtonAction), for: .touchUpInside)
-        self.movieActionButton.setTitleColor(.systemPink , for: .normal)
-        if self.isPlayingMovie {
-            self.movieActionButton.setTitle("Pause", for: .normal)
-        } else {
-            self.movieActionButton.setTitle("Start", for: .normal)
-        }
+    private func configureShowTrimViewButtion() {
+        self.showTrimViewButton.addTarget(self, action: #selector(self.showTrimViewAction), for: .touchUpInside)
+        self.showTrimViewButton.setTitleColor(.systemPink , for: .normal)
+        self.showTrimViewButton.setTitle("Trim", for: .normal)
     }
     
-    @objc func movieActionButtonAction() {
-        
+    @objc func showTrimViewAction() {
+        self.viewModel.didPressShowTrimViewButton()
     }
     
     private func configureShowEditViewButton() {
@@ -171,7 +165,7 @@ extension AssetScreenViewController {
     }
     
     @objc func showEditViewButtonAction() {
-        self.viewModel.didAddOverlay(of: UIImage(named: "bg")) { [weak self] result in
+        self.viewModel.didAddOverlay(of: UIImage(named: "overlay")) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(_):

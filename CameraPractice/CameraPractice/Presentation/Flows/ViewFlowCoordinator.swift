@@ -10,7 +10,8 @@ import UIKit
 protocol ViewFlowCoordinatorDependencies {
     func makeStudioViewController(action: StudioViewModelAction) -> StudioViewController
     func makeMediaPickerViewController(action: MediaPickerViewModelAction) -> MediaPickerViewController
-    func makePlaybackViewController(assetIndex: Int) -> AssetScreenViewController
+    func makeAssetScreenViewController(assetIndex: Int, action: AssetScreenViewModelAction) -> AssetScreenViewController
+    func makeMovieTrimViewController(assetIndex: Int) -> MovieTrimViewController
 }
 
 final class ViewFlowCoordinator {
@@ -34,13 +35,23 @@ final class ViewFlowCoordinator {
     }
     
     private func showMediaPickerView() {
-        let action = MediaPickerViewModelAction(showPlaybackView: self.showPlaybackView)
+        let action = MediaPickerViewModelAction(showAssetScreenView: self.showAssetScreenView)
         let viewController = dependencies.makeMediaPickerViewController(action: action)
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    private func showPlaybackView(at assetIndex: Int) {
-        let viewController = dependencies.makePlaybackViewController(assetIndex: assetIndex)
+    private func showAssetScreenView(at assetIndex: Int) {
+        let action = AssetScreenViewModelAction(popAssetScreenView: popViewController, showTrimView: self.showTrimView)
+        let viewController = dependencies.makeAssetScreenViewController(assetIndex: assetIndex, action: action)
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    private func popViewController() {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    private func showTrimView(at assetIndex: Int) {
+        let viewController = dependencies.makeMovieTrimViewController(assetIndex: assetIndex)
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     

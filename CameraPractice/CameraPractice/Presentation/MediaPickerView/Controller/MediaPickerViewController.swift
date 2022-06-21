@@ -24,13 +24,13 @@ class MediaPickerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.bind()
         self.assetCollectionView.dataSource = self
         self.assetCollectionView.delegate = self
         self.registerCellID()
         self.addSubviews()
         self.configureLayout()
         self.fetchAssets()
-        self.bind()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -46,7 +46,7 @@ class MediaPickerViewController: UIViewController {
     }
     
     private func bind() {
-        self.viewModel.phAssetsRequestResult.bind { [weak self] assets in
+        self.viewModel.assetsRequestResult.bind { [weak self] assets in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 self.assetCollectionView.reloadData()
@@ -85,7 +85,7 @@ extension MediaPickerViewController {
 extension MediaPickerViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let phAssetsRequestResult = self.viewModel.phAssetsRequestResult
+        let phAssetsRequestResult = self.viewModel.assetsRequestResult
         guard let value = phAssetsRequestResult.value else { return  -1 }
         let count = value.count
         return count

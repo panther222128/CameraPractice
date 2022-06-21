@@ -78,9 +78,9 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
         return MediaPickerViewController.create(with: self.makeMediaPickerViewModel(mediaPickerViewModelAction: action))
     }
     
-    // MARK: - Playback
+    // MARK: - AssetScreen
     
-    private func makePlaybackRepository() -> PlaybackRepository {
+    private func makeAssetScreenRepository() -> PlaybackRepository {
         return DefaultPlaybackRepository()
     }
     
@@ -88,16 +88,38 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
         return DefaultAssetEditor()
     }
     
-    private func makePlaybackUseCase() -> AssetScreenUseCase {
+    private func makeAssetScreenUseCase() -> AssetScreenUseCase {
         return DefaultAssetScreenUseCase(assetEditor: self.makeAssetEditor())
     }
     
-    private func makePlaybackViewModel(assetIndex: Int) -> AssetScreenViewModel {
-        return DefaultAssetScreenViewModel(assetScreenUseCase: self.makePlaybackUseCase(), assetIndex: assetIndex)
+    private func makeAssetScreenViewModel(assetIndex: Int, action: AssetScreenViewModelAction) -> AssetScreenViewModel {
+        return DefaultAssetScreenViewModel(assetScreenUseCase: self.makeAssetScreenUseCase(), assetIndex: assetIndex, action: action)
     }
     
-    func makePlaybackViewController(assetIndex: Int) -> AssetScreenViewController {
-        return AssetScreenViewController.create(with: self.makePlaybackViewModel(assetIndex: assetIndex))
+    func makeAssetScreenViewController(assetIndex: Int, action: AssetScreenViewModelAction) -> AssetScreenViewController {
+        return AssetScreenViewController.create(with: self.makeAssetScreenViewModel(assetIndex: assetIndex, action: action))
+    }
+    
+    // MARK: - MovieTrim
+    
+    private func makeMovieTrimRepository() -> MovieTrimRepository {
+        return DefaultMovieTrimRepository()
+    }
+    
+    private func makeMovieTrimEditor() -> MovieTrimEditor {
+        return DefaultMovieTrimEditor()
+    }
+    
+    private func makeMovieTrimUseCase() -> MovieTrimUseCase {
+        return DefaultMovieTrimUseCase(movieTrimEditor: self.makeMovieTrimEditor())
+    }
+    
+    private func makeMovieTrimViewModel(assetIndex: Int) -> MovieTrimViewModel {
+        return DefaultMovieTrimViewModel(movieTrimUseCase: self.makeMovieTrimUseCase(), assetIndex: assetIndex)
+    }
+    
+    func makeMovieTrimViewController(assetIndex: Int) -> MovieTrimViewController {
+        return MovieTrimViewController.create(with: self.makeMovieTrimViewModel(assetIndex: assetIndex))
     }
     
 }

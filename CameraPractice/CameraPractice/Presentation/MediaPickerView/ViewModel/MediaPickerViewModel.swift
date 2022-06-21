@@ -9,11 +9,11 @@ import UIKit
 import Photos
 
 struct MediaPickerViewModelAction {
-    let showPlaybackView: ((Int) -> Void)
+    let showAssetScreenView: ((Int) -> Void)
 }
 
 protocol MediaPickerViewModel {
-    var phAssetsRequestResult: Observable<PHFetchResult<PHAsset>?> { get }
+    var assetsRequestResult: Observable<PHFetchResult<PHAsset>?> { get }
     
     func fetchAssetCollection()
     func requestImage(at index: Int, size: CGSize, completion: @escaping ((UIImage?, [AnyHashable: Any]?) -> Void))
@@ -23,31 +23,31 @@ protocol MediaPickerViewModel {
 final class DefaultMediaPickerViewModel: MediaPickerViewModel {
     
     private let mediaPickerViewModelAction: MediaPickerViewModelAction
-    private let phCachingImageManager: PHCachingImageManager
+    private let cachingImageManager: PHCachingImageManager
     private let options: PHImageRequestOptions
     
-    let phAssetsRequestResult: Observable<PHFetchResult<PHAsset>?>
+    let assetsRequestResult: Observable<PHFetchResult<PHAsset>?>
     
     init(mediaPickerViewModelAction: MediaPickerViewModelAction) {
         self.mediaPickerViewModelAction = mediaPickerViewModelAction
-        self.phAssetsRequestResult = Observable(nil)
-        self.phCachingImageManager = PHCachingImageManager()
+        self.assetsRequestResult = Observable(nil)
+        self.cachingImageManager = PHCachingImageManager()
         self.options = PHImageRequestOptions()
     }
     
     func fetchAssetCollection() {
         self.options.isNetworkAccessAllowed = true
-        self.phAssetsRequestResult.value = PHAsset.fetchAssets(with: nil)
+        self.assetsRequestResult.value = PHAsset.fetchAssets(with: nil)
     }
     
     func requestImage(at index: Int, size: CGSize, completion: @escaping ((UIImage?, [AnyHashable: Any]?) -> Void)) {
-        guard let phAssetsRequestResult = self.phAssetsRequestResult.value else { return }
-        let asset = phAssetsRequestResult.object(at: index)
-        self.phCachingImageManager.requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: nil, resultHandler: completion)
+        guard let assetsRequestResult = self.assetsRequestResult.value else { return }
+        let asset = assetsRequestResult.object(at: index)
+        self.cachingImageManager.requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: nil, resultHandler: completion)
     }
 
     func didSelectItem(at assetIndex: Int) {
-        self.mediaPickerViewModelAction.showPlaybackView(assetIndex)
+        self.mediaPickerViewModelAction.showAssetScreenView(assetIndex)
     }
 
 }
