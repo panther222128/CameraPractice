@@ -17,7 +17,7 @@ enum AssetEditorError: Error {
 }
 
 protocol AssetEditor {
-    func addImageOverlay(to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void)
+    func addImageOverlay(of image: UIImage?, to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void)
 }
 
 final class DefaultAssetEditor: AssetEditor {
@@ -42,7 +42,7 @@ final class DefaultAssetEditor: AssetEditor {
         self.mutableVideoCompositionInstruction = AVMutableVideoCompositionInstruction()
     }
     
-    func addImageOverlay(to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
+    func addImageOverlay(of image: UIImage?, to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
         self.addMutableTrack()
         self.getAssetTrack(from: asset)
         switch self.insertTimeRangeToMutableCompositionTrack(asset: asset) {
@@ -62,7 +62,8 @@ final class DefaultAssetEditor: AssetEditor {
             }
             self.setVideoLayer(size: videoSize)
             self.setOverlayLayer(size: videoSize)
-            self.addImage(to: self.overlayLayer, videoSize: videoSize)
+            guard let image = image else { return }
+            self.addImage(of: image, to: self.overlayLayer, videoSize: videoSize)
             self.setOutputLayer(videoLayer: self.videoLayer, overlayLayer: self.overlayLayer, size: videoSize)
             self.setMutableVideoComposition(size: videoSize, videoLayer: self.videoLayer, outputLayer: self.outputLayer)
             self.setInstructions(mutableComposition: self.mutableComposition, compositionTrack: mutableCompositionTrack)
@@ -167,8 +168,8 @@ extension DefaultAssetEditor {
         return (assetOrientation, isPortrait)
     }
     
-    private func addImage(to layer: CALayer, videoSize: CGSize) {
-        guard let image = UIImage(named: "overlay") else { return }
+    private func addImage(of image: UIImage?, to layer: CALayer, videoSize: CGSize) {
+        guard let image = image else { return }
         let imageLayer = CALayer()
         
         let aspoect: CGFloat = image.size.width / image.size.height

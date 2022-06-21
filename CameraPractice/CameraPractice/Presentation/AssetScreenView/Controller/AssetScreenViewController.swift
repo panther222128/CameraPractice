@@ -171,7 +171,7 @@ extension AssetScreenViewController {
     }
     
     @objc func showEditViewButtonAction() {
-        self.viewModel.didAddOverlay { result in
+        self.viewModel.didAddOverlay(of: UIImage(named: "bg")) { result in
             switch result {
             case .success(_):
                 self.showOverlaySuccessAlert()
