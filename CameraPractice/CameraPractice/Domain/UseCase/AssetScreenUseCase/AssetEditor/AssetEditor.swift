@@ -12,6 +12,8 @@ enum AssetEditorError: Error {
     case insertTimeRangeError
     case assetTrackError
     case exportError
+    case mutableCompositionTrackError
+    case mutableCompositionError
 }
 
 protocol AssetEditor {
@@ -43,13 +45,13 @@ final class DefaultAssetEditor: AssetEditor {
     func addImageOverlay(to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
         self.addMutableTrack()
         self.getAssetTrack(from: asset)
-        guard let mutableCompositionTrack = self.mutableCompositionTrack else { return }
-        switch self.insertTimeRangeToMutableCompositionTrack(asset: asset, mutableComposition: mutableComposition, mutableCompositionTrack: mutableCompositionTrack) {
+        switch self.insertTimeRangeToMutableCompositionTrack(asset: asset) {
         case .success(_):
             guard let assetTrack = self.assetTrack else {
                 completion(.failure(.insertTimeRangeError))
                 return
             }
+            guard let mutableCompositionTrack = self.mutableCompositionTrack else { return }
             self.setPreferredTransform(of: mutableCompositionTrack, to: assetTrack)
             let videoOrientation = orientation(from: assetTrack.preferredTransform)
             let videoSize: CGSize
@@ -60,11 +62,11 @@ final class DefaultAssetEditor: AssetEditor {
             }
             self.setVideoLayer(size: videoSize)
             self.setOverlayLayer(size: videoSize)
-            self.addImage(to: overlayLayer, videoSize: videoSize)
-            self.setOutputLayer(videoLayer: videoLayer, overlayLayer: overlayLayer, size: videoSize)
-            self.setMutableVideoComposition(size: videoSize, videoLayer: videoLayer, outputLayer: outputLayer)
-            self.setInstructions(mutableComposition: mutableComposition, compositionTrack: mutableCompositionTrack)
-            self.export(composition: mutableComposition, videoComposition: mutableVideoComposition) { result in
+            self.addImage(to: self.overlayLayer, videoSize: videoSize)
+            self.setOutputLayer(videoLayer: self.videoLayer, overlayLayer: self.overlayLayer, size: videoSize)
+            self.setMutableVideoComposition(size: videoSize, videoLayer: self.videoLayer, outputLayer: self.outputLayer)
+            self.setInstructions(mutableComposition: self.mutableComposition, compositionTrack: mutableCompositionTrack)
+            self.export(composition: self.mutableComposition, videoComposition: self.mutableVideoComposition) { result in
                 switch result {
                 case .success(let url):
                     completion(.success(url))
@@ -90,14 +92,17 @@ extension DefaultAssetEditor {
         self.assetTrack = assetTrack
     }
     
-    private func insertTimeRangeToMutableCompositionTrack(asset: AVAsset, mutableComposition: AVMutableComposition, mutableCompositionTrack: AVMutableCompositionTrack) -> Result<AVAssetTrack, AssetEditorError> {
+    private func insertTimeRangeToMutableCompositionTrack(asset: AVAsset) -> Result<AVAssetTrack, AssetEditorError> {
+        guard let mutableCompositionTrack = self.mutableCompositionTrack else {
+            return .failure(.mutableCompositionTrackError)
+        }
         do {
             let timeRange = CMTimeRange(start: .zero, duration: asset.duration)
             guard let assetTrack = self.assetTrack else {
                 return .failure(.assetTrackError)
             }
             try mutableCompositionTrack.insertTimeRange(timeRange, of: assetTrack, at: .zero)
-            if let audioAssetTrack = asset.tracks(withMediaType: .audio).first, let compositionAudioTrack = mutableComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid) {
+            if let audioAssetTrack = asset.tracks(withMediaType: .audio).first, let compositionAudioTrack = self.mutableComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid) {
                 try compositionAudioTrack.insertTimeRange(timeRange, of: audioAssetTrack, at: .zero)
                 return .success(audioAssetTrack)
             } else {

@@ -16,14 +16,16 @@ protocol AssetScreenUseCase {
 
 final class DefaultAssetScreenUseCase: AssetScreenUseCase {
     
-    private let assetEditor: AssetEditor
+    private var assetEditor: AssetEditor?
     
     init(assetEditor: AssetEditor) {
-        self.assetEditor = assetEditor
+        self.assetEditor = nil
     }
     
     func addOverlay(to asset: AVAsset, completion: @escaping (Result<URL?, Error>) -> Void) {
-        self.assetEditor.addImageOverlay(to: asset) { result in
+        self.assetEditor = DefaultAssetEditor()
+        guard let assetEditor = self.assetEditor else { return }
+        assetEditor.addImageOverlay(to: asset) { result in
             switch result {
             case .success(let url):
                 completion(.success(url))
@@ -37,6 +39,7 @@ final class DefaultAssetScreenUseCase: AssetScreenUseCase {
         guard let outputUrl = outputUrl else { return }
         let recordedMovieUrl = outputUrl as URL
         UISaveVideoAtPathToSavedPhotosAlbum(recordedMovieUrl.path, nil, nil, nil)
+        self.assetEditor = nil
     }
     
 }

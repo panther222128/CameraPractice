@@ -21,9 +21,9 @@ class AssetScreenViewController: UIViewController {
     private let showEditViewButton = UIButton()
     
     // MARK: - Media
-    private let avPlayer = AVPlayer()
-    private var avPlayerLayer: AVPlayerLayer?
-    private var phAssetMediaType: PHAssetMediaType?
+    private let moviePlayer = AVPlayer()
+    private var moviePlayerLayer: AVPlayerLayer?
+    private var assetMediaType: PHAssetMediaType?
     
     private var isPlayingMovie = true
     
@@ -47,7 +47,7 @@ class AssetScreenViewController: UIViewController {
     private func bind() {
         self.viewModel.phAssetMediaType.bind { [weak self] assetMediaType in
             guard let self = self else { return }
-            self.phAssetMediaType = assetMediaType
+            self.assetMediaType = assetMediaType
         }
     }
     
@@ -68,7 +68,7 @@ extension AssetScreenViewController {
     private func requestAsset() {
         self.viewModel.fetchAssetCollection()
         self.viewModel.checkAssetMediaType()
-        switch self.phAssetMediaType {
+        switch self.assetMediaType {
         case .image:
             self.viewModel.requestImage(size: CGSize(width: self.view.frame.width, height: self.view.frame.height)) { [weak self] image, error in
                 guard let self = self else { return }
@@ -79,14 +79,14 @@ extension AssetScreenViewController {
             self.viewModel.requestVideo { video, error in
                 guard let self = self else { return }
                 guard let video = video else { return }
-                self.avPlayer.replaceCurrentItem(with: video)
-                let avPlayerLayer = AVPlayerLayer(player: self.avPlayer)
+                self.moviePlayer.replaceCurrentItem(with: video)
+                let avPlayerLayer = AVPlayerLayer(player: self.moviePlayer)
                 avPlayerLayer.frame = self.movieScreenView.frame
                 avPlayerLayer.videoGravity = .resizeAspect
-                self.avPlayerLayer = avPlayerLayer
-                guard let avPlayerLayer = self.avPlayerLayer else { return }
+                self.moviePlayerLayer = avPlayerLayer
+                guard let avPlayerLayer = self.moviePlayerLayer else { return }
                 self.movieScreenView.layer.addSublayer(avPlayerLayer)
-                self.avPlayer.play()
+                self.moviePlayer.play()
             }
         default:
             self.viewModel.requestImage(size: CGSize(width: self.view.frame.width, height: self.view.frame.height)) { image, error in
@@ -104,7 +104,7 @@ extension AssetScreenViewController {
 extension AssetScreenViewController {
 
     private func addSubviews() {
-        if let phAssetMediaType = self.phAssetMediaType {
+        if let phAssetMediaType = self.assetMediaType {
             switch phAssetMediaType {
             case .image:
                 self.view.addSubview(self.imageScreenView)
@@ -119,7 +119,7 @@ extension AssetScreenViewController {
     }
     
     private func configureLayout() {
-        guard let phAssetMediaType = self.phAssetMediaType else { return }
+        guard let phAssetMediaType = self.assetMediaType else { return }
         switch phAssetMediaType {
         case .image:
             self.imageScreenView.snp.makeConstraints {
@@ -173,9 +173,9 @@ extension AssetScreenViewController {
     @objc func showEditViewButtonAction() {
         self.viewModel.didAddOverlay { result in
             switch result {
-            case .success(let asset):
+            case .success(_):
                 self.showOverlaySuccessAlert()
-            case .failure(let error):
+            case .failure(_):
                 self.showErrorAlert()
             }
         }
