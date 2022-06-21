@@ -9,19 +9,9 @@ import AVFoundation
 import UIKit
 
 enum AssetEditorError: Error {
-    case instantiateMutableCompositionError
-    case compositionTrackError
-    case addMutableTrackError
-    case assetTrackError
     case insertTimeRangeError
+    case assetTrackError
     case exportError
-    case instantiateVideoLayerError
-    case instantiateOutputLayerError
-    case setVideoLayerError
-    case setOverlayLayerError
-    case setOutputLayerError
-    case mutableVideoCompositionError
-    case setInstructionError
 }
 
 protocol AssetEditor {
