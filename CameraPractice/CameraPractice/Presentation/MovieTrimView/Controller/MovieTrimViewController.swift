@@ -15,6 +15,8 @@ class MovieTrimViewController: UIViewController {
     private let trimExecuteButton = UIButton()
     private let startTimeTextField = UITextField()
     private let endTimeTextField = UITextField()
+    private var startTime = Float()
+    private var endTime = Float()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +27,7 @@ class MovieTrimViewController: UIViewController {
         self.configureTrimExecuteButton()
         self.startTimeTextField.delegate = self
         self.endTimeTextField.delegate = self
+        self.requestAsset()
     }
 
     static func create(with viewModel: MovieTrimViewModel) -> MovieTrimViewController {
@@ -37,13 +40,18 @@ class MovieTrimViewController: UIViewController {
 
 extension MovieTrimViewController: UITextFieldDelegate {
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        DispatchQueue.main.async {
+            guard let startTimeText = self.startTimeTextField.text else { return }
+            self.startTime = (startTimeText as NSString).floatValue
+            guard let endTimeText = self.endTimeTextField.text else { return }
+            self.endTime = (endTimeText as NSString).floatValue
+        }
     }
     
 }
 
-// Add subviews and layout
+// MARK: - Add subviews and layout
 
 extension MovieTrimViewController {
     
@@ -65,6 +73,14 @@ extension MovieTrimViewController {
         self.trimExecuteButton.snp.makeConstraints {
             $0.center.equalToSuperview()
         }
+    }
+    
+    private func showTrimSuccessAlert() {
+        
+    }
+    
+    private func showErrorAlert() {
+        
     }
     
 }
@@ -90,9 +106,30 @@ extension MovieTrimViewController {
 
 extension MovieTrimViewController {
     
+    private func requestAsset() {
+        self.viewModel.fetchAssetCollection()
+    }
+    
     private func configureTrimExecuteButton() {
         self.trimExecuteButton.setTitle("Trim", for: .normal)
         self.trimExecuteButton.setTitleColor(.systemPink, for: .normal)
+        self.trimExecuteButton.addTarget(self, action: #selector(self.trimAsset), for: .touchUpInside)
+    }
+    
+    @objc func trimAsset() {
+        self.viewModel.didTrimMovie(from: self.startTime, to: self.endTime) { result in
+            switch result {
+            case .success(let asset):
+                self.showTrimSuccessAlert()
+            case .failure(let error):
+                self.showErrorAlert()
+            }
+        }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return false
     }
     
 }

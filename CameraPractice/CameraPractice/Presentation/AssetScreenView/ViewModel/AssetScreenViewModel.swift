@@ -30,7 +30,7 @@ final class DefaultAssetScreenViewModel: AssetScreenViewModel {
     private let assetScreenUseCase: AssetScreenUseCase
     private let action: AssetScreenViewModelAction
     private let options: PHImageRequestOptions
-    private let phImageManager: PHImageManager
+    private let imageManager: PHImageManager
     private let assetIndex: Int
     
     let assetMediaType: Observable<PHAssetMediaType>
@@ -40,7 +40,7 @@ final class DefaultAssetScreenViewModel: AssetScreenViewModel {
         self.assetScreenUseCase = assetScreenUseCase
         self.assetIndex = assetIndex
         self.options = PHImageRequestOptions()
-        self.phImageManager = PHImageManager()
+        self.imageManager = PHImageManager()
         self.assetMediaType = Observable(.unknown)
         self.assetsRequestResult = Observable(nil)
         self.action = action
@@ -52,27 +52,27 @@ final class DefaultAssetScreenViewModel: AssetScreenViewModel {
     }
     
     func checkAssetMediaType() {
-        guard let phAssetsRequestResult = self.assetsRequestResult.value else { return }
-        let asset = phAssetsRequestResult.object(at: self.assetIndex)
+        guard let assetsRequestResult = self.assetsRequestResult.value else { return }
+        let asset = assetsRequestResult.object(at: self.assetIndex)
         self.assetMediaType.value = asset.mediaType
     }
     
     func requestImage(size: CGSize, completion: @escaping ((UIImage?, [AnyHashable: Any]?) -> Void)) {
-        guard let phAssetsRequestResult = self.assetsRequestResult.value else { return }
-        let asset = phAssetsRequestResult.object(at: self.assetIndex)
-        self.phImageManager.requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: nil, resultHandler: completion)
+        guard let assetsRequestResult = self.assetsRequestResult.value else { return }
+        let asset = assetsRequestResult.object(at: self.assetIndex)
+        self.imageManager.requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: nil, resultHandler: completion)
     }
     
     func requestVideo(completion: @escaping ((AVPlayerItem?, [AnyHashable: Any]?) -> Void)) {
-        guard let phAssetsRequestResult = self.assetsRequestResult.value else { return }
-        let asset = phAssetsRequestResult.object(at: self.assetIndex)
-        self.phImageManager.requestPlayerItem(forVideo: asset, options: nil, resultHandler: completion)
+        guard let assetsRequestResult = self.assetsRequestResult.value else { return }
+        let asset = assetsRequestResult.object(at: self.assetIndex)
+        self.imageManager.requestPlayerItem(forVideo: asset, options: nil, resultHandler: completion)
     }
     
     func didAddOverlay(of image: UIImage?, completion: @escaping (Result<AVAsset?, Error>) -> Void) {
-        guard let phAssetsRequestResult = self.assetsRequestResult.value else { return }
-        let asset = phAssetsRequestResult.object(at: self.assetIndex)
-        self.phImageManager.requestAVAsset(forVideo: asset, options: nil) { [weak self] asset, audioMix, error in
+        guard let assetsRequestResult = self.assetsRequestResult.value else { return }
+        let asset = assetsRequestResult.object(at: self.assetIndex)
+        self.imageManager.requestAVAsset(forVideo: asset, options: nil) { [weak self] asset, audioMix, error in
             guard let self = self else { return }
             if let asset = asset {
                 guard let image = image else { return }

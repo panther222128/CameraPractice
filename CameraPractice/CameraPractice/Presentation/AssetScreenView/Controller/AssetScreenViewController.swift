@@ -78,12 +78,12 @@ extension AssetScreenViewController {
                 guard let self = self else { return }
                 guard let video = video else { return }
                 self.moviePlayer.replaceCurrentItem(with: video)
-                let avPlayerLayer = AVPlayerLayer(player: self.moviePlayer)
-                avPlayerLayer.frame = self.movieScreenView.frame
-                avPlayerLayer.videoGravity = .resizeAspect
-                self.moviePlayerLayer = avPlayerLayer
-                guard let avPlayerLayer = self.moviePlayerLayer else { return }
-                self.movieScreenView.layer.addSublayer(avPlayerLayer)
+                let playerLayer = AVPlayerLayer(player: self.moviePlayer)
+                playerLayer.frame = self.movieScreenView.frame
+                playerLayer.videoGravity = .resizeAspect
+                self.moviePlayerLayer = playerLayer
+                guard let playerLayer = self.moviePlayerLayer else { return }
+                self.movieScreenView.layer.addSublayer(playerLayer)
                 self.moviePlayer.play()
             }
         default:
@@ -102,8 +102,8 @@ extension AssetScreenViewController {
 extension AssetScreenViewController {
 
     private func addSubviews() {
-        if let phAssetMediaType = self.assetMediaType {
-            switch phAssetMediaType {
+        if let assetMediaType = self.assetMediaType {
+            switch assetMediaType {
             case .image:
                 self.view.addSubview(self.imageScreenView)
             case .video:

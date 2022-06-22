@@ -6,9 +6,11 @@
 //
 
 import AVFoundation
+import UIKit
 
 protocol MovieTrimUseCase {
     func trimMovie(of asset: AVAsset, from startTime: Float, to endTime: Float, completion: @escaping (Result<URL?, MovieTrimEditorError>) -> Void)
+    func saveRecordedMovie(outputUrl: URL?)
 }
 
 final class DefaultMovieTrimUseCase: MovieTrimUseCase {
@@ -30,6 +32,13 @@ final class DefaultMovieTrimUseCase: MovieTrimUseCase {
                 completion(.failure(error))
             }
         })
+    }
+    
+    func saveRecordedMovie(outputUrl: URL?) {
+        guard let outputUrl = outputUrl else { return }
+        let recordedMovieUrl = outputUrl as URL
+        UISaveVideoAtPathToSavedPhotosAlbum(recordedMovieUrl.path, nil, nil, nil)
+        self.movieTrimEditor = nil
     }
     
 }

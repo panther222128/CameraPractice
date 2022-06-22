@@ -26,6 +26,9 @@ final class DefaultMovieTrimEditor: MovieTrimEditor {
         if (endTime - startTime) <= 0 {
             completion(.failure(.trimTimeRangeError))
         }
+        if endTime < 0 || startTime < 0 {
+            completion(.failure(.trimTimeRangeError))
+        }
         let startTime = CMTime(seconds: Double(startTime), preferredTimescale: 1000)
         let endTime = CMTime(seconds: Double(endTime), preferredTimescale: 1000)
         let timeRange = CMTimeRange(start: startTime, end: endTime)
