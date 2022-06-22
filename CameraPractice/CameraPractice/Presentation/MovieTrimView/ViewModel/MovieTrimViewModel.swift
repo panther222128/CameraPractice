@@ -54,4 +54,8 @@ final class DefaultMovieTrimViewModel: MovieTrimViewModel {
         }
     }
     
+    func didSaveTrimedMovie() {
+        
+    }
+    
 }

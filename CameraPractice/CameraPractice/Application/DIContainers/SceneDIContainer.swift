@@ -66,12 +66,16 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
         return DefaultMediaPickerRepository()
     }
     
+    private func makeMovieCombineEditor() -> MovieCombineEditor {
+        return DefaultMovieCombineEditor()
+    }
+    
     private func makeMediaPickerUseCase() -> MediaPickerUseCase {
-        return DefaultMediaPickerUseCase()
+        return DefaultMediaPickerUseCase(movieCombineEditor: self.makeMovieCombineEditor())
     }
     
     private func makeMediaPickerViewModel(mediaPickerViewModelAction: MediaPickerViewModelAction) -> MediaPickerViewModel {
-        return DefaultMediaPickerViewModel(mediaPickerViewModelAction: mediaPickerViewModelAction)
+        return DefaultMediaPickerViewModel(mediaPickerUseCase: self.makeMediaPickerUseCase(), mediaPickerViewModelAction: mediaPickerViewModelAction)
     }
 
     func makeMediaPickerViewController(action: MediaPickerViewModelAction) -> MediaPickerViewController {
