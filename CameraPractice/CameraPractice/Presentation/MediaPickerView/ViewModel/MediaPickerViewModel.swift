@@ -66,7 +66,6 @@ final class DefaultMediaPickerViewModel: MediaPickerViewModel {
                     guard let self = self else { return }
                     if let second = second {
                         self.mediaPickerUseCase.combineMovies(first: first, second: second) { result in
-                            print(first)
                             switch result {
                             case .success(let url):
                                 self.mediaPickerUseCase.saveRecordedMovie(outputUrl: url)

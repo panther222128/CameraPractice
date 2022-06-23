@@ -19,6 +19,7 @@ class AssetScreenViewController: UIViewController {
     private let movieScreenView = UIView()
     private let showTrimViewButton = UIButton()
     private let showEditViewButton = UIButton()
+    private let metaboxButton = UIButton()
     
     // MARK: - Media
     private let moviePlayer = AVPlayer()
@@ -34,6 +35,7 @@ class AssetScreenViewController: UIViewController {
         self.configureView()
         self.configureShowTrimViewButtion()
         self.configureShowEditViewButton()
+        self.configureMetaboxButton()
     }
     
     static func create(with viewModel: AssetScreenViewModel) -> AssetScreenViewController {
@@ -114,6 +116,7 @@ extension AssetScreenViewController {
         }
         self.view.addSubview(self.showTrimViewButton)
         self.view.addSubview(self.showEditViewButton)
+        self.view.addSubview(self.metaboxButton)
     }
     
     private func configureLayout() {
@@ -140,6 +143,10 @@ extension AssetScreenViewController {
         self.showEditViewButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.top.equalTo(self.view.snp.top).offset(120)
+        }
+        self.metaboxButton.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalTo(self.showTrimViewButton.snp.bottom).offset(-20)
         }
     }
     
@@ -175,6 +182,16 @@ extension AssetScreenViewController {
                 self.showErrorAlert()
             }
         }
+    }
+    
+    private func configureMetaboxButton() {
+        self.metaboxButton.addTarget(self, action: #selector(self.metaboxButtonAction), for: .touchUpInside)
+        self.metaboxButton.setTitleColor(.systemPink, for: .normal)
+        self.metaboxButton.setTitle("Metabox", for: .normal)
+    }
+    
+    @objc func metaboxButtonAction() {
+
     }
     
 }

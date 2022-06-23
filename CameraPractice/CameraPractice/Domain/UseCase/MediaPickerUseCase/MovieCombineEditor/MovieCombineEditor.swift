@@ -34,18 +34,11 @@ final class DefaultMovieCombineEditor: MovieCombineEditor {
     }
     
     func combineMovies(first: AVAsset, second: AVAsset, completion: @escaping (Result<URL?, MovieCombineError>) -> Void) {
-        switch self.insertTimeRange(of: first) {
+        switch self.insertTimeRange(fisrt: first, second: second) {
         case .success(_):
             completion(.success(nil))
         case .failure(_):
             completion(.failure(.insertTimeRangeError))
-        }
-        
-        switch self.insertTimeRange(of: second) {
-        case .success(_):
-            completion(.success(nil))
-        case .failure(let error):
-            completion(.failure(error))
         }
         
         self.export(composition: self.mutableComposition) { result in
@@ -62,24 +55,36 @@ final class DefaultMovieCombineEditor: MovieCombineEditor {
 
 extension DefaultMovieCombineEditor {
     
-    private func insertTimeRange(of asset: AVAsset) -> Result<AVAsset, MovieCombineError> {
+    private func insertTimeRange(fisrt: AVAsset, second: AVAsset) -> Result<AVAsset, MovieCombineError> {
         guard let mutableCompositionVideoTrack = self.mutableComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else { return .failure(.mutableCompositionTrackError) }
-        guard let mutableCompositionAudioTrack = self.mutableComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid) else { return .failure(.mutableCompositionTrackError)}
+        guard let mutableCompositionAudioTrack = self.mutableComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid) else { return .failure(.mutableCompositionTrackError) }
         
         do {
-            self.currentDuration = asset.duration
+            let firstTimeRange = CMTimeRange(start: .zero, duration: fisrt.duration)
             
-            let timeRange = CMTimeRange(start: .zero, duration: asset.duration)
+            guard let firstAudioTrack = fisrt.tracks(withMediaType: .audio).first else { return .failure(.assetTrackError) }
+            guard let firstVideoTrack = fisrt.tracks(withMediaType: .video).first else { return .failure(.assetTrackError) }
             
-            guard let audioTrack = asset.tracks(withMediaType: .audio).first else { return .failure(.assetTrackError) }
-            guard let videoTrack = asset.tracks(withMediaType: .video).first else { return .failure(.assetTrackError) }
+            try mutableCompositionAudioTrack.insertTimeRange(firstTimeRange, of: firstAudioTrack, at: self.currentDuration)
+            try mutableCompositionVideoTrack.insertTimeRange(firstTimeRange, of: firstVideoTrack, at: self.currentDuration)
             
-            try mutableCompositionAudioTrack.insertTimeRange(timeRange, of: audioTrack, at: self.currentDuration)
-            try mutableCompositionVideoTrack.insertTimeRange(timeRange, of: videoTrack, at: self.currentDuration)
+            mutableCompositionVideoTrack.preferredTransform = firstVideoTrack.preferredTransform
             
-            mutableCompositionVideoTrack.preferredTransform = videoTrack.preferredTransform
+            self.currentDuration = fisrt.duration
             
-            return .success(asset)
+            let secondTimeRange = CMTimeRange(start: .zero, duration: second.duration)
+            
+            guard let secondAudioTrack = second.tracks(withMediaType: .audio).first else { return .failure(.assetTrackError) }
+            guard let secondVideoTrack = second.tracks(withMediaType: .video).first else { return .failure(.assetTrackError) }
+            
+            try mutableCompositionAudioTrack.insertTimeRange(secondTimeRange, of: secondAudioTrack, at: self.currentDuration)
+            try mutableCompositionVideoTrack.insertTimeRange(secondTimeRange, of: secondVideoTrack, at: self.currentDuration)
+            
+            mutableCompositionVideoTrack.preferredTransform = secondVideoTrack.preferredTransform
+            
+            self.currentDuration = second.duration
+            
+            return .success(fisrt)
         } catch {
             return .failure(.insertTimeRangeError)
         }
