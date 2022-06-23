@@ -11,15 +11,10 @@ import Photos
 final class PhotoCaptureProcessor: NSObject {
     
     private(set) var requestedPhotoSettings: AVCapturePhotoSettings
-    
     lazy var context = CIContext()
-    
     private let completionHandler: (PhotoCaptureProcessor) -> Void
-    
     private var photoData: Data?
-    
     private var portraitEffectsMatteData: Data?
-    
     private var semanticSegmentationMatteDataArray = [Data]()
     
     init(with requestedPhotoSettings: AVCapturePhotoSettings,
@@ -71,10 +66,7 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
                                         .colorSpace: perceptualColorSpace])
         
         // Get the HEIF representation of this image.
-        guard let imageData = context.heifRepresentation(of: ciImage,
-                                                         format: .RGBA8,
-                                                         colorSpace: perceptualColorSpace,
-                                                         options: [.depthImage: ciImage]) else { return }
+        guard let imageData = context.heifRepresentation(of: ciImage, format: .RGBA8, colorSpace: perceptualColorSpace, options: [.depthImage: ciImage]) else { return }
         
         // Add the image data to the SSM data array for writing to the photo library.
         semanticSegmentationMatteDataArray.append(imageData)
@@ -99,10 +91,7 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
                 portraitEffectsMatteData = nil
                 return
             }
-            portraitEffectsMatteData = context.heifRepresentation(of: portraitEffectsMatteImage,
-                                                                  format: .RGBA8,
-                                                                  colorSpace: perceptualColorSpace,
-                                                                  options: [.portraitEffectsMatteImage: portraitEffectsMatteImage])
+            portraitEffectsMatteData = context.heifRepresentation(of: portraitEffectsMatteImage, format: .RGBA8, colorSpace: perceptualColorSpace, options: [.portraitEffectsMatteImage: portraitEffectsMatteImage])
         } else {
             portraitEffectsMatteData = nil
         }
@@ -135,16 +124,12 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
             // Save Portrait Effects Matte to Photos Library only if it was generated
             if let portraitEffectsMatteData = self.portraitEffectsMatteData {
                 let creationRequest = PHAssetCreationRequest.forAsset()
-                creationRequest.addResource(with: .photo,
-                                            data: portraitEffectsMatteData,
-                                            options: nil)
+                creationRequest.addResource(with: .photo, data: portraitEffectsMatteData, options: nil)
             }
             // Save Portrait Effects Matte to Photos Library only if it was generated
             for semanticSegmentationMatteData in self.semanticSegmentationMatteDataArray {
                 let creationRequest = PHAssetCreationRequest.forAsset()
-                creationRequest.addResource(with: .photo,
-                                            data: semanticSegmentationMatteData,
-                                            options: nil)
+                creationRequest.addResource(with: .photo, data: semanticSegmentationMatteData, options: nil)
             }
             
         }, completionHandler: { _, error in

@@ -22,14 +22,10 @@ protocol MovieCombineEditor {
 final class DefaultMovieCombineEditor: MovieCombineEditor {
     
     private var mutableComposition: AVMutableComposition
-    private var mutableCompositionTrack: AVMutableCompositionTrack?
-    private var mutableVideoCompositionInstruction: AVMutableVideoCompositionInstruction
     private var currentDuration: CMTime
     
     init() {
         self.mutableComposition = AVMutableComposition()
-        self.mutableCompositionTrack = nil
-        self.mutableVideoCompositionInstruction = AVMutableVideoCompositionInstruction()
         self.currentDuration = CMTime()
     }
     
