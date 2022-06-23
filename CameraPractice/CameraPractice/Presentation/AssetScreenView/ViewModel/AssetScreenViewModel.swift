@@ -15,14 +15,15 @@ struct AssetScreenViewModelAction {
 
 protocol AssetScreenViewModel {
     var assetMediaType: Observable<PHAssetMediaType> { get }
-    var assetsRequestResult: Observable<PHFetchResult<PHAsset>?> { get }
+    var assetsRequestResult: PHFetchResult<PHAsset>? { get }
     
     func fetchAssetCollection()
     func checkAssetMediaType()
     func requestImage(size: CGSize, completion: @escaping ((UIImage?, [AnyHashable: Any]?) -> Void))
     func requestVideo(completion: @escaping ((AVPlayerItem?, [AnyHashable: Any]?) -> Void))
-    func didAddOverlay(of image: UIImage?, completion: @escaping (Result<AVAsset?, Error>) -> Void)
+    func didAddOverlay(of image: UIImage?, completion: @escaping (Result<URL?, Error>) -> Void)
     func didPressShowTrimViewButton()
+    func didSaveMovie(url: URL?)
 }
 
 final class DefaultAssetScreenViewModel: AssetScreenViewModel {
@@ -34,7 +35,7 @@ final class DefaultAssetScreenViewModel: AssetScreenViewModel {
     private let assetIndex: Int
     
     let assetMediaType: Observable<PHAssetMediaType>
-    let assetsRequestResult: Observable<PHFetchResult<PHAsset>?>
+    var assetsRequestResult: PHFetchResult<PHAsset>?
 
     init(assetScreenUseCase: AssetScreenUseCase, assetIndex: Int, action: AssetScreenViewModelAction) {
         self.assetScreenUseCase = assetScreenUseCase
@@ -42,35 +43,35 @@ final class DefaultAssetScreenViewModel: AssetScreenViewModel {
         self.options = PHImageRequestOptions()
         self.imageManager = PHImageManager()
         self.assetMediaType = Observable(.unknown)
-        self.assetsRequestResult = Observable(nil)
+        self.assetsRequestResult = nil
         self.action = action
     }
     
     func fetchAssetCollection() {
         self.options.isNetworkAccessAllowed = true
-        self.assetsRequestResult.value = PHAsset.fetchAssets(with: nil)
+        self.assetsRequestResult = PHAsset.fetchAssets(with: nil)
     }
     
     func checkAssetMediaType() {
-        guard let assetsRequestResult = self.assetsRequestResult.value else { return }
+        guard let assetsRequestResult = self.assetsRequestResult else { return }
         let asset = assetsRequestResult.object(at: self.assetIndex)
         self.assetMediaType.value = asset.mediaType
     }
     
     func requestImage(size: CGSize, completion: @escaping ((UIImage?, [AnyHashable: Any]?) -> Void)) {
-        guard let assetsRequestResult = self.assetsRequestResult.value else { return }
+        guard let assetsRequestResult = self.assetsRequestResult else { return }
         let asset = assetsRequestResult.object(at: self.assetIndex)
         self.imageManager.requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: nil, resultHandler: completion)
     }
     
     func requestVideo(completion: @escaping ((AVPlayerItem?, [AnyHashable: Any]?) -> Void)) {
-        guard let assetsRequestResult = self.assetsRequestResult.value else { return }
+        guard let assetsRequestResult = self.assetsRequestResult else { return }
         let asset = assetsRequestResult.object(at: self.assetIndex)
         self.imageManager.requestPlayerItem(forVideo: asset, options: nil, resultHandler: completion)
     }
     
-    func didAddOverlay(of image: UIImage?, completion: @escaping (Result<AVAsset?, Error>) -> Void) {
-        guard let assetsRequestResult = self.assetsRequestResult.value else { return }
+    func didAddOverlay(of image: UIImage?, completion: @escaping (Result<URL?, Error>) -> Void) {
+        guard let assetsRequestResult = self.assetsRequestResult else { return }
         let asset = assetsRequestResult.object(at: self.assetIndex)
         self.imageManager.requestAVAsset(forVideo: asset, options: nil) { [weak self] asset, audioMix, error in
             guard let self = self else { return }
@@ -79,21 +80,18 @@ final class DefaultAssetScreenViewModel: AssetScreenViewModel {
                 self.assetScreenUseCase.addOverlay(of: image, to: asset) { result in
                     switch result {
                     case .success(let url):
-                        self.assetScreenUseCase.saveRecordedMovie(outputUrl: url)
-                        completion(.success(asset))
+                        completion(.success(url))
                     case .failure(let error):
                         completion(.failure(error))
                     }
                 }
-                completion(.success(asset))
             }
         }
-        self.action.popAssetScreenView()
     }
     
-    func didSaveMovie(outputUrl: URL?) {
-        guard let outputUrl = outputUrl else { return }
-        self.assetScreenUseCase.saveRecordedMovie(outputUrl: outputUrl)
+    func didSaveMovie(url: URL?) {
+        guard let url = url else { return }
+        self.assetScreenUseCase.saveRecordedMovie(url: url)
     }
     
     func didPressShowTrimViewButton() {

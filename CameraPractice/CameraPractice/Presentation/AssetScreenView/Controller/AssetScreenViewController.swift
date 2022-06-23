@@ -176,9 +176,10 @@ extension AssetScreenViewController {
         self.viewModel.didAddOverlay(of: UIImage(named: "overlay")) { [weak self] result in
             guard let self = self else { return }
             switch result {
-            case .success(_):
+            case .success(let url):
+                self.viewModel.didSaveMovie(url: url)
                 self.showOverlaySuccessAlert()
-            case .failure(_):
+            case .failure(let error):
                 self.showErrorAlert()
             }
         }

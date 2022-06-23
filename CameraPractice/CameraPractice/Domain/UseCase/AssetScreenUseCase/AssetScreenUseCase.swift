@@ -11,7 +11,7 @@ import UIKit
 
 protocol AssetScreenUseCase {
     func addOverlay(of image: UIImage?, to asset: AVAsset, completion: @escaping (Result<URL?, Error>) -> Void)
-    func saveRecordedMovie(outputUrl: URL?)
+    func saveRecordedMovie(url: URL?)
 }
 
 final class DefaultAssetScreenUseCase: AssetScreenUseCase {
@@ -34,9 +34,9 @@ final class DefaultAssetScreenUseCase: AssetScreenUseCase {
         }
     }
     
-    func saveRecordedMovie(outputUrl: URL?) {
-        guard let outputUrl = outputUrl else { return }
-        let recordedMovieUrl = outputUrl as URL
+    func saveRecordedMovie(url: URL?) {
+        guard let url = url else { return }
+        let recordedMovieUrl = url as URL
         UISaveVideoAtPathToSavedPhotosAlbum(recordedMovieUrl.path, nil, nil, nil)
     }
     

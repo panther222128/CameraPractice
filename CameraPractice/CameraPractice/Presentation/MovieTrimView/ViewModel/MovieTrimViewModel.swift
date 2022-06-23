@@ -10,7 +10,8 @@ import Photos
 
 protocol MovieTrimViewModel {
     func fetchAssetCollection()
-    func didTrimMovie(from startTime: Float, to endTime: Float, completion: @escaping (Result<AVAsset, MovieTrimEditorError>) -> Void)
+    func didTrimMovie(from startTime: Float, to endTime: Float, completion: @escaping (Result<URL?, MovieTrimEditorError>) -> Void)
+    func didSaveTrimedMovie(url: URL?)
 }
 
 final class DefaultMovieTrimViewModel: MovieTrimViewModel {
@@ -34,7 +35,7 @@ final class DefaultMovieTrimViewModel: MovieTrimViewModel {
         self.assetsRequestResult.value = PHAsset.fetchAssets(with: nil)
     }
     
-    func didTrimMovie(from startTime: Float, to endTime: Float, completion: @escaping (Result<AVAsset, MovieTrimEditorError>) -> Void) {
+    func didTrimMovie(from startTime: Float, to endTime: Float, completion: @escaping (Result<URL?, MovieTrimEditorError>) -> Void) {
         guard let assetsRequestResult = self.assetsRequestResult.value else { return }
         let asset = assetsRequestResult.object(at: self.assetIndex)
         self.imageManager.requestAVAsset(forVideo: asset, options: nil) { [weak self] asset, audioMix, error in
@@ -43,19 +44,20 @@ final class DefaultMovieTrimViewModel: MovieTrimViewModel {
                 self.movieTrimUseCase.trimMovie(of: asset, from: startTime, to: endTime) { result in
                     switch result {
                     case .success(let url):
-                        self.movieTrimUseCase.saveRecordedMovie(outputUrl: url)
-                        completion(.success(asset))
+                        completion(.success(url))
                     case .failure(let error):
                         completion(.failure(error))
                     }
                 }
-                completion(.success(asset))
+            } else {
+                completion(.failure(.assetRequestError))
             }
         }
     }
     
-    func didSaveTrimedMovie() {
-        
+    func didSaveTrimedMovie(url: URL?) {
+        guard let url = url else { return }
+        self.movieTrimUseCase.saveRecordedMovie(outputUrl: url)
     }
     
 }

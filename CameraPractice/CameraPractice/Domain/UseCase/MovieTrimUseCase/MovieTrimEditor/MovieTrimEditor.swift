@@ -11,6 +11,7 @@ import UIKit
 enum MovieTrimEditorError: Error {
     case trimTimeRangeError
     case exportError
+    case assetRequestError
 }
 
 protocol MovieTrimEditor {

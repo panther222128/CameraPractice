@@ -119,7 +119,8 @@ extension MovieTrimViewController {
     @objc func trimAsset() {
         self.viewModel.didTrimMovie(from: self.startTime, to: self.endTime) { result in
             switch result {
-            case .success(let asset):
+            case .success(let url):
+                self.viewModel.didSaveTrimedMovie(url: url)
                 self.showTrimSuccessAlert()
             case .failure(let error):
                 self.showErrorAlert()
