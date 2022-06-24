@@ -7,38 +7,50 @@
 
 import AVFoundation
 import UIKit
+import Photos
 
 protocol MovieTrimUseCase {
-    func trimMovie(of asset: AVAsset, from startTime: Float, to endTime: Float, completion: @escaping (Result<URL?, MovieTrimEditorError>) -> Void)
-    func saveRecordedMovie(outputUrl: URL?)
+    func fetchAssets() -> PHFetchResult<PHAsset>
+    func trimMovie(of asset: PHAsset, from startTime: Float, to endTime: Float, completion: @escaping (Result<URL?, MovieTrimEditorError>) -> Void)
 }
 
 final class DefaultMovieTrimUseCase: MovieTrimUseCase {
     
-    private var movieTrimEditor: MovieTrimEditor?
+    private let movieTrimRepository: MovieTrimRepository
+    private var movieTrimEditor: MovieTrimEditor
     
-    init(movieTrimEditor: MovieTrimEditor) {
-        self.movieTrimEditor = nil
+    init(movieTrimRepository: MovieTrimRepository, movieTrimEditor: MovieTrimEditor) {
+        self.movieTrimRepository = movieTrimRepository
+        self.movieTrimEditor = movieTrimEditor
     }
     
-    func trimMovie(of asset: AVAsset, from startTime: Float, to endTime: Float, completion: @escaping (Result<URL?, MovieTrimEditorError>) -> Void) {
-        self.movieTrimEditor = DefaultMovieTrimEditor()
-        guard let movieTrimEditor = self.movieTrimEditor else { return }
-        movieTrimEditor.trimMovie(of: asset, from: startTime, to: endTime, completion: { result in
-            switch result {
-            case .success(let url):
-                completion(.success(url))
-            case .failure(let error):
-                completion(.failure(error))
+    func fetchAssets() -> PHFetchResult<PHAsset> {
+        return self.movieTrimRepository.fetchAssets()
+    }
+    
+    func trimMovie(of asset: PHAsset, from startTime: Float, to endTime: Float, completion: @escaping (Result<URL?, MovieTrimEditorError>) -> Void) {
+        self.movieTrimRepository.requestAVAssetVideoWithDefaultOptions(of: asset) { asset, audioMix, error in
+            if let asset = asset {
+                self.movieTrimEditor.trimMovie(of: asset, from: startTime, to: endTime) { result in
+                    switch result {
+                    case .success(let url):
+                        self.saveRecordedMovie(outputUrl: url)
+                        completion(.success(url))
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                }
             }
-        })
+        }
     }
     
-    func saveRecordedMovie(outputUrl: URL?) {
+}
+
+extension DefaultMovieTrimUseCase {
+    
+    private func saveRecordedMovie(outputUrl: URL?) {
         guard let outputUrl = outputUrl else { return }
-        let recordedMovieUrl = outputUrl as URL
-        UISaveVideoAtPathToSavedPhotosAlbum(recordedMovieUrl.path, nil, nil, nil)
-        self.movieTrimEditor = nil
+        self.movieTrimRepository.saveAsset(outputUrl: outputUrl)
     }
     
 }

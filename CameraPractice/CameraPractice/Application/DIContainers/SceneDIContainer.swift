@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Photos
 
 final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     
@@ -26,6 +27,26 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
         return DefaultAuthorizationManager()
     }()
     
+    lazy var assetEditor: AssetEditor = {
+        return DefaultAssetEditor()
+    }()
+    
+    lazy var movieCombineEditor: MovieCombineEditor = {
+        return DefaultMovieCombineEditor()
+    }()
+    
+    lazy var movieTrimEditor: MovieTrimEditor = {
+        return DefaultMovieTrimEditor()
+    }()
+    
+    lazy var imageManager: ImageManager & PHImageManager = {
+        return DefaultImageManager()
+    }()
+    
+    lazy var cachingImageManager: CachingImageManager & PHCachingImageManager = {
+        return DefaultCachingImageManager()
+    }()
+
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
     }
@@ -63,15 +84,11 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     // MARK: - MediaPicker
     
     private func makeMediaPickerRepository() -> MediaPickerRepository {
-        return DefaultMediaPickerRepository()
+        return DefaultMediaPickerRepository(imageManager: self.imageManager, cachingImageManager: self.cachingImageManager)
     }
-    
-    private func makeMovieCombineEditor() -> MovieCombineEditor {
-        return DefaultMovieCombineEditor()
-    }
-    
+
     private func makeMediaPickerUseCase() -> MediaPickerUseCase {
-        return DefaultMediaPickerUseCase(movieCombineEditor: self.makeMovieCombineEditor())
+        return DefaultMediaPickerUseCase(mediaPickerRepository: self.makeMediaPickerRepository(), movieCombineEditor: self.movieCombineEditor)
     }
     
     private func makeMediaPickerViewModel(mediaPickerViewModelAction: MediaPickerViewModelAction) -> MediaPickerViewModel {
@@ -84,16 +101,12 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     
     // MARK: - AssetScreen
     
-    private func makeAssetScreenRepository() -> PlaybackRepository {
-        return DefaultPlaybackRepository()
-    }
-    
-    private func makeAssetEditor() -> AssetEditor {
-        return DefaultAssetEditor()
+    private func makeAssetScreenRepository() -> AssetScreenRepository {
+        return DefaultAssetScreenRepository(imageManager: self.imageManager)
     }
     
     private func makeAssetScreenUseCase() -> AssetScreenUseCase {
-        return DefaultAssetScreenUseCase(assetEditor: self.makeAssetEditor())
+        return DefaultAssetScreenUseCase(assetScreenRepository: self.makeAssetScreenRepository(), assetEditor: self.assetEditor)
     }
     
     private func makeAssetScreenViewModel(assetIndex: Int, action: AssetScreenViewModelAction) -> AssetScreenViewModel {
@@ -107,15 +120,11 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     // MARK: - MovieTrim
     
     private func makeMovieTrimRepository() -> MovieTrimRepository {
-        return DefaultMovieTrimRepository()
+        return DefaultMovieTrimRepository(imageManager: self.imageManager)
     }
-    
-    private func makeMovieTrimEditor() -> MovieTrimEditor {
-        return DefaultMovieTrimEditor()
-    }
-    
+
     private func makeMovieTrimUseCase() -> MovieTrimUseCase {
-        return DefaultMovieTrimUseCase(movieTrimEditor: self.makeMovieTrimEditor())
+        return DefaultMovieTrimUseCase(movieTrimRepository: self.makeMovieTrimRepository(), movieTrimEditor: self.movieTrimEditor)
     }
     
     private func makeMovieTrimViewModel(assetIndex: Int) -> MovieTrimViewModel {

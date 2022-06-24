@@ -11,8 +11,12 @@
 		A01287D6284456650068A093 /* DefaultDeviceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01287D5284456650068A093 /* DefaultDeviceConfiguration.swift */; };
 		A030308828532604008BB69D /* RecordTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A030308728532604008BB69D /* RecordTimer.swift */; };
 		A030308A285346C9008BB69D /* DefaultPhotoSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0303089285346C9008BB69D /* DefaultPhotoSettings.swift */; };
-		A03B439A2858473B0050B656 /* DefaultPlaybackRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03B43992858473B0050B656 /* DefaultPlaybackRepository.swift */; };
-		A03B439C285847520050B656 /* PlaybackRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03B439B285847520050B656 /* PlaybackRepository.swift */; };
+		A03B439A2858473B0050B656 /* DefaultAssetScreenRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03B43992858473B0050B656 /* DefaultAssetScreenRepository.swift */; };
+		A03B439C285847520050B656 /* AssetScreenRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03B439B285847520050B656 /* AssetScreenRepository.swift */; };
+		A06975D62865922B00FE8462 /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06975D52865922B00FE8462 /* ImageManager.swift */; };
+		A06975D9286592F700FE8462 /* CachingImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06975D8286592F700FE8462 /* CachingImageManager.swift */; };
+		A06975DC286593DA00FE8462 /* ImageRequestOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06975DB286593DA00FE8462 /* ImageRequestOptions.swift */; };
+		A06975DF2865961B00FE8462 /* VideoRequestOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06975DE2865961B00FE8462 /* VideoRequestOptions.swift */; };
 		A07F58F22861CE23000220E7 /* MovieTrimViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F58F12861CE23000220E7 /* MovieTrimViewModel.swift */; };
 		A07F58F42861CE35000220E7 /* MovieTrimViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F58F32861CE35000220E7 /* MovieTrimViewController.swift */; };
 		A07F58FA2861D144000220E7 /* MovieTrimUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F58F92861D144000220E7 /* MovieTrimUseCase.swift */; };
@@ -54,8 +58,12 @@
 		A01287D5284456650068A093 /* DefaultDeviceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDeviceConfiguration.swift; sourceTree = "<group>"; };
 		A030308728532604008BB69D /* RecordTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTimer.swift; sourceTree = "<group>"; };
 		A0303089285346C9008BB69D /* DefaultPhotoSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultPhotoSettings.swift; sourceTree = "<group>"; };
-		A03B43992858473B0050B656 /* DefaultPlaybackRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultPlaybackRepository.swift; sourceTree = "<group>"; };
-		A03B439B285847520050B656 /* PlaybackRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackRepository.swift; sourceTree = "<group>"; };
+		A03B43992858473B0050B656 /* DefaultAssetScreenRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultAssetScreenRepository.swift; sourceTree = "<group>"; };
+		A03B439B285847520050B656 /* AssetScreenRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetScreenRepository.swift; sourceTree = "<group>"; };
+		A06975D52865922B00FE8462 /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
+		A06975D8286592F700FE8462 /* CachingImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachingImageManager.swift; sourceTree = "<group>"; };
+		A06975DB286593DA00FE8462 /* ImageRequestOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageRequestOptions.swift; sourceTree = "<group>"; };
+		A06975DE2865961B00FE8462 /* VideoRequestOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRequestOptions.swift; sourceTree = "<group>"; };
 		A07F58F12861CE23000220E7 /* MovieTrimViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTrimViewModel.swift; sourceTree = "<group>"; };
 		A07F58F32861CE35000220E7 /* MovieTrimViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTrimViewController.swift; sourceTree = "<group>"; };
 		A07F58F92861D144000220E7 /* MovieTrimUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTrimUseCase.swift; sourceTree = "<group>"; };
@@ -114,6 +122,38 @@
 				A030308728532604008BB69D /* RecordTimer.swift */,
 			);
 			path = RecordTimer;
+			sourceTree = "<group>";
+		};
+		A06975D42865922000FE8462 /* ImageManager */ = {
+			isa = PBXGroup;
+			children = (
+				A06975D52865922B00FE8462 /* ImageManager.swift */,
+			);
+			path = ImageManager;
+			sourceTree = "<group>";
+		};
+		A06975D7286592EF00FE8462 /* CachingImageManager */ = {
+			isa = PBXGroup;
+			children = (
+				A06975D8286592F700FE8462 /* CachingImageManager.swift */,
+			);
+			path = CachingImageManager;
+			sourceTree = "<group>";
+		};
+		A06975DA286593BC00FE8462 /* ImageRequestOptions */ = {
+			isa = PBXGroup;
+			children = (
+				A06975DB286593DA00FE8462 /* ImageRequestOptions.swift */,
+			);
+			path = ImageRequestOptions;
+			sourceTree = "<group>";
+		};
+		A06975DD2865960D00FE8462 /* VideoRequestOptions */ = {
+			isa = PBXGroup;
+			children = (
+				A06975DE2865961B00FE8462 /* VideoRequestOptions.swift */,
+			);
+			path = VideoRequestOptions;
 			sourceTree = "<group>";
 		};
 		A07F58EE2861CDF0000220E7 /* MovieTrimView */ = {
@@ -321,6 +361,10 @@
 		A0A096A32840909000BCB214 /* Infrastructure */ = {
 			isa = PBXGroup;
 			children = (
+				A06975DD2865960D00FE8462 /* VideoRequestOptions */,
+				A06975DA286593BC00FE8462 /* ImageRequestOptions */,
+				A06975D7286592EF00FE8462 /* CachingImageManager */,
+				A06975D42865922000FE8462 /* ImageManager */,
 				A0A096C42840C07200BCB214 /* AuthorizationManager */,
 			);
 			path = Infrastructure;
@@ -377,7 +421,7 @@
 			children = (
 				A0A096BA2840AD0100BCB214 /* StudioRepository.swift */,
 				A08F071A28573B27005AE166 /* MediaPickerRepository.swift */,
-				A03B439B285847520050B656 /* PlaybackRepository.swift */,
+				A03B439B285847520050B656 /* AssetScreenRepository.swift */,
 				A07F58FF2861D2D3000220E7 /* MovieTrimRepository.swift */,
 			);
 			path = Interface;
@@ -388,7 +432,7 @@
 			children = (
 				A0A096BC2840AD1D00BCB214 /* DefaultStudioRepository.swift */,
 				A08F071828573B18005AE166 /* DefaultMediaPickerRepository.swift */,
-				A03B43992858473B0050B656 /* DefaultPlaybackRepository.swift */,
+				A03B43992858473B0050B656 /* DefaultAssetScreenRepository.swift */,
 				A07F58FD2861D2BA000220E7 /* DefaultMovieTrimRepository.swift */,
 			);
 			path = Repository;
@@ -592,9 +636,10 @@
 			files = (
 				A08F071B28573B27005AE166 /* MediaPickerRepository.swift in Sources */,
 				A0A096BB2840AD0100BCB214 /* StudioRepository.swift in Sources */,
-				A03B439C285847520050B656 /* PlaybackRepository.swift in Sources */,
+				A03B439C285847520050B656 /* AssetScreenRepository.swift in Sources */,
 				A0F4462228572D5000932C21 /* AssetScreenViewModel.swift in Sources */,
 				A0F4461B28572C3C00932C21 /* AssetScreenViewController.swift in Sources */,
+				A06975D9286592F700FE8462 /* CachingImageManager.swift in Sources */,
 				A0A0968A2840900B00BCB214 /* AppDelegate.swift in Sources */,
 				A0A096AA2840910500BCB214 /* AppDIContainer.swift in Sources */,
 				A0A096BD2840AD1D00BCB214 /* DefaultStudioRepository.swift in Sources */,
@@ -608,14 +653,16 @@
 				A0A0968C2840900B00BCB214 /* SceneDelegate.swift in Sources */,
 				A0C135F72861D8EB00BFB841 /* MovieTrimEditor.swift in Sources */,
 				A0A096AF2840918900BCB214 /* ViewFlowCoordinator.swift in Sources */,
-				A03B439A2858473B0050B656 /* DefaultPlaybackRepository.swift in Sources */,
+				A03B439A2858473B0050B656 /* DefaultAssetScreenRepository.swift in Sources */,
 				A030308A285346C9008BB69D /* DefaultPhotoSettings.swift in Sources */,
 				A0A096B12840AC4F00BCB214 /* StudioViewController.swift in Sources */,
+				A06975D62865922B00FE8462 /* ImageManager.swift in Sources */,
 				A07F58FA2861D144000220E7 /* MovieTrimUseCase.swift in Sources */,
 				A07F58F42861CE35000220E7 /* MovieTrimViewController.swift in Sources */,
 				A08F071728573ABA005AE166 /* MediaPickerViewModel.swift in Sources */,
 				A087047C2862E9B90091418D /* MovieCombineEditor.swift in Sources */,
 				A07F59002861D2D3000220E7 /* MovieTrimRepository.swift in Sources */,
+				A06975DC286593DA00FE8462 /* ImageRequestOptions.swift in Sources */,
 				A085168C2859A6BF0034D662 /* AssetsCollectionViewCell.swift in Sources */,
 				A08F071928573B18005AE166 /* DefaultMediaPickerRepository.swift in Sources */,
 				A0F4462028572D4700932C21 /* AssetScreenUseCase.swift in Sources */,
@@ -627,6 +674,7 @@
 				A0A096A8284090FD00BCB214 /* SceneDIContainer.swift in Sources */,
 				A01287D6284456650068A093 /* DefaultDeviceConfiguration.swift in Sources */,
 				A030308828532604008BB69D /* RecordTimer.swift in Sources */,
+				A06975DF2865961B00FE8462 /* VideoRequestOptions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

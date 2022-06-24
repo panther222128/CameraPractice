@@ -19,7 +19,7 @@ class AssetScreenViewController: UIViewController {
     private let movieScreenView = UIView()
     private let showTrimViewButton = UIButton()
     private let showEditViewButton = UIButton()
-    private let metaboxButton = UIButton()
+    private let letterboxButton = UIButton()
     
     // MARK: - Media
     private let moviePlayer = AVPlayer()
@@ -35,7 +35,7 @@ class AssetScreenViewController: UIViewController {
         self.configureView()
         self.configureShowTrimViewButtion()
         self.configureShowEditViewButton()
-        self.configureMetaboxButton()
+        self.configureLetterboxButton()
     }
     
     static func create(with viewModel: AssetScreenViewModel) -> AssetScreenViewController {
@@ -56,6 +56,10 @@ class AssetScreenViewController: UIViewController {
     }
     
     private func showErrorAlert() {
+        
+    }
+    
+    private func showLetterboxSuccessAlert() {
         
     }
     
@@ -116,7 +120,7 @@ extension AssetScreenViewController {
         }
         self.view.addSubview(self.showTrimViewButton)
         self.view.addSubview(self.showEditViewButton)
-        self.view.addSubview(self.metaboxButton)
+        self.view.addSubview(self.letterboxButton)
     }
     
     private func configureLayout() {
@@ -144,9 +148,9 @@ extension AssetScreenViewController {
             $0.leading.trailing.equalToSuperview()
             $0.top.equalTo(self.view.snp.top).offset(120)
         }
-        self.metaboxButton.snp.makeConstraints {
+        self.letterboxButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(self.showTrimViewButton.snp.bottom).offset(-20)
+            $0.bottom.equalTo(self.showTrimViewButton.snp.bottom).offset(-40)
         }
     }
     
@@ -177,7 +181,6 @@ extension AssetScreenViewController {
             guard let self = self else { return }
             switch result {
             case .success(let url):
-                self.viewModel.didSaveMovie(url: url)
                 self.showOverlaySuccessAlert()
             case .failure(let error):
                 self.showErrorAlert()
@@ -185,14 +188,22 @@ extension AssetScreenViewController {
         }
     }
     
-    private func configureMetaboxButton() {
-        self.metaboxButton.addTarget(self, action: #selector(self.metaboxButtonAction), for: .touchUpInside)
-        self.metaboxButton.setTitleColor(.systemPink, for: .normal)
-        self.metaboxButton.setTitle("Metabox", for: .normal)
+    private func configureLetterboxButton() {
+        self.letterboxButton.addTarget(self, action: #selector(self.letterboxButtonAction), for: .touchUpInside)
+        self.letterboxButton.setTitleColor(.systemPink, for: .normal)
+        self.letterboxButton.setTitle("Letterbox", for: .normal)
     }
     
-    @objc func metaboxButtonAction() {
-
+    @objc func letterboxButtonAction() {
+        self.viewModel.didApplyLetterBox { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let url):
+                self.showLetterboxSuccessAlert()
+            case .failure(let error):
+                self.showErrorAlert()
+            }
+        }
     }
     
 }

@@ -7,57 +7,33 @@
 
 import AVFoundation
 import Photos
+// Observable error needed
 
 protocol MovieTrimViewModel {
     func fetchAssetCollection()
     func didTrimMovie(from startTime: Float, to endTime: Float, completion: @escaping (Result<URL?, MovieTrimEditorError>) -> Void)
-    func didSaveTrimedMovie(url: URL?)
 }
 
 final class DefaultMovieTrimViewModel: MovieTrimViewModel {
     
     private let movieTrimUseCase: MovieTrimUseCase
     private let assetIndex: Int
-    private let imageManager: PHImageManager
-    private let options: PHImageRequestOptions
     let assetsRequestResult: Observable<PHFetchResult<PHAsset>?>
     
     init(movieTrimUseCase: MovieTrimUseCase, assetIndex: Int) {
         self.movieTrimUseCase = movieTrimUseCase
         self.assetIndex = assetIndex
-        self.imageManager = PHImageManager()
-        self.options = PHImageRequestOptions()
         self.assetsRequestResult = Observable(nil)
     }
     
     func fetchAssetCollection() {
-        self.options.isNetworkAccessAllowed = true
-        self.assetsRequestResult.value = PHAsset.fetchAssets(with: nil)
+        self.assetsRequestResult.value = self.movieTrimUseCase.fetchAssets()
     }
     
     func didTrimMovie(from startTime: Float, to endTime: Float, completion: @escaping (Result<URL?, MovieTrimEditorError>) -> Void) {
         guard let assetsRequestResult = self.assetsRequestResult.value else { return }
         let asset = assetsRequestResult.object(at: self.assetIndex)
-        self.imageManager.requestAVAsset(forVideo: asset, options: nil) { [weak self] asset, audioMix, error in
-            guard let self = self else { return }
-            if let asset = asset {
-                self.movieTrimUseCase.trimMovie(of: asset, from: startTime, to: endTime) { result in
-                    switch result {
-                    case .success(let url):
-                        completion(.success(url))
-                    case .failure(let error):
-                        completion(.failure(error))
-                    }
-                }
-            } else {
-                completion(.failure(.assetRequestError))
-            }
-        }
+        self.movieTrimUseCase.trimMovie(of: asset, from: startTime, to: endTime, completion: completion)
     }
-    
-    func didSaveTrimedMovie(url: URL?) {
-        guard let url = url else { return }
-        self.movieTrimUseCase.saveRecordedMovie(outputUrl: url)
-    }
-    
+
 }

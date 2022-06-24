@@ -37,8 +37,7 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
         guard var segmentationMatte = photo.semanticSegmentationMatte(for: ssmType) else { return }
         
         // Retrieve the photo orientation and apply it to the matte image.
-        if let orientation = photo.metadata[String(kCGImagePropertyOrientation)] as? UInt32,
-            let exifOrientation = CGImagePropertyOrientation(rawValue: orientation) {
+        if let orientation = photo.metadata[String(kCGImagePropertyOrientation)] as? UInt32, let exifOrientation = CGImagePropertyOrientation(rawValue: orientation) {
             // Apply the Exif orientation to the matte image.
             segmentationMatte = segmentationMatte.applyingExifOrientation(exifOrientation)
         }

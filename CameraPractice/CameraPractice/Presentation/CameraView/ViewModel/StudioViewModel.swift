@@ -8,6 +8,8 @@
 import Foundation
 import AVFoundation
 
+// Observable error needed
+
 struct StudioViewModelAction {
     let presentMediaPickerView: (() -> Void)
 }

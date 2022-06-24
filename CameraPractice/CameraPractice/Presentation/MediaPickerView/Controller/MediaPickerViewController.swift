@@ -174,6 +174,8 @@ extension MediaPickerViewController: UICollectionViewDataSource {
         return count
     }
     
+    // MARK: - Need to error handling
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AssetsCollectionViewCellID", for: indexPath) as? AssetsCollectionViewCell else { return UICollectionViewCell() }
         self.viewModel.requestImage(at: indexPath.row, size: CGSize(width: cell.frame.width, height: cell.frame.width)) { image, error in
