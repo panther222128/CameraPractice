@@ -18,6 +18,8 @@ struct AssetScreenViewModelAction {
 protocol AssetScreenViewModel {
     var assetMediaType: Observable<PHAssetMediaType> { get }
     var assetsRequestResult: PHFetchResult<PHAsset>? { get }
+    var isError: Observable<Bool?> { get }
+    var error: Observable<Error?> { get }
     
     func fetchAssetCollection()
     func checkAssetMediaType()
@@ -36,6 +38,8 @@ final class DefaultAssetScreenViewModel: AssetScreenViewModel {
     
     let assetMediaType: Observable<PHAssetMediaType>
     var assetsRequestResult: PHFetchResult<PHAsset>?
+    let isError: Observable<Bool?>
+    let error: Observable<Error?>
 
     init(assetScreenUseCase: AssetScreenUseCase, assetIndex: Int, action: AssetScreenViewModelAction) {
         self.assetScreenUseCase = assetScreenUseCase
@@ -43,6 +47,8 @@ final class DefaultAssetScreenViewModel: AssetScreenViewModel {
         self.assetMediaType = Observable(.unknown)
         self.assetsRequestResult = nil
         self.action = action
+        self.isError = Observable(nil)
+        self.error = Observable(nil)
     }
     
     func fetchAssetCollection() {

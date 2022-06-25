@@ -16,6 +16,8 @@ struct MediaPickerViewModelAction {
 
 protocol MediaPickerViewModel {
     var assetsRequestResult: Observable<PHFetchResult<PHAsset>?> { get }
+    var isError: Observable<Bool?> { get }
+    var error: Observable<Error?> { get }
     
     func fetchAssetCollection()
     func requestImage(at index: Int, size: CGSize, resultHandler: @escaping ((UIImage?, [AnyHashable: Any]?) -> Void))
@@ -29,11 +31,15 @@ final class DefaultMediaPickerViewModel: MediaPickerViewModel {
     private let mediaPickerViewModelAction: MediaPickerViewModelAction
     
     let assetsRequestResult: Observable<PHFetchResult<PHAsset>?>
+    let isError: Observable<Bool?>
+    let error: Observable<Error?>
     
     init(mediaPickerUseCase: MediaPickerUseCase, mediaPickerViewModelAction: MediaPickerViewModelAction) {
         self.mediaPickerUseCase = mediaPickerUseCase
         self.mediaPickerViewModelAction = mediaPickerViewModelAction
         self.assetsRequestResult = Observable(nil)
+        self.isError = Observable(nil)
+        self.error = Observable(nil)
     }
     
     func fetchAssetCollection() {

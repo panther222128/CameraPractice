@@ -17,7 +17,9 @@ struct StudioViewModelAction {
 protocol StudioViewModel {
     var isDeviceAccessAuthorized: Observable<Bool?> { get }
     var isPhotoAlbumAccessAuthorized: Observable<Bool?> { get }
-
+    var isError: Observable<Bool?> { get }
+    var error: Observable<Error?> { get }
+    
     func checkDeviceAccessAuthorizationStatus()
     func checkPhotoAlbumAccessAuthorized()
     
@@ -35,11 +37,15 @@ class DefaultStudioViewModel: StudioViewModel {
     
     let isDeviceAccessAuthorized: Observable<Bool?>
     let isPhotoAlbumAccessAuthorized: Observable<Bool?>
+    let isError: Observable<Bool?>
+    let error: Observable<Error?>
     
     init(studioUseCase: StudioUseCase, action: StudioViewModelAction) {
         self.studioUseCase = studioUseCase
         self.isDeviceAccessAuthorized = Observable(nil)
         self.isPhotoAlbumAccessAuthorized = Observable(nil)
+        self.isError = Observable(nil)
+        self.error = Observable(nil)
         self.action = action
     }
     
