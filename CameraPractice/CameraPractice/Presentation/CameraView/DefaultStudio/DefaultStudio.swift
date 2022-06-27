@@ -118,7 +118,7 @@ extension DefaultStudio {
     private func startSession() {
         self.captureSession = AVCaptureSession()
         guard let captureSession = captureSession else { return }
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .userInteractive).async {
             captureSession.startRunning()
         }
     }

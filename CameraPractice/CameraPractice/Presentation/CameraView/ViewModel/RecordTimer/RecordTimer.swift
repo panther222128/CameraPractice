@@ -44,7 +44,7 @@ class RecordTimer: RecordTimerConfigurable {
 
     private func convertMinSec(of second: Int) -> String {
         if second / 60 > 0 {
-            return "\(second / 60)분" + ":" + "0\(second % 60)초"
+            return "\(second / 60)분" + ":" + "\(second % 60)초"
         } else {
             return "\(second % 60)초"
         }

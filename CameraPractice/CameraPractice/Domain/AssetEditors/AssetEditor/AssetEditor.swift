@@ -92,8 +92,6 @@ final class DefaultAssetEditor: AssetEditor {
         guard let ratio = self.checkAssetTrackRatio() else { return }
         self.addMutableTrack()
         if ratio < 0.5625 {
-            // width 360 : height 480
-            // 0.5625 = width / height
             guard let assetTrack = assetTrack else {
                 completion(.failure(.assetTrackError))
                 return
