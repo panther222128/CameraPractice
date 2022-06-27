@@ -18,8 +18,8 @@ final class DefaultMediaPickerRepository: MediaPickerRepository {
         self.cachingImageManager = cachingImageManager
     }
     
-    func requestAVAssetVideoWithDefaultOptions(of asset: PHAsset, resultHandler: @escaping (AVAsset?, AVAudioMix?, [AnyHashable : Any]?) -> Void) {
-        self.imageManager.requestAVAssetVideoWithDefaultOptions(for: asset, resultHandler: resultHandler)
+    func requestAssetVideoWithDefaultOptions(of asset: PHAsset, resultHandler: @escaping (AVAsset?, AVAudioMix?, [AnyHashable : Any]?) -> Void) {
+        self.imageManager.requestAssetVideoWithDefaultOptions(for: asset, resultHandler: resultHandler)
     }
     
     func requestCachingImage(of asset: PHAsset, size: CGSize, resultHandler: @escaping ((UIImage?, [AnyHashable : Any]?) -> Void)) {

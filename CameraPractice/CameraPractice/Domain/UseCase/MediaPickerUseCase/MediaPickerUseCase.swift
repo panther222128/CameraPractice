@@ -30,7 +30,7 @@ final class DefaultMediaPickerUseCase: MediaPickerUseCase {
     func combineMovies(firstAsset: PHAsset, secondAsset: PHAsset, completion: @escaping (Result<URL?, Error>) -> Void) {
         self.requestAsset(from: firstAsset) { first, audioMix, error in
             if let first = first {
-                self.mediaPickerRepository.requestAVAssetVideoWithDefaultOptions(of: secondAsset) { second, audioMix, error in
+                self.mediaPickerRepository.requestAssetVideoWithDefaultOptions(of: secondAsset) { second, audioMix, error in
                     if let second = second {
                         self.movieCombineEditor.combineMovies(first: first, second: second) { result in
                             switch result {
@@ -65,7 +65,7 @@ extension DefaultMediaPickerUseCase {
     }
     
     private func requestAsset(from phAsset: PHAsset, resultHandler: @escaping (AVAsset?, AVAudioMix?, [AnyHashable : Any]?) -> Void) {
-        self.mediaPickerRepository.requestAVAssetVideoWithDefaultOptions(of: phAsset, resultHandler: resultHandler)
+        self.mediaPickerRepository.requestAssetVideoWithDefaultOptions(of: phAsset, resultHandler: resultHandler)
     }
     
 }

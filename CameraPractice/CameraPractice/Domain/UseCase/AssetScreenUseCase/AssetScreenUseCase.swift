@@ -77,7 +77,7 @@ final class DefaultAssetScreenUseCase: AssetScreenUseCase {
 extension DefaultAssetScreenUseCase {
     
     private func requestAsset(of asset: PHAsset, resultHandler: @escaping (AVAsset?, AVAudioMix?, [AnyHashable : Any]?) -> Void) {
-        self.assetScreenRepository.requestAVAssetVideoWithDefaultOptions(of: asset, resultHandler: resultHandler)
+        self.assetScreenRepository.requestAssetVideoWithDefaultOptions(of: asset, resultHandler: resultHandler)
     }
     
     private func saveRecordedMovie(outputUrl: URL?) {

@@ -9,7 +9,7 @@ import Photos
 import UIKit
 
 protocol ImageManager {
-    func requestAVAssetVideoWithDefaultOptions(for asset: PHAsset, resultHandler: @escaping (AVAsset?, AVAudioMix?, [AnyHashable : Any]?) -> Void)
+    func requestAssetVideoWithDefaultOptions(for asset: PHAsset, resultHandler: @escaping (AVAsset?, AVAudioMix?, [AnyHashable : Any]?) -> Void)
     func requestImage(of asset: PHAsset, size: CGSize, resultHandler: @escaping (UIImage?, [AnyHashable : Any]?) -> Void)
     func requestPlayerItem(of asset: PHAsset, resultHandler: @escaping (AVPlayerItem?, [AnyHashable : Any]?) -> Void)
 }
@@ -34,7 +34,7 @@ final class DefaultImageManager: PHImageManager, ImageManager {
     
     // MARK: - This method has to return PHImageRequestID if you want to cancel during request.
     
-    func requestAVAssetVideoWithDefaultOptions(for asset: PHAsset, resultHandler: @escaping (AVAsset?, AVAudioMix?, [AnyHashable : Any]?) -> Void) {
+    func requestAssetVideoWithDefaultOptions(for asset: PHAsset, resultHandler: @escaping (AVAsset?, AVAudioMix?, [AnyHashable : Any]?) -> Void) {
         self.requestAVAsset(forVideo: asset, options: defaultVideoRequestOptions, resultHandler: resultHandler)
     }
     

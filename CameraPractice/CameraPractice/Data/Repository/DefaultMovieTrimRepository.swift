@@ -17,7 +17,7 @@ final class DefaultMovieTrimRepository: MovieTrimRepository {
     }
     
     func requestAVAssetVideoWithDefaultOptions(of asset: PHAsset, resultHandler: @escaping (AVAsset?, AVAudioMix?, [AnyHashable : Any]?) -> Void) {
-        self.imageManager.requestAVAssetVideoWithDefaultOptions(for: asset, resultHandler: resultHandler)
+        self.imageManager.requestAssetVideoWithDefaultOptions(for: asset, resultHandler: resultHandler)
     }
     
     func fetchAssets() -> PHFetchResult<PHAsset> {

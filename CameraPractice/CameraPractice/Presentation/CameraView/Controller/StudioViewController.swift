@@ -79,7 +79,8 @@ final class StudioViewController: UIViewController {
             guard let isAuthorized = isAuthorized else { return }
             if isAuthorized {
                 DispatchQueue.main.async {
-                    
+                    self.studioConfiguration.configureEnvironment(at: 0, presenter: self)
+                    self.studioConfiguration.configurePhotoInputOutput(presenter: self)
                 }
             } else {
                 self.presentPhotoAlbumAccessAuthorizationStatusAlert()

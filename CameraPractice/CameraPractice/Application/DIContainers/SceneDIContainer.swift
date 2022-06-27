@@ -11,6 +11,8 @@ import Photos
 final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     
     struct Dependencies {
+        let imageManager: ImageManager
+        let cachingImageManager: CachingImageManager
     }
     
     private let dependencies: Dependencies
@@ -39,14 +41,6 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
         return DefaultMovieTrimEditor()
     }()
     
-    lazy var imageManager: ImageManager & PHImageManager = {
-        return DefaultImageManager()
-    }()
-    
-    lazy var cachingImageManager: CachingImageManager & PHCachingImageManager = {
-        return DefaultCachingImageManager()
-    }()
-
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
     }
@@ -84,7 +78,7 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     // MARK: - MediaPicker
     
     private func makeMediaPickerRepository() -> MediaPickerRepository {
-        return DefaultMediaPickerRepository(imageManager: self.imageManager, cachingImageManager: self.cachingImageManager)
+        return DefaultMediaPickerRepository(imageManager: self.dependencies.imageManager, cachingImageManager: self.dependencies.cachingImageManager)
     }
 
     private func makeMediaPickerUseCase() -> MediaPickerUseCase {
@@ -102,7 +96,7 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     // MARK: - AssetScreen
     
     private func makeAssetScreenRepository() -> AssetScreenRepository {
-        return DefaultAssetScreenRepository(imageManager: self.imageManager)
+        return DefaultAssetScreenRepository(imageManager: self.dependencies.imageManager)
     }
     
     private func makeAssetScreenUseCase() -> AssetScreenUseCase {
@@ -120,7 +114,7 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
     // MARK: - MovieTrim
     
     private func makeMovieTrimRepository() -> MovieTrimRepository {
-        return DefaultMovieTrimRepository(imageManager: self.imageManager)
+        return DefaultMovieTrimRepository(imageManager: self.dependencies.imageManager)
     }
 
     private func makeMovieTrimUseCase() -> MovieTrimUseCase {

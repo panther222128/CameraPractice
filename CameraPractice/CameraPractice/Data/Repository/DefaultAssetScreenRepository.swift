@@ -24,8 +24,8 @@ final class DefaultAssetScreenRepository: AssetScreenRepository {
         self.imageManager.requestPlayerItem(of: asset, resultHandler: resultHandler)
     }
     
-    func requestAVAssetVideoWithDefaultOptions(of asset: PHAsset, resultHandler: @escaping (AVAsset?, AVAudioMix?, [AnyHashable : Any]?) -> Void) {
-        self.imageManager.requestAVAssetVideoWithDefaultOptions(for: asset, resultHandler: resultHandler)
+    func requestAssetVideoWithDefaultOptions(of asset: PHAsset, resultHandler: @escaping (AVAsset?, AVAudioMix?, [AnyHashable : Any]?) -> Void) {
+        self.imageManager.requestAssetVideoWithDefaultOptions(for: asset, resultHandler: resultHandler)
     }
     
     func fetchAssets() -> PHFetchResult<PHAsset> {

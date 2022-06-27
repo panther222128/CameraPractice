@@ -22,7 +22,6 @@ enum AssetEditorError: Error {
 
 protocol AssetEditor {
     func addImageOverlay(of image: UIImage?, to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void)
-    func trimMovie(of asset: AVAsset, from startTime: Float, to endTime: Float, completion: @escaping (Result<URL?, AssetEditorError>) -> Void)
     func applyLetterbox(to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void)
 }
 
@@ -87,26 +86,7 @@ final class DefaultAssetEditor: AssetEditor {
             completion(.failure(error))
         }
     }
-    
-    func trimMovie(of asset: AVAsset, from startTime: Float, to endTime: Float, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
-        self.getAssetTrack(from: asset)
-        if (endTime - startTime) <= 0 {
-            completion(.failure(.trimTimeRangeError))
-        }
-        let startTime = CMTime(seconds: Double(startTime), preferredTimescale: 1000)
-        let endTime = CMTime(seconds: Double(endTime), preferredTimescale: 1000)
-        let timeRange = CMTimeRange(start: startTime, end: endTime)
-        
-        self.exportTrimmedAsset(from: asset, timeRange: timeRange) { result in
-            switch result {
-            case .success(let url):
-                completion(.success(url))
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
-    }
-    
+
     func applyLetterbox(to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
         self.getAssetTrack(from: asset)
         guard let ratio = self.checkAssetTrackRatio() else { return }

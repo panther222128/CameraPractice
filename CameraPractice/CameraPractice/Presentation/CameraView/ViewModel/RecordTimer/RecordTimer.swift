@@ -22,7 +22,7 @@ class RecordTimer: RecordTimerConfigurable {
     
     init() {
         self.timeProgressStatus = 0
-        self.time = Observable("00:00")
+        self.time = Observable("0초")
     }
     
     func start() {
@@ -39,16 +39,14 @@ class RecordTimer: RecordTimerConfigurable {
         timer.invalidate()
         self.timer = nil
         self.timeProgressStatus = 0
-        self.time.value = "00:00"
+        self.time.value = "0초"
     }
-    
-    // Need to fix
-    
+
     private func convertMinSec(of second: Int) -> String {
         if second / 60 > 0 {
-            return "\(second / 60)" + ":" + "0\(second % 60)"
+            return "\(second / 60)분" + ":" + "0\(second % 60)초"
         } else {
-            return "00" + ":" + "0\(second % 60)"
+            return "\(second % 60)초"
         }
     }
     
