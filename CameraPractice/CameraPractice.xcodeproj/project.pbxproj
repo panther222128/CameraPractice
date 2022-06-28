@@ -23,6 +23,7 @@
 		A07F58FE2861D2BA000220E7 /* DefaultMovieTrimRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F58FD2861D2BA000220E7 /* DefaultMovieTrimRepository.swift */; };
 		A07F59002861D2D3000220E7 /* MovieTrimRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F58FF2861D2D3000220E7 /* MovieTrimRepository.swift */; };
 		A083B74528506C9600949ED4 /* PhotoCaptureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A083B74428506C9600949ED4 /* PhotoCaptureProcessor.swift */; };
+		A084364A286AE6D6004E8FFE /* AVAssetTrack+CGAffineTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0843649286AE6D6004E8FFE /* AVAssetTrack+CGAffineTransform.swift */; };
 		A085168C2859A6BF0034D662 /* AssetsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A085168B2859A6BF0034D662 /* AssetsCollectionViewCell.swift */; };
 		A087047C2862E9B90091418D /* MovieCombineEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A087047B2862E9B90091418D /* MovieCombineEditor.swift */; };
 		A08F070F2857346E005AE166 /* MediaPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08F070E2857346E005AE166 /* MediaPickerViewController.swift */; };
@@ -71,6 +72,7 @@
 		A07F58FD2861D2BA000220E7 /* DefaultMovieTrimRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultMovieTrimRepository.swift; sourceTree = "<group>"; };
 		A07F58FF2861D2D3000220E7 /* MovieTrimRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieTrimRepository.swift; sourceTree = "<group>"; };
 		A083B74428506C9600949ED4 /* PhotoCaptureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureProcessor.swift; sourceTree = "<group>"; };
+		A0843649286AE6D6004E8FFE /* AVAssetTrack+CGAffineTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAssetTrack+CGAffineTransform.swift"; sourceTree = "<group>"; };
 		A085168B2859A6BF0034D662 /* AssetsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsCollectionViewCell.swift; sourceTree = "<group>"; };
 		A087047B2862E9B90091418D /* MovieCombineEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCombineEditor.swift; sourceTree = "<group>"; };
 		A08F070E2857346E005AE166 /* MediaPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPickerViewController.swift; sourceTree = "<group>"; };
@@ -222,6 +224,14 @@
 			path = DefaultDeviceConfiguration;
 			sourceTree = "<group>";
 		};
+		A0843648286AE6CC004E8FFE /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				A0843649286AE6D6004E8FFE /* AVAssetTrack+CGAffineTransform.swift */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
 		A085168A2859A69D0034D662 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -293,6 +303,7 @@
 		A0A096882840900B00BCB214 /* CameraPractice */ = {
 			isa = PBXGroup;
 			children = (
+				A0843648286AE6CC004E8FFE /* Extension */,
 				A0A0969D2840903600BCB214 /* Resources */,
 				A0A0969F2840905C00BCB214 /* Application */,
 				A0A0969E2840905600BCB214 /* Presentation */,
@@ -679,6 +690,7 @@
 				A0A096B52840ACAD00BCB214 /* StudioViewModel.swift in Sources */,
 				A0A096AC2840911B00BCB214 /* AppFlowCoordinator.swift in Sources */,
 				A0A096B92840ACE000BCB214 /* StudioUseCase.swift in Sources */,
+				A084364A286AE6D6004E8FFE /* AVAssetTrack+CGAffineTransform.swift in Sources */,
 				A0A096A8284090FD00BCB214 /* SceneDIContainer.swift in Sources */,
 				A01287D6284456650068A093 /* DefaultDeviceConfiguration.swift in Sources */,
 				A030308828532604008BB69D /* RecordTimer.swift in Sources */,

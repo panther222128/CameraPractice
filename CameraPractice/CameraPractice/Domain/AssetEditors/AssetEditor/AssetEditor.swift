@@ -23,9 +23,12 @@ enum AssetEditorError: Error {
 protocol AssetEditor {
     func addImageOverlay(of image: UIImage?, to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void)
     func applyLetterbox(to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void)
+    func makeLetterbox(to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void)
 }
 
 final class DefaultAssetEditor: AssetEditor {
+    
+    private let renderSize = CGSize(width: 720, height: 1280) // for higher quality use CGSize(width: 1080, height: 1920)
     
     private var mutableComposition: AVMutableComposition
     private var assetTrack: AVAssetTrack?
@@ -86,13 +89,44 @@ final class DefaultAssetEditor: AssetEditor {
             completion(.failure(error))
         }
     }
-
+    
+    private func makeOutputLayer(videoLayer: CALayer, size: CGSize) {
+        outputLayer.frame = CGRect(origin: .zero, size: size)
+        outputLayer.addSublayer(videoLayer)
+    }
+    
+    func makeLetterbox(to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
+        self.getAssetTrack(from: asset)
+        self.addMutableTrack()
+        switch self.insertTimeRangeToMutableCompositionTrack(asset: asset) {
+        case .success(let assetTrack):
+            guard let mutableCompositionTrack = self.mutableCompositionTrack else { return }
+            self.mutableVideoComposition.renderSize = self.renderSize
+            self.mutableVideoComposition.frameDuration = CMTimeMake(value: 1, timescale: 30)
+            self.setVideoLayer(size: self.renderSize)
+            self.makeOutputLayer(videoLayer: self.videoLayer, size: self.renderSize)
+            self.setMutableVideoComposition(size: self.renderSize, videoLayer: self.videoLayer, outputLayer: self.outputLayer)
+            self.setLetterboxInstructions(mutableComposition: self.mutableComposition, compositionTrack: mutableCompositionTrack)
+            self.export(composition: self.mutableComposition, videoComposition: self.mutableVideoComposition) { result in
+                switch result {
+                case .success(let url):
+                    completion(.success(url))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
+        case .failure(let error):
+            print(error)
+            completion(.failure(error))
+        }
+    }
+    
     func applyLetterbox(to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
         self.getAssetTrack(from: asset)
         guard let ratio = self.checkAssetTrackRatio() else { return }
         self.addMutableTrack()
         if ratio < 0.5625 {
-            guard let assetTrack = assetTrack else {
+            guard let assetTrack = self.assetTrack else {
                 completion(.failure(.assetTrackError))
                 return
             }
@@ -164,11 +198,11 @@ final class DefaultAssetEditor: AssetEditor {
             completion(.failure(.doesntNeedToApplyLetterbox))
         }
     }
-
+    
 }
 
 extension DefaultAssetEditor {
-
+    
     private func addMutableTrack() {
         self.mutableCompositionTrack = self.mutableComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
     }
@@ -229,10 +263,17 @@ extension DefaultAssetEditor {
     private func setInstructions(mutableComposition: AVMutableComposition, compositionTrack: AVMutableCompositionTrack) {
         self.mutableVideoCompositionInstruction.timeRange = CMTimeRange(start: .zero, duration: mutableComposition.duration)
         self.mutableVideoComposition.instructions = [mutableVideoCompositionInstruction]
-        
         guard let assetTrack = self.assetTrack else { return }
         let layerInstruction = compositionLayerInstruction(for: compositionTrack, assetTrack: assetTrack)
-        mutableVideoCompositionInstruction.layerInstructions = [layerInstruction]
+        self.mutableVideoCompositionInstruction.layerInstructions = [layerInstruction]
+    }
+    
+    private func setLetterboxInstructions(mutableComposition: AVMutableComposition, compositionTrack: AVMutableCompositionTrack) {
+        self.mutableVideoCompositionInstruction.timeRange = CMTimeRange(start: .zero, duration: mutableComposition.duration)
+        self.mutableVideoComposition.instructions = [mutableVideoCompositionInstruction]
+        guard let assetTrack = self.assetTrack else { return }
+        let layerInstruction = setLetterboxVideoCompositionLayerInstruction(compositionTrack: compositionTrack, assetTrack: assetTrack)
+        self.mutableVideoCompositionInstruction.layerInstructions = [layerInstruction]
     }
     
     private func setPreferredTransform(of compositionTrack: AVMutableCompositionTrack, to assetTrack: AVAssetTrack) {
@@ -245,8 +286,14 @@ extension DefaultAssetEditor {
         if transform.a == 0 && transform.b == 1.0 && transform.c == -1.0 && transform.d == 0 {
             assetOrientation = .right
             isPortrait = true
+        } else if transform.a == 0 && transform.b == 1.0 && transform.c == 1.0 && transform.d == 0 {
+            assetOrientation = .rightMirrored
+            isPortrait = true
         } else if transform.a == 0 && transform.b == -1.0 && transform.c == 1.0 && transform.d == 0 {
             assetOrientation = .left
+            isPortrait = true
+        } else if transform.a == 0 && transform.b == -1.0 && transform.c == -1.0 && transform.d == 0 {
+            assetOrientation = .leftMirrored
             isPortrait = true
         } else if transform.a == 1.0 && transform.b == 0 && transform.c == 0 && transform.d == 1.0 {
             assetOrientation = .up
@@ -279,6 +326,33 @@ extension DefaultAssetEditor {
         return instruction
     }
     
+    private func setLetterboxVideoCompositionLayerInstruction(compositionTrack: AVMutableCompositionTrack, assetTrack: AVAssetTrack) -> AVMutableVideoCompositionLayerInstruction {
+        let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: assetTrack)
+        let fixedPreferredTransform = assetTrack.fixedPreferredTransform
+        let assetTrackOrientation = orientationFromTransform(fixedPreferredTransform)
+        
+        if assetTrackOrientation.isPortrait {
+            let scaleToFitRatio = self.renderSize.width / assetTrack.naturalSize.height
+            let scaleFactor = CGAffineTransform(scaleX: scaleToFitRatio, y: scaleToFitRatio)
+            var transformed = assetTrack.fixedPreferredTransform.concatenating(scaleFactor)
+            
+            if assetTrackOrientation.orientation == .rightMirrored || assetTrackOrientation.orientation == .leftMirrored {
+                transformed = transformed.translatedBy(x: -fixedPreferredTransform.ty, y: 0)
+            }
+            layerInstruction.setTransform(transformed, at: .zero)
+        } else {
+            let renderRect = CGRect(x: 0, y: 0, width: self.renderSize.width, height: self.renderSize.height)
+            let videoRect = CGRect(origin: .zero, size: assetTrack.naturalSize).applying(assetTrack.fixedPreferredTransform)
+
+            let scale = renderRect.width / videoRect.width
+            let transform = CGAffineTransform(scaleX: renderRect.width / videoRect.width, y: (videoRect.height * scale) / assetTrack.naturalSize.height)
+            let translate = CGAffineTransform(translationX: .zero, y: ((self.renderSize.height - (videoRect.height * scale))) / 2)
+
+            layerInstruction.setTransform(assetTrack.fixedPreferredTransform.concatenating(transform).concatenating(translate), at: .zero)
+        }
+        return layerInstruction
+    }
+    
     private func export(composition: AVMutableComposition, videoComposition: AVMutableVideoComposition, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
         guard let exportSession = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetHighestQuality) else {
             completion(.failure(.exportError))
@@ -289,7 +363,6 @@ extension DefaultAssetEditor {
         exportSession.videoComposition = videoComposition
         exportSession.outputFileType = .mp4
         exportSession.outputURL = exportURL
-        
         exportSession.exportAsynchronously {
             DispatchQueue.main.async {
                 switch exportSession.status {
@@ -335,6 +408,34 @@ extension DefaultAssetEditor {
         let ratio = width / height
         
         return ratio
+    }
+    
+}
+
+extension DefaultAssetEditor {
+
+    func orientationFromTransform(_ transform: CGAffineTransform) -> (orientation: UIImage.Orientation, isPortrait: Bool) {
+        var assetOrientation = UIImage.Orientation.up
+        var isPortrait = false
+        
+        if transform.a == 0 && transform.b == 1.0 && transform.c == -1.0 && transform.d == 0 {
+            assetOrientation = .right
+            isPortrait = true
+        } else if transform.a == 0 && transform.b == 1.0 && transform.c == 1.0 && transform.d == 0 {
+            assetOrientation = .rightMirrored
+            isPortrait = true
+        } else if transform.a == 0 && transform.b == -1.0 && transform.c == 1.0 && transform.d == 0 {
+            assetOrientation = .left
+            isPortrait = true
+        } else if transform.a == 0 && transform.b == -1.0 && transform.c == -1.0 && transform.d == 0 {
+            assetOrientation = .leftMirrored
+            isPortrait = true
+        } else if transform.a == 1.0 && transform.b == 0 && transform.c == 0 && transform.d == 1.0 {
+            assetOrientation = .up
+        } else if transform.a == -1.0 && transform.b == 0 && transform.c == 0 && transform.d == -1.0 {
+            assetOrientation = .down
+        }
+        return (assetOrientation, isPortrait)
     }
     
 }
