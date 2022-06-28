@@ -28,7 +28,7 @@ protocol AssetEditor {
 
 final class DefaultAssetEditor: AssetEditor {
     
-    private let renderSize = CGSize(width: 720, height: 1280) // for higher quality use CGSize(width: 1080, height: 1920)
+    private let renderSize = CGSize(width: 1080, height: 1920)
     
     private var mutableComposition: AVMutableComposition
     private var assetTrack: AVAssetTrack?
@@ -90,6 +90,8 @@ final class DefaultAssetEditor: AssetEditor {
         }
     }
     
+    //
+    
     private func makeOutputLayer(videoLayer: CALayer, size: CGSize) {
         outputLayer.frame = CGRect(origin: .zero, size: size)
         outputLayer.addSublayer(videoLayer)
@@ -100,23 +102,27 @@ final class DefaultAssetEditor: AssetEditor {
         self.addMutableTrack()
         switch self.insertTimeRangeToMutableCompositionTrack(asset: asset) {
         case .success(let assetTrack):
-            guard let mutableCompositionTrack = self.mutableCompositionTrack else { return }
-            self.mutableVideoComposition.renderSize = self.renderSize
-            self.mutableVideoComposition.frameDuration = CMTimeMake(value: 1, timescale: 30)
+            guard let mutableCompositionTrack = self.mutableCompositionTrack else {
+                completion(.failure(.mutableCompositionTrackError))
+                return
+            }
             self.setVideoLayer(size: self.renderSize)
             self.makeOutputLayer(videoLayer: self.videoLayer, size: self.renderSize)
+            
             self.setMutableVideoComposition(size: self.renderSize, videoLayer: self.videoLayer, outputLayer: self.outputLayer)
-            self.setLetterboxInstructions(mutableComposition: self.mutableComposition, compositionTrack: mutableCompositionTrack)
+            
+            self.setLetterboxInstructions(asset: asset, mutableComposition: self.mutableComposition, compositionTrack: mutableCompositionTrack)
+            
             self.export(composition: self.mutableComposition, videoComposition: self.mutableVideoComposition) { result in
                 switch result {
                 case .success(let url):
                     completion(.success(url))
                 case .failure(let error):
+                    print(error)
                     completion(.failure(error))
                 }
             }
         case .failure(let error):
-            print(error)
             completion(.failure(error))
         }
     }
@@ -181,6 +187,7 @@ final class DefaultAssetEditor: AssetEditor {
                 self.setVideoLayer(size: videoSize)
                 self.setBackgroundLayer(videoLayer: self.videoLayer, backgroundLayer: self.backgroundLayer, size: videoSize)
                 self.setOutputLayer(videoLayer: self.videoLayer, overlayLayer: self.overlayLayer, size: videoSize)
+                
                 self.setMutableVideoComposition(size: videoSize, videoLayer: self.videoLayer, outputLayer: self.outputLayer)
                 self.setInstructions(mutableComposition: self.mutableComposition, compositionTrack: mutableCompositionTrack)
                 self.export(composition: self.mutableComposition, videoComposition: self.mutableVideoComposition) { result in
@@ -205,6 +212,8 @@ extension DefaultAssetEditor {
     
     private func addMutableTrack() {
         self.mutableCompositionTrack = self.mutableComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
+        self.mutableVideoComposition.renderSize = self.renderSize
+        self.mutableVideoComposition.frameDuration = CMTimeMake(value: 1, timescale: 30)
     }
     
     private func getAssetTrack(from asset: AVAsset) {
@@ -268,11 +277,11 @@ extension DefaultAssetEditor {
         self.mutableVideoCompositionInstruction.layerInstructions = [layerInstruction]
     }
     
-    private func setLetterboxInstructions(mutableComposition: AVMutableComposition, compositionTrack: AVMutableCompositionTrack) {
+    private func setLetterboxInstructions(asset: AVAsset, mutableComposition: AVMutableComposition, compositionTrack: AVMutableCompositionTrack) {
         self.mutableVideoCompositionInstruction.timeRange = CMTimeRange(start: .zero, duration: mutableComposition.duration)
         self.mutableVideoComposition.instructions = [mutableVideoCompositionInstruction]
         guard let assetTrack = self.assetTrack else { return }
-        let layerInstruction = setLetterboxVideoCompositionLayerInstruction(compositionTrack: compositionTrack, assetTrack: assetTrack)
+        let layerInstruction = setLetterboxVideoCompositionLayerInstruction(asset: asset, compositionTrack: compositionTrack, assetTrack: assetTrack)
         self.mutableVideoCompositionInstruction.layerInstructions = [layerInstruction]
     }
     
@@ -326,7 +335,7 @@ extension DefaultAssetEditor {
         return instruction
     }
     
-    private func setLetterboxVideoCompositionLayerInstruction(compositionTrack: AVMutableCompositionTrack, assetTrack: AVAssetTrack) -> AVMutableVideoCompositionLayerInstruction {
+    private func setLetterboxVideoCompositionLayerInstruction(asset: AVAsset, compositionTrack: AVMutableCompositionTrack, assetTrack: AVAssetTrack) -> AVMutableVideoCompositionLayerInstruction {
         let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: assetTrack)
         let fixedPreferredTransform = assetTrack.fixedPreferredTransform
         let assetTrackOrientation = orientationFromTransform(fixedPreferredTransform)
@@ -350,6 +359,9 @@ extension DefaultAssetEditor {
 
             layerInstruction.setTransform(assetTrack.fixedPreferredTransform.concatenating(transform).concatenating(translate), at: .zero)
         }
+        
+        layerInstruction.setOpacity(0, at: asset.duration)
+        
         return layerInstruction
     }
     
