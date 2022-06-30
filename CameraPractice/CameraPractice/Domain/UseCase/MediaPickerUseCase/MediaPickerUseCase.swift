@@ -28,10 +28,10 @@ final class DefaultMediaPickerUseCase: MediaPickerUseCase {
     // MARK: - Need to error handling
     
     func combineMovies(firstAsset: PHAsset, secondAsset: PHAsset, completion: @escaping (Result<URL?, Error>) -> Void) {
-        self.requestAsset(from: firstAsset) { first, audioMix, error in
-            if let first = first {
-                self.mediaPickerRepository.requestAssetVideoWithDefaultOptions(of: secondAsset) { second, audioMix, error in
-                    if let second = second {
+        self.requestAsset(from: secondAsset) { second, audioMix, error in
+            if let second = second {
+                self.mediaPickerRepository.requestAssetVideoWithDefaultOptions(of: firstAsset) { first, audioMix, error in
+                    if let first = first {
                         self.movieCombineEditor.combineMovies(first: first, second: second) { result in
                             switch result {
                             case .success(let url):

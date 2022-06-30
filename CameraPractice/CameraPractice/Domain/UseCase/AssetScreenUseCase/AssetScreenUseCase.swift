@@ -55,7 +55,7 @@ final class DefaultAssetScreenUseCase: AssetScreenUseCase {
     func applyLetterbox(to asset: PHAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
         self.requestAsset(of: asset) { asset, audioMix, error in
             if let asset = asset {
-                self.assetEditor.makeLetterbox(to: asset) { result in
+                self.assetEditor.applyLetterbox(to: asset) { result in
                     switch result {
                     case .success(let url):
                         self.saveRecordedMovie(outputUrl: url)
