@@ -13,6 +13,8 @@ enum MovieCombineError: Error {
     case insertTimeRangeError
     case assetTrackError
     case exportError
+    case mutableCompositionError
+    case makeLetterboxError
 }
 
 protocol MovieCombineEditor {
@@ -37,6 +39,42 @@ final class DefaultMovieCombineEditor: MovieCombineEditor {
     }
 
     func combineMovies(first: AVAsset, second: AVAsset, completion: @escaping (Result<URL?, MovieCombineError>) -> Void) {
+        var firstComposition = AVMutableComposition()
+        var secondComposition = AVMutableComposition()
+        
+        guard let firstVideoTrack = first.tracks(withMediaType: .video).first else { return }
+        guard let secondVideoTrack = second.tracks(withMediaType: .video).first else { return }
+        
+        if firstVideoTrack.naturalSize == self.renderSize && secondVideoTrack.naturalSize == self.renderSize {
+            
+        } else {
+            if let firstMutableVideoTrack = first.tracks(withMediaType: .video).first {
+                if firstMutableVideoTrack.naturalSize != self.renderSize {
+                    self.makeLetterbox(to: first) { result in
+                        switch result {
+                        case .success(let asset):
+                            completion(.success(nil))
+                        case .failure(let error):
+                            completion(.failure(error))
+                        }
+                    }
+                }
+            }
+
+            if let secondMutableVideoTrack = second.tracks(withMediaType: .video).first {
+                if secondMutableVideoTrack.naturalSize != self.renderSize {
+                    self.makeLetterbox(to: second) { result in
+                        switch result {
+                        case .success(let asset):
+                            completion(.success(nil))
+                        case .failure(let error):
+                            completion(.failure(error))
+                        }
+                    }
+                }
+            }
+        }
+        
         guard let mutableVideoTrack = self.mutableComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else {
             completion(.failure(.insertTimeRangeError))
             return
@@ -45,23 +83,33 @@ final class DefaultMovieCombineEditor: MovieCombineEditor {
             completion(.failure(.insertTimeRangeError))
             return
         }
+        
         self.setMutableVideoComposition()
+        
+        guard let firstMutableVideoTrack = firstComposition.tracks(withMediaType: .video).first else { return }
+        guard let firstMutableAudioTrack = firstComposition.tracks(withMediaType: .audio).first else { return }
+        guard let secondMutableVideoTrack = secondComposition.tracks(withMediaType: .video).first else { return }
+        guard let secondMutableAudioTrack = secondComposition.tracks(withMediaType: .audio).first else { return }
+        
         do {
-            try self.insertTimeRange(of: first, mutableVideoTrack: mutableVideoTrack, mutableAudioTrack: mutableAudioTrack)
+            try mutableVideoTrack.insertTimeRange(CMTimeRange(start: .zero, duration: first.duration), of: firstMutableVideoTrack, at: self.currentDuration)
+            try mutableAudioTrack.insertTimeRange(CMTimeRange(start: .zero, duration: first.duration), of: firstMutableAudioTrack, at: self.currentDuration)
         } catch {
             completion(.failure(.insertTimeRangeError))
             return
         }
         self.setDuration(of: first)
         do {
-            try self.insertTimeRange(of: second, mutableVideoTrack: mutableVideoTrack, mutableAudioTrack: mutableAudioTrack)
+            try mutableVideoTrack.insertTimeRange(CMTimeRange(start: .zero, duration: second.duration), of: secondMutableVideoTrack, at: self.currentDuration)
+            try mutableAudioTrack.insertTimeRange(CMTimeRange(start: .zero, duration: second.duration), of: secondMutableAudioTrack, at: self.currentDuration)
         } catch {
             completion(.failure(.insertTimeRangeError))
             return
         }
         self.setDuration(of: second)
-        self.setPreferredTransform(of: first, mutableVideoTrack: mutableVideoTrack, mutableAudioTrack: mutableAudioTrack)
-        self.setPreferredTransform(of: second, mutableVideoTrack: mutableVideoTrack, mutableAudioTrack: mutableAudioTrack)
+        self.setPreferredTransform(of: first, mutableVideoTrack: mutableVideoTrack, mutableAudioTrack: mutableVideoTrack)
+        self.setPreferredTransform(of: second, mutableVideoTrack: mutableVideoTrack, mutableAudioTrack: mutableVideoTrack)
+        
         self.export(composition: self.mutableComposition) { result in
             switch result {
             case .success(let url):
@@ -77,48 +125,43 @@ final class DefaultMovieCombineEditor: MovieCombineEditor {
 
 extension DefaultMovieCombineEditor {
     
-    private func makeLetterbox(to asset: AVAsset) throws -> Result<AVMutableCompositionTrack?, MovieCombineError> {
-        guard let mutableVideoTrack = self.mutableComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else { return .failure(.mutableCompositionTrackError) }
-        guard let mutableAudioTrack = self.mutableComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid) else { return .failure(.mutableCompositionTrackError) }
+    private func makeLetterbox(to asset: AVAsset, completion: @escaping (Result<AVAsset, MovieCombineError>) -> Void) {
+        guard let mutableVideoTrack = mutableComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else {
+            completion(.failure(.mutableCompositionTrackError))
+            return
+        }
+        guard let mutableAudioTrack = mutableComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid) else {
+            completion(.failure(.mutableCompositionTrackError))
+            return
+        }
         do {
             try self.insertTimeRange(of: asset, mutableVideoTrack: mutableVideoTrack, mutableAudioTrack: mutableAudioTrack)
-            
         } catch {
-            return .failure(.insertTimeRangeError)
+            completion(.failure(.insertTimeRangeError))
+            return
         }
         
-        let videoLayer: CALayer? = CALayer()
-        if let videoLayer = videoLayer {
-            self.setVideoLayer(to: videoLayer, size: self.renderSize)
-        }
-        
-        let outputLayer: CALayer? = CALayer()
-        if let outputLayer = outputLayer {
-            self.setLetterboxOutputLayer(outputLayer: outputLayer, videoLayer: videoLayer ?? CALayer(), size: self.renderSize)
-        }
-        self.setMutableVideoComposition(size: self.renderSize, videoLayer: videoLayer ?? CALayer(), outputLayer: outputLayer ?? CALayer())
-        self.setLetterboxInstructions(asset: asset, mutableComposition: self.mutableComposition, compositionTrack: mutableVideoTrack)
-        self.export(composition: self.mutableComposition) { result in
-            switch result {
-            case .success(let url):
-                return .success(mutableVideoTrack)
-            case .failure(let error):
-            }
-        }
+        let videoLayer: CALayer = CALayer()
+        self.setVideoLayer(to: videoLayer)
+        let outputLayer: CALayer = CALayer()
+        self.setLetterboxOutputLayer(outputLayer: outputLayer, videoLayer: videoLayer)
+        self.setMutableVideoComposition(videoLayer: videoLayer, outputLayer: outputLayer)
+        self.setLetterboxInstructions(asset: asset, mutableComposition: mutableComposition, compositionTrack: mutableVideoTrack)
+        completion(.success(asset))
     }
     
-    private func setVideoLayer(to layer: CALayer, size: CGSize) {
-        layer.frame = CGRect(origin: .zero, size: size)
+    private func setVideoLayer(to layer: CALayer) {
+        layer.frame = CGRect(origin: .zero, size: self.renderSize)
     }
     
-    private func setMutableVideoComposition(size: CGSize, videoLayer: CALayer, outputLayer: CALayer) {
-        self.mutableVideoComposition.renderSize = size
+    private func setMutableVideoComposition(videoLayer: CALayer, outputLayer: CALayer) {
+        self.mutableVideoComposition.renderSize = self.renderSize
         self.mutableVideoComposition.frameDuration = CMTime(value: 1, timescale: 30)
         self.mutableVideoComposition.animationTool = AVVideoCompositionCoreAnimationTool(postProcessingAsVideoLayer: videoLayer, in: outputLayer)
     }
     
-    private func setLetterboxOutputLayer(outputLayer: CALayer, videoLayer: CALayer, size: CGSize) {
-        outputLayer.frame = CGRect(origin: .zero, size: size)
+    private func setLetterboxOutputLayer(outputLayer: CALayer, videoLayer: CALayer) {
+        outputLayer.frame = CGRect(origin: .zero, size: self.renderSize)
         outputLayer.addSublayer(videoLayer)
     }
     
@@ -143,8 +186,8 @@ extension DefaultMovieCombineEditor {
     private func setPreferredTransform(of asset: AVAsset, mutableVideoTrack: AVMutableCompositionTrack, mutableAudioTrack: AVMutableCompositionTrack) {
         guard let videoTrack = asset.tracks(withMediaType: .video).first else { return }
         guard let audioTrack = asset.tracks(withMediaType: .audio).first else { return }
-        mutableVideoTrack.preferredTransform = videoTrack.preferredTransform
-        mutableAudioTrack.preferredTransform = audioTrack.preferredTransform
+        mutableVideoTrack.preferredTransform = videoTrack.fixedPreferredTransform
+        mutableAudioTrack.preferredTransform = audioTrack.fixedPreferredTransform
     }
     
     private func insertTimeRange(of asset: AVAsset, mutableVideoTrack: AVMutableCompositionTrack, mutableAudioTrack: AVMutableCompositionTrack) throws {
