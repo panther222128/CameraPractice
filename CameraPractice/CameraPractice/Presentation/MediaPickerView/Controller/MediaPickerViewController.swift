@@ -94,8 +94,8 @@ extension MediaPickerViewController {
     }
     
     @objc func combineMovieButtonAction() {
-        guard let firstIndex = self.selectedIndex.first else { return }
-        self.viewModel.didCombineMovies(firstIndex: firstIndex.row, secondIndex: self.selectedIndex[1].row) { result in
+        let assetIndex = self.selectedIndex.map( { $0.row } )
+        self.viewModel.didCombineMovies(assetIndex: assetIndex) { result in
             switch result {
             case .success(let url):
                 self.showCombineSuccessAlert()

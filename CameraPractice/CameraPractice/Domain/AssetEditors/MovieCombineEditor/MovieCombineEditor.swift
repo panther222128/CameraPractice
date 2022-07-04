@@ -18,7 +18,7 @@ enum MovieCombineError: Error {
 }
 
 protocol MovieCombineEditor {
-    func combineMovies(first: AVAsset, second: AVAsset, completion: @escaping (Result<URL?, MovieCombineError>) -> Void)
+    func combineMovies(assets: [AVAsset], completion: @escaping (Result<URL?, MovieCombineError>) -> Void)
 }
 
 final class DefaultMovieCombineEditor: MovieCombineEditor {
@@ -37,22 +37,118 @@ final class DefaultMovieCombineEditor: MovieCombineEditor {
         self.currentDuration = CMTime()
         self.mutableVideoCompositionInstruction = AVMutableVideoCompositionInstruction()
     }
+    
+    func combineMovies(assets: [AVAsset], completion: @escaping (Result<URL?, MovieCombineError>) -> Void) {
+        let mergedMutableComposition = AVMutableComposition()
+        
+        let mergedVideoMutableCompositionTrack = mergedMutableComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
+        let mergedAudioMutableCompositionTrack = mergedMutableComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)
+        
+        var count = 0
+        var insertTime = CMTime.zero
+        var instructions = [AVMutableVideoCompositionInstruction]()
+        
+        for asset in assets {
+            guard let videoTrack = asset.tracks(withMediaType: .video).first else { return }
+            guard let audioTrack = asset.tracks(withMediaType: .audio).first else { return }
+            
+            do {
+                guard let mergedVideoMutableCompositionTrack = mergedVideoMutableCompositionTrack else { return }
+                guard let mergedAudioMutableCompositionTrack = mergedAudioMutableCompositionTrack else { return }
+                
+                try mergedVideoMutableCompositionTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: asset.duration), of: videoTrack, at: insertTime)
+                try mergedAudioMutableCompositionTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: asset.duration), of: audioTrack, at: insertTime)
+                
+                let videoCompositionInstruction = AVMutableVideoCompositionInstruction()
+                let videoLayerInstruction = self.videoCompositionInstruction(asset: asset, count: count)
+                
+                videoCompositionInstruction.timeRange = CMTimeRangeMake(start: insertTime, duration: asset.duration)
+                videoCompositionInstruction.layerInstructions = [videoLayerInstruction]
+                
+                instructions.append(videoCompositionInstruction)
+                
+                insertTime = CMTimeAdd(insertTime, asset.duration)
+                count += 1
+            } catch {
+                
+            }
+        }
+        
+        let videoComposition = AVMutableVideoComposition()
+        videoComposition.instructions = instructions
+        videoComposition.frameDuration = CMTimeMake(value: 1, timescale: 30)
+        videoComposition.renderSize = self.renderSize
+        
+        guard let exportSession = AVAssetExportSession(asset: mergedMutableComposition, presetName: AVAssetExportPresetHEVCHighestQuality) else { return }
+        let videoName = UUID().uuidString
+        let exportURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(videoName).appendingPathExtension("mov")
+        exportSession.outputFileType = .mov
+        exportSession.outputURL = exportURL
+        exportSession.videoComposition = videoComposition
+        
+        exportSession.exportAsynchronously {
+            DispatchQueue.main.async {
+                switch exportSession.status {
+                case .completed:
+                    completion(.success(exportURL))
+                default:
+                    completion(.failure(.exportError))
+                    break
+                }
+            }
+        }
+    }
+    
+    private func videoCompositionInstruction(asset: AVAsset, count: Int) -> AVMutableVideoCompositionLayerInstruction {
+        guard let assetTrack = asset.tracks(withMediaType: .video).first else { return AVMutableVideoCompositionLayerInstruction() }
 
+        let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: assetTrack)
+        let fixedPreferredTransform = assetTrack.fixedPreferredTransform
+        let assetTrackOrientation = orientationFromTransform(fixedPreferredTransform)
+        
+        if assetTrackOrientation.isPortrait {
+            let scaleToFitRatio = self.renderSize.width / assetTrack.naturalSize.height
+            let scaleFactor = CGAffineTransform(scaleX: scaleToFitRatio, y: scaleToFitRatio)
+            var transformed = assetTrack.fixedPreferredTransform.concatenating(scaleFactor)
+            
+            if assetTrackOrientation.orientation == .rightMirrored || assetTrackOrientation.orientation == .leftMirrored {
+                transformed = transformed.translatedBy(x: -fixedPreferredTransform.ty, y: 0)
+            }
+            layerInstruction.setTransform(transformed, at: .zero)
+        } else {
+            let renderRect = CGRect(x: 0, y: 0, width: self.renderSize.width, height: self.renderSize.height)
+            let videoRect = CGRect(origin: .zero, size: assetTrack.naturalSize).applying(assetTrack.fixedPreferredTransform)
+
+            let scale = renderRect.width / videoRect.width
+            let transform = CGAffineTransform(scaleX: renderRect.width / videoRect.width, y: (videoRect.height * scale) / assetTrack.naturalSize.height)
+            let translate = CGAffineTransform(translationX: .zero, y: ((self.renderSize.height - (videoRect.height * scale))) / 2)
+
+            layerInstruction.setTransform(assetTrack.fixedPreferredTransform.concatenating(transform).concatenating(translate), at: .zero)
+        }
+        
+        if count == 0 {
+            layerInstruction.setOpacity(0.0, at: asset.duration)
+        }
+        
+        return layerInstruction
+    }
+    
     func combineMovies(first: AVAsset, second: AVAsset, completion: @escaping (Result<URL?, MovieCombineError>) -> Void) {
         var firstComposition = AVMutableComposition()
         var secondComposition = AVMutableComposition()
-        
+
         guard let firstVideoTrack = first.tracks(withMediaType: .video).first else { return }
         guard let secondVideoTrack = second.tracks(withMediaType: .video).first else { return }
-        
+
         if firstVideoTrack.naturalSize == self.renderSize && secondVideoTrack.naturalSize == self.renderSize {
-            
+
         } else {
             if let firstMutableVideoTrack = first.tracks(withMediaType: .video).first {
                 if firstMutableVideoTrack.naturalSize != self.renderSize {
                     self.makeLetterbox(to: first) { result in
                         switch result {
                         case .success(let asset):
+
                             completion(.success(nil))
                         case .failure(let error):
                             completion(.failure(error))

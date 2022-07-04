@@ -22,7 +22,7 @@ protocol MediaPickerViewModel {
     func fetchAssetCollection()
     func requestImage(at index: Int, size: CGSize, resultHandler: @escaping ((UIImage?, [AnyHashable: Any]?) -> Void))
     func didSelectItem(at assetIndex: Int)
-    func didCombineMovies(firstIndex: Int, secondIndex: Int, completion: @escaping (Result<URL?, Error>) -> Void)
+    func didCombineMovies(assetIndex: [Int], completion: @escaping (Result<URL?, Error>) -> Void)
 }
 
 final class DefaultMediaPickerViewModel: MediaPickerViewModel {
@@ -56,15 +56,19 @@ final class DefaultMediaPickerViewModel: MediaPickerViewModel {
         self.mediaPickerViewModelAction.showAssetScreenView(assetIndex)
     }
     
-    func didCombineMovies(firstIndex: Int, secondIndex: Int, completion: @escaping (Result<URL?, Error>) -> Void) {
+    func didCombineMovies(assetIndex: [Int], completion: @escaping (Result<URL?, Error>) -> Void) {
         guard let assetsRequestResult = self.assetsRequestResult.value else { return }
-        let firstAsset = assetsRequestResult.object(at: firstIndex)
-        let secondAsset = assetsRequestResult.object(at: secondIndex)
-        self.mediaPickerUseCase.combineMovies(firstAsset: firstAsset, secondAsset: secondAsset) { result in
+        let firstAsset = assetsRequestResult.object(at: assetIndex[0])
+        let secondAsset = assetsRequestResult.object(at: assetIndex[1])
+        var assets = [PHAsset]()
+        assets.append(firstAsset)
+        assets.append(secondAsset)
+        self.mediaPickerUseCase.combineMovies(assets: assets) { result in
             switch result {
             case .success(let url):
                 completion(.success(url))
             case .failure(let error):
+                print(error)
                 completion(.failure(error))
             }
         }
