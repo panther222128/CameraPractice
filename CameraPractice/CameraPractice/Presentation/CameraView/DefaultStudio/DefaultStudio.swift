@@ -36,12 +36,14 @@ final class DefaultStudio: StudioConfigurable {
     
     private var captureSession: AVCaptureSession?
     private var captureInput: AVCaptureInput?
+    private var sessionQueue: DispatchQueue
     
     init(deviceConfiguration: DeviceConfigurable, photoSettings: AVCapturePhotoSettings) {
         self.captureSession = nil
         self.captureInput = nil
         self.deviceConfiguration = deviceConfiguration
         self.photoSettings = photoSettings
+        self.sessionQueue = DispatchQueue(label: "session queue")
     }
     
     func configureEnvironment(at index: Int, presenter: some UIViewController & DataOutputSampleBufferDelegate) {
@@ -116,28 +118,34 @@ final class DefaultStudio: StudioConfigurable {
 extension DefaultStudio {
     
     private func startSession() {
-        self.captureSession = AVCaptureSession()
-        guard let captureSession = captureSession else { return }
-        DispatchQueue.global(qos: .userInteractive).async {
+        sessionQueue.async {
+            self.captureSession = AVCaptureSession()
+            guard let captureSession = self.captureSession else { return }
             captureSession.startRunning()
         }
     }
     
     private func captureSessionBeginConfiguration() {
-        guard let captureSession = self.captureSession else { return }
-        captureSession.beginConfiguration()
+        sessionQueue.async{
+            guard let captureSession = self.captureSession else { return }
+            captureSession.beginConfiguration()
+        }
     }
     
     private func configureSession() {
-        guard let captureSession = self.captureSession else { return }
-        captureSession.sessionPreset = .high
-        captureSession.commitConfiguration()
+        sessionQueue.async {
+            guard let captureSession = self.captureSession else { return }
+            captureSession.sessionPreset = .high
+            captureSession.commitConfiguration()
+        }
     }
     
     private func stopSession() {
-        guard let captureSession = captureSession else { return }
-        captureSession.stopRunning()
-        self.captureSession = nil
+        sessionQueue.async {
+            guard let captureSession = self.captureSession else { return }
+            captureSession.stopRunning()
+            self.captureSession = nil
+        }
     }
     
 }
@@ -147,53 +155,61 @@ extension DefaultStudio {
 extension DefaultStudio {
     
     private func configureCameraDevice(cameraDevices: CameraDevices) {
-        guard let captureSession = captureSession else { return }
-        self.deviceConfiguration.configureCameraDevice(captureSession: captureSession, cameraDevices: cameraDevices)
-        
-        captureSession.commitConfiguration()
+        sessionQueue.async {
+            guard let captureSession = self.captureSession else { return }
+            self.deviceConfiguration.configureCameraDevice(captureSession: captureSession, cameraDevices: cameraDevices)
+            
+            captureSession.commitConfiguration()
+        }
     }
     
     private func configureAudioDevice() {
-        guard let captureSession = captureSession else { return }
-        self.deviceConfiguration.configureAudioDevice(captureSession: captureSession)
-        
-        captureSession.commitConfiguration()
+        sessionQueue.async {
+            guard let captureSession = self.captureSession else { return }
+            self.deviceConfiguration.configureAudioDevice(captureSession: captureSession)
+            
+            captureSession.commitConfiguration()
+        }
     }
     
     private func configureInput() {
-        guard let captureDevice = self.deviceConfiguration.defaultDevice else { return }
-        guard let captureSession = captureSession else { return }
-        do {
-            self.captureInput = try AVCaptureDeviceInput(device: captureDevice)
-            
-            guard let captureInput = self.captureInput else { return }
-            
-            if captureSession.canAddInput(captureInput) {
-                captureSession.addInput(captureInput)
+        sessionQueue.async {
+            guard let captureDevice = self.deviceConfiguration.defaultDevice else { return }
+            guard let captureSession = self.captureSession else { return }
+            do {
+                self.captureInput = try AVCaptureDeviceInput(device: captureDevice)
+                
+                guard let captureInput = self.captureInput else { return }
+                
+                if captureSession.canAddInput(captureInput) {
+                    captureSession.addInput(captureInput)
+                }
+                
+                captureSession.commitConfiguration()
+            } catch {
+                print(error.localizedDescription)
             }
             
             captureSession.commitConfiguration()
-        } catch {
-            print(error.localizedDescription)
         }
-        
-        captureSession.commitConfiguration()
     }
     
     private func configurePhotoOutput() {
-        self.photoOutput = AVCapturePhotoOutput()
-        guard let captureSession = captureSession else { return }
-        guard let photoOutput = photoOutput else { return }
-        
-        photoOutput.isHighResolutionCaptureEnabled = true
-        
-        if captureSession.canAddOutput(photoOutput) {
-            captureSession.addOutput(photoOutput)
-        } else {
+        sessionQueue.async {
+            self.photoOutput = AVCapturePhotoOutput()
+            guard let captureSession = self.captureSession else { return }
+            guard let photoOutput = self.photoOutput else { return }
+            
+            photoOutput.isHighResolutionCaptureEnabled = true
+            
+            if captureSession.canAddOutput(photoOutput) {
+                captureSession.addOutput(photoOutput)
+            } else {
+                captureSession.commitConfiguration()
+            }
+            
             captureSession.commitConfiguration()
         }
-        
-        captureSession.commitConfiguration()
     }
     
     /* MARK: - Available from Swift 5.7
@@ -203,17 +219,19 @@ extension DefaultStudio {
      */
     
     private func configureVideoDataOutput(presenter: some UIViewController & AVCaptureVideoDataOutputSampleBufferDelegate) {
-        guard let captureSession = captureSession else { return }
-        
-        self.videoDataOutput = AVCaptureVideoDataOutput()
-        
-        guard let videoOutput = self.videoDataOutput else { return }
-        videoOutput.setSampleBufferDelegate(presenter, queue: DispatchQueue.main)
-        if captureSession.canAddOutput(videoOutput) {
-            captureSession.addOutput(videoOutput)
+        sessionQueue.async {
+            guard let captureSession = self.captureSession else { return }
+            
+            self.videoDataOutput = AVCaptureVideoDataOutput()
+            
+            guard let videoOutput = self.videoDataOutput else { return }
+            videoOutput.setSampleBufferDelegate(presenter, queue: DispatchQueue.main)
+            if captureSession.canAddOutput(videoOutput) {
+                captureSession.addOutput(videoOutput)
+            }
+            
+            captureSession.commitConfiguration()
         }
-        
-        captureSession.commitConfiguration()
     }
     
     /* MARK: - Available from Swift 5.7
@@ -223,17 +241,19 @@ extension DefaultStudio {
      */
     
     private func configureAudioDataOutput(presenter: some UIViewController & AVCaptureAudioDataOutputSampleBufferDelegate) {
-        guard let captureSession = captureSession else { return }
-        
-        self.audioDataOutput = AVCaptureAudioDataOutput()
-        
-        guard let audioOutput = self.audioDataOutput else { return }
-        audioOutput.setSampleBufferDelegate(presenter, queue: DispatchQueue.main)
-        if captureSession.canAddOutput(audioOutput) {
-            captureSession.addOutput(audioOutput)
+        sessionQueue.async {
+            guard let captureSession = self.captureSession else { return }
+            
+            self.audioDataOutput = AVCaptureAudioDataOutput()
+            
+            guard let audioOutput = self.audioDataOutput else { return }
+            audioOutput.setSampleBufferDelegate(presenter, queue: DispatchQueue.main)
+            if captureSession.canAddOutput(audioOutput) {
+                captureSession.addOutput(audioOutput)
+            }
+            
+            captureSession.commitConfiguration()
         }
-        
-        captureSession.commitConfiguration()
     }
     
 }
@@ -243,19 +263,21 @@ extension DefaultStudio {
 extension DefaultStudio {
     
     private func configurePhotoSettings() {
-        guard let photoOutput = photoOutput else { return }
-        if photoOutput.availablePhotoCodecTypes.contains(.hevc) {
-            photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
+        sessionQueue.async {
+            guard let photoOutput = self.photoOutput else { return }
+            if photoOutput.availablePhotoCodecTypes.contains(.hevc) {
+                self.photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
+            }
+            guard let photoSettings = self.photoSettings else { return }
+            
+            photoSettings.isHighResolutionPhotoEnabled = true
+            if let previewPhotoPixelFormatType = photoSettings.availablePreviewPhotoPixelFormatTypes.first {
+                photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: previewPhotoPixelFormatType]
+            }
+            
+            photoSettings.isDepthDataDeliveryEnabled = photoOutput.isDepthDataDeliveryEnabled
+            photoSettings.isPortraitEffectsMatteDeliveryEnabled = photoOutput.isPortraitEffectsMatteDeliveryEnabled
         }
-        guard let photoSettings = self.photoSettings else { return }
-        
-        photoSettings.isHighResolutionPhotoEnabled = true
-        if let previewPhotoPixelFormatType = photoSettings.availablePreviewPhotoPixelFormatTypes.first {
-            photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: previewPhotoPixelFormatType]
-        }
-        
-        photoSettings.isDepthDataDeliveryEnabled = photoOutput.isDepthDataDeliveryEnabled
-        photoSettings.isPortraitEffectsMatteDeliveryEnabled = photoOutput.isPortraitEffectsMatteDeliveryEnabled
     }
     
 }
@@ -265,17 +287,19 @@ extension DefaultStudio {
 extension DefaultStudio {
     
     private func configureMovieFileOutput() {
-        guard let captureSession = self.captureSession else { return }
-        
-        self.movieFileOutput = AVCaptureMovieFileOutput()
-        
-        guard let movieFileOutput = self.movieFileOutput else { return }
-        
-        if captureSession.canAddOutput(movieFileOutput) {
-            captureSession.addOutput(movieFileOutput)
+        sessionQueue.async {
+            guard let captureSession = self.captureSession else { return }
+            
+            self.movieFileOutput = AVCaptureMovieFileOutput()
+            
+            guard let movieFileOutput = self.movieFileOutput else { return }
+            
+            if captureSession.canAddOutput(movieFileOutput) {
+                captureSession.addOutput(movieFileOutput)
+            }
+            
+            captureSession.commitConfiguration()
         }
-        
-        captureSession.commitConfiguration()
     }
     
 }
