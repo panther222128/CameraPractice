@@ -9,6 +9,13 @@
 /* Begin PBXBuildFile section */
 		9B2373B708CEDE453110E580 /* libPods-CameraPractice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB10BA060D23B295B40FEF6 /* libPods-CameraPractice.a */; };
 		A01287D6284456650068A093 /* DefaultDeviceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01287D5284456650068A093 /* DefaultDeviceConfiguration.swift */; };
+		A0190F422875203B000F5753 /* ScreenMetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0190F412875203B000F5753 /* ScreenMetalView.swift */; };
+		A0190F5628755602000F5753 /* DepthToGrayscale.metal in Sources */ = {isa = PBXBuildFile; fileRef = A0190F4628755424000F5753 /* DepthToGrayscale.metal */; };
+		A0190F5728755602000F5753 /* Mixer.metal in Sources */ = {isa = PBXBuildFile; fileRef = A0190F4428755424000F5753 /* Mixer.metal */; };
+		A0190F5828755602000F5753 /* PassThrough.metal in Sources */ = {isa = PBXBuildFile; fileRef = A0190F4528755424000F5753 /* PassThrough.metal */; };
+		A0190F5928755602000F5753 /* RosyEffect.metal in Sources */ = {isa = PBXBuildFile; fileRef = A0190F4728755424000F5753 /* RosyEffect.metal */; };
+		A0190F5B28755AD9000F5753 /* FilterRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0190F5A28755AD9000F5753 /* FilterRenderer.swift */; };
+		A0190F5F2875614F000F5753 /* VideoMixer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0190F5E28756020000F5753 /* VideoMixer.swift */; };
 		A030308828532604008BB69D /* RecordTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A030308728532604008BB69D /* RecordTimer.swift */; };
 		A030308A285346C9008BB69D /* DefaultPhotoSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0303089285346C9008BB69D /* DefaultPhotoSettings.swift */; };
 		A03B439A2858473B0050B656 /* DefaultAssetScreenRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03B43992858473B0050B656 /* DefaultAssetScreenRepository.swift */; };
@@ -31,6 +38,9 @@
 		A08F071728573ABA005AE166 /* MediaPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08F071628573ABA005AE166 /* MediaPickerViewModel.swift */; };
 		A08F071928573B18005AE166 /* DefaultMediaPickerRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08F071828573B18005AE166 /* DefaultMediaPickerRepository.swift */; };
 		A08F071B28573B27005AE166 /* MediaPickerRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08F071A28573B27005AE166 /* MediaPickerRepository.swift */; };
+		A0985E9B2873D1CD00C386DE /* MovieRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0985E9A2873D1CD00C386DE /* MovieRecorder.swift */; };
+		A0985E9D2873D9CB00C386DE /* AVCaptureVideoOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0985E9C2873D9CB00C386DE /* AVCaptureVideoOrientation.swift */; };
+		A0985E9F2873D9F900C386DE /* AVCaptureConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0985E9E2873D9F900C386DE /* AVCaptureConnection.swift */; };
 		A0A0968A2840900B00BCB214 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096892840900B00BCB214 /* AppDelegate.swift */; };
 		A0A0968C2840900B00BCB214 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A0968B2840900B00BCB214 /* SceneDelegate.swift */; };
 		A0A096932840900D00BCB214 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0A096922840900D00BCB214 /* Assets.xcassets */; };
@@ -48,6 +58,7 @@
 		A0A096C62840C08A00BCB214 /* AuthorizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096C52840C08A00BCB214 /* AuthorizationManager.swift */; };
 		A0BE9E58285C4FF8001B9240 /* AssetEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0BE9E57285C4FF8001B9240 /* AssetEditor.swift */; };
 		A0C135F72861D8EB00BFB841 /* MovieTrimEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F58FC2861D19E000220E7 /* MovieTrimEditor.swift */; };
+		A0D7C03F2876DD6200BC2FAD /* UIWindow+Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D7C03E2876DD6200BC2FAD /* UIWindow+Orientation.swift */; };
 		A0DA208D2843644E00604A5D /* DefaultStudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DA208C2843644E00604A5D /* DefaultStudio.swift */; };
 		A0F4461B28572C3C00932C21 /* AssetScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F4461A28572C3C00932C21 /* AssetScreenViewController.swift */; };
 		A0F4462028572D4700932C21 /* AssetScreenUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F4461F28572D4700932C21 /* AssetScreenUseCase.swift */; };
@@ -57,6 +68,13 @@
 /* Begin PBXFileReference section */
 		5B5CA06E605C74C1EE2DEB64 /* Pods-CameraPractice.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CameraPractice.release.xcconfig"; path = "Target Support Files/Pods-CameraPractice/Pods-CameraPractice.release.xcconfig"; sourceTree = "<group>"; };
 		A01287D5284456650068A093 /* DefaultDeviceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDeviceConfiguration.swift; sourceTree = "<group>"; };
+		A0190F412875203B000F5753 /* ScreenMetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenMetalView.swift; sourceTree = "<group>"; };
+		A0190F4428755424000F5753 /* Mixer.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Mixer.metal; sourceTree = "<group>"; };
+		A0190F4528755424000F5753 /* PassThrough.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = PassThrough.metal; sourceTree = "<group>"; };
+		A0190F4628755424000F5753 /* DepthToGrayscale.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = DepthToGrayscale.metal; sourceTree = "<group>"; };
+		A0190F4728755424000F5753 /* RosyEffect.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = RosyEffect.metal; sourceTree = "<group>"; };
+		A0190F5A28755AD9000F5753 /* FilterRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterRenderer.swift; sourceTree = "<group>"; };
+		A0190F5E28756020000F5753 /* VideoMixer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoMixer.swift; sourceTree = "<group>"; };
 		A030308728532604008BB69D /* RecordTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTimer.swift; sourceTree = "<group>"; };
 		A0303089285346C9008BB69D /* DefaultPhotoSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultPhotoSettings.swift; sourceTree = "<group>"; };
 		A03B43992858473B0050B656 /* DefaultAssetScreenRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultAssetScreenRepository.swift; sourceTree = "<group>"; };
@@ -80,6 +98,9 @@
 		A08F071628573ABA005AE166 /* MediaPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPickerViewModel.swift; sourceTree = "<group>"; };
 		A08F071828573B18005AE166 /* DefaultMediaPickerRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultMediaPickerRepository.swift; sourceTree = "<group>"; };
 		A08F071A28573B27005AE166 /* MediaPickerRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPickerRepository.swift; sourceTree = "<group>"; };
+		A0985E9A2873D1CD00C386DE /* MovieRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieRecorder.swift; sourceTree = "<group>"; };
+		A0985E9C2873D9CB00C386DE /* AVCaptureVideoOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCaptureVideoOrientation.swift; sourceTree = "<group>"; };
+		A0985E9E2873D9F900C386DE /* AVCaptureConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCaptureConnection.swift; sourceTree = "<group>"; };
 		A0A096862840900B00BCB214 /* CameraPractice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CameraPractice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A0A096892840900B00BCB214 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A0A0968B2840900B00BCB214 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -98,6 +119,7 @@
 		A0A096BF2840AF5300BCB214 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		A0A096C52840C08A00BCB214 /* AuthorizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationManager.swift; sourceTree = "<group>"; };
 		A0BE9E57285C4FF8001B9240 /* AssetEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetEditor.swift; sourceTree = "<group>"; };
+		A0D7C03E2876DD6200BC2FAD /* UIWindow+Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+Orientation.swift"; sourceTree = "<group>"; };
 		A0DA208C2843644E00604A5D /* DefaultStudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultStudio.swift; sourceTree = "<group>"; };
 		A0F4461A28572C3C00932C21 /* AssetScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetScreenViewController.swift; sourceTree = "<group>"; };
 		A0F4461F28572D4700932C21 /* AssetScreenUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetScreenUseCase.swift; sourceTree = "<group>"; };
@@ -118,6 +140,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A0190F432875541B000F5753 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				A0190F4628755424000F5753 /* DepthToGrayscale.metal */,
+				A0190F4428755424000F5753 /* Mixer.metal */,
+				A0190F4528755424000F5753 /* PassThrough.metal */,
+				A0190F4728755424000F5753 /* RosyEffect.metal */,
+			);
+			path = Shaders;
+			sourceTree = "<group>";
+		};
+		A0190F5C28755AFD000F5753 /* FilterRenderer */ = {
+			isa = PBXGroup;
+			children = (
+				A0190F5A28755AD9000F5753 /* FilterRenderer.swift */,
+			);
+			path = FilterRenderer;
+			sourceTree = "<group>";
+		};
+		A0190F5D28756016000F5753 /* VideoMixer */ = {
+			isa = PBXGroup;
+			children = (
+				A0190F5E28756020000F5753 /* VideoMixer.swift */,
+			);
+			path = VideoMixer;
+			sourceTree = "<group>";
+		};
 		A0303086285325FC008BB69D /* RecordTimer */ = {
 			isa = PBXGroup;
 			children = (
@@ -228,6 +277,9 @@
 			isa = PBXGroup;
 			children = (
 				A0843649286AE6D6004E8FFE /* AVAssetTrack+CGAffineTransform.swift */,
+				A0985E9C2873D9CB00C386DE /* AVCaptureVideoOrientation.swift */,
+				A0985E9E2873D9F900C386DE /* AVCaptureConnection.swift */,
+				A0D7C03E2876DD6200BC2FAD /* UIWindow+Orientation.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -303,6 +355,7 @@
 		A0A096882840900B00BCB214 /* CameraPractice */ = {
 			isa = PBXGroup;
 			children = (
+				A0190F432875541B000F5753 /* Shaders */,
 				A0843648286AE6CC004E8FFE /* Extension */,
 				A0A0969D2840903600BCB214 /* Resources */,
 				A0A0969F2840905C00BCB214 /* Application */,
@@ -329,7 +382,7 @@
 			children = (
 				A0A096BE2840AF4300BCB214 /* Utility */,
 				A0A096A02840905E00BCB214 /* Flows */,
-				A0A096AD2840917500BCB214 /* CameraView */,
+				A0A096AD2840917500BCB214 /* StudioView */,
 				A08F070C28573440005AE166 /* MediaPickerView */,
 				A0F4461628572B5100932C21 /* AssetScreenView */,
 				A07F58EE2861CDF0000220E7 /* MovieTrimView */,
@@ -407,7 +460,7 @@
 			path = DIContainers;
 			sourceTree = "<group>";
 		};
-		A0A096AD2840917500BCB214 /* CameraView */ = {
+		A0A096AD2840917500BCB214 /* StudioView */ = {
 			isa = PBXGroup;
 			children = (
 				A083B7482850989B00949ED4 /* DefaultDeviceConfiguration */,
@@ -416,7 +469,7 @@
 				A0A096B32840ACA100BCB214 /* ViewModel */,
 				A0A096B22840AC9D00BCB214 /* Controller */,
 			);
-			path = CameraView;
+			path = StudioView;
 			sourceTree = "<group>";
 		};
 		A0A096B22840AC9D00BCB214 /* Controller */ = {
@@ -469,6 +522,9 @@
 		A0A096C12840B9CD00BCB214 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				A0190F5D28756016000F5753 /* VideoMixer */,
+				A0190F5C28755AFD000F5753 /* FilterRenderer */,
+				A0190F412875203B000F5753 /* ScreenMetalView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -518,6 +574,7 @@
 		A0F4461C28572D2200932C21 /* StudioUseCase */ = {
 			isa = PBXGroup;
 			children = (
+				A0985E9A2873D1CD00C386DE /* MovieRecorder.swift */,
 				A083B74428506C9600949ED4 /* PhotoCaptureProcessor.swift */,
 				A0A096B82840ACE000BCB214 /* StudioUseCase.swift */,
 			);
@@ -653,14 +710,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A0190F5F2875614F000F5753 /* VideoMixer.swift in Sources */,
+				A0190F5628755602000F5753 /* DepthToGrayscale.metal in Sources */,
+				A0190F5728755602000F5753 /* Mixer.metal in Sources */,
+				A0190F5828755602000F5753 /* PassThrough.metal in Sources */,
+				A0190F5928755602000F5753 /* RosyEffect.metal in Sources */,
 				A08F071B28573B27005AE166 /* MediaPickerRepository.swift in Sources */,
 				A0A096BB2840AD0100BCB214 /* StudioRepository.swift in Sources */,
 				A03B439C285847520050B656 /* AssetScreenRepository.swift in Sources */,
 				A0F4462228572D5000932C21 /* AssetScreenViewModel.swift in Sources */,
 				A0F4461B28572C3C00932C21 /* AssetScreenViewController.swift in Sources */,
+				A0985E9B2873D1CD00C386DE /* MovieRecorder.swift in Sources */,
 				A06975D9286592F700FE8462 /* CachingImageManager.swift in Sources */,
 				A0A0968A2840900B00BCB214 /* AppDelegate.swift in Sources */,
 				A0A096AA2840910500BCB214 /* AppDIContainer.swift in Sources */,
+				A0985E9D2873D9CB00C386DE /* AVCaptureVideoOrientation.swift in Sources */,
 				A0A096BD2840AD1D00BCB214 /* DefaultStudioRepository.swift in Sources */,
 				A0DA208D2843644E00604A5D /* DefaultStudio.swift in Sources */,
 				A08F071428573A8A005AE166 /* MediaPickerUseCase.swift in Sources */,
@@ -676,6 +740,7 @@
 				A030308A285346C9008BB69D /* DefaultPhotoSettings.swift in Sources */,
 				A0A096B12840AC4F00BCB214 /* StudioViewController.swift in Sources */,
 				A06975D62865922B00FE8462 /* ImageManager.swift in Sources */,
+				A0985E9F2873D9F900C386DE /* AVCaptureConnection.swift in Sources */,
 				A07F58FA2861D144000220E7 /* MovieTrimUseCase.swift in Sources */,
 				A07F58F42861CE35000220E7 /* MovieTrimViewController.swift in Sources */,
 				A08F071728573ABA005AE166 /* MediaPickerViewModel.swift in Sources */,
@@ -686,8 +751,11 @@
 				A08F071928573B18005AE166 /* DefaultMediaPickerRepository.swift in Sources */,
 				A0F4462028572D4700932C21 /* AssetScreenUseCase.swift in Sources */,
 				A0A096C62840C08A00BCB214 /* AuthorizationManager.swift in Sources */,
+				A0D7C03F2876DD6200BC2FAD /* UIWindow+Orientation.swift in Sources */,
 				A07F58F22861CE23000220E7 /* MovieTrimViewModel.swift in Sources */,
+				A0190F5B28755AD9000F5753 /* FilterRenderer.swift in Sources */,
 				A0A096B52840ACAD00BCB214 /* StudioViewModel.swift in Sources */,
+				A0190F422875203B000F5753 /* ScreenMetalView.swift in Sources */,
 				A0A096AC2840911B00BCB214 /* AppFlowCoordinator.swift in Sources */,
 				A0A096B92840ACE000BCB214 /* StudioUseCase.swift in Sources */,
 				A084364A286AE6D6004E8FFE /* AVAssetTrack+CGAffineTransform.swift in Sources */,

@@ -12,11 +12,11 @@ protocol DeviceConfigurable: CameraDeviceConfigurable & AudioDeviceConfigurable 
 }
 
 protocol CameraDeviceConfigurable {
-    func configureCameraDevice(captureSession: AVCaptureSession, cameraDevices: CameraDevices)
+    func configureCameraDevice(captureSession: AVCaptureSession, cameraDevices: CameraDevices, videoDataOutput: AVCaptureVideoDataOutput)
 }
 
 protocol AudioDeviceConfigurable {
-    func configureAudioDevice(captureSession: AVCaptureSession)
+    func configureAudioDevice(captureSession: AVCaptureSession, audioDataOutput: AVCaptureAudioDataOutput)
 }
 
 enum CameraDevices {
@@ -38,13 +38,12 @@ final class DefaultDeviceConfiguration: DeviceConfigurable {
 
 extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
     
-    func configureCameraDevice(captureSession: AVCaptureSession, cameraDevices: CameraDevices) {
+    func configureCameraDevice(captureSession: AVCaptureSession, cameraDevices: CameraDevices, videoDataOutput: AVCaptureVideoDataOutput) {
         do {
             switch cameraDevices {
             case .builtInDualWideCamera:
-                if let dualWideCamera = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) {
-                    self.defaultDevice = dualWideCamera
-                }
+                guard let dualWideCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else { return }
+                self.defaultDevice = dualWideCamera
             case .frontCamera:
                 let discoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDualCamera, .builtInTelephotoCamera, .builtInDualWideCamera], mediaType: .video, position: .front)
                 guard let frontCameraDevice = discoverySession.devices.filter( { $0.position == .front } ).first else { return }
@@ -63,14 +62,6 @@ extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
         } catch {
             return
         }
-        
-        do {
-            guard let defaultDevice = self.defaultDevice else { return }
-            try defaultDevice.lockForConfiguration()
-        } catch {
-            print("Cannot lock for configuration")
-        }
-        
     }
     
 }
@@ -79,10 +70,11 @@ extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
 
 extension DefaultDeviceConfiguration: AudioDeviceConfigurable {
     
-    func configureAudioDevice(captureSession: AVCaptureSession) {
+    func configureAudioDevice(captureSession: AVCaptureSession, audioDataOutput: AVCaptureAudioDataOutput) {
         do {
-            let audioDevice = AVCaptureDevice.default(for: .audio)
-            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
+            guard let audioDevice = AVCaptureDevice.default(for: .audio) else { return }
+            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice)
+            
             if captureSession.canAddInput(audioDeviceInput) {
                 captureSession.addInput(audioDeviceInput)
             } else {
