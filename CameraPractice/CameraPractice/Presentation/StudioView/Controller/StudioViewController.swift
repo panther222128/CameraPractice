@@ -80,7 +80,6 @@ final class StudioViewController: UIViewController {
                         self.setOrientation()
                     }
                 }
-                
             } else {
                 self.presentDeviceAccessAuthorizationStatusAlert()
             }
@@ -172,15 +171,21 @@ extension StudioViewController {
         switch sender.selectedSegmentIndex {
         case 0:
             DispatchQueue.main.async {
-                self.studioConfiguration.configureEnvironment(at: sender.selectedSegmentIndex, presenter: self, with: .builtInDualWideCamera, sessionQueue: self.sessionQueue)
+                self.sessionQueue.async {
+                    self.studioConfiguration.convertCamera(to: .builtInDualWideCamera, presenter: self, sessionQueue: self.sessionQueue)
+                }
             }
         case 1:
             DispatchQueue.main.async {
-                self.studioConfiguration.configureEnvironment(at: sender.selectedSegmentIndex, presenter: self, with: .frontCamera, sessionQueue: self.sessionQueue)
+                self.sessionQueue.async {
+                    self.studioConfiguration.convertCamera(to: .frontCamera, presenter: self, sessionQueue: self.sessionQueue)
+                }
             }
         default:
             DispatchQueue.main.async {
-                self.studioConfiguration.configureEnvironment(at: sender.selectedSegmentIndex, presenter: self, with: .builtInDualWideCamera, sessionQueue: self.sessionQueue)
+                self.sessionQueue.async {
+                    self.studioConfiguration.convertCamera(to: .builtInDualWideCamera, presenter: self, sessionQueue: self.sessionQueue)
+                }
             }
         }
     }

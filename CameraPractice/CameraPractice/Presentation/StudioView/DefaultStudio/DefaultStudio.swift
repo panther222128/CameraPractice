@@ -8,6 +8,11 @@
 import AVFoundation
 import UIKit
 
+enum CameraPosition {
+    case back
+    case front
+}
+
 protocol StudioConfigurable {
     var photoSettings: AVCapturePhotoSettings? { get }
     var photoOutput: AVCapturePhotoOutput? { get }
@@ -15,11 +20,11 @@ protocol StudioConfigurable {
     var audioDataOutput: AVCaptureAudioDataOutput { get }
     var movieFileOutput: AVCaptureMovieFileOutput? { get }
     var videoTransform: CGAffineTransform? { get }
-    var captureInput: AVCaptureInput? { get }
     
     func configureEnvironment<T>(at index: Int, presenter: T,with camera: CameraDevices,  sessionQueue: DispatchQueue) where T: UIViewController & DataOutputSampleBufferDelegate
     func configurePhotoInputOutput<T>(presenter: T, with camera: CameraDevices, sessionQueue: DispatchQueue) where T: UIViewController & DataOutputSampleBufferDelegate
     func configureMovieInputOutput<T>(presenter: T, with camera: CameraDevices, sessionQueue: DispatchQueue) where T: UIViewController & DataOutputSampleBufferDelegate
+    func convertCamera<T>(to camera: CameraDevices, presenter: T, sessionQueue: DispatchQueue) where T: UIViewController & DataOutputSampleBufferDelegate
     
     func createVideoTransform(videoDataOutput: AVCaptureVideoDataOutput)
     
@@ -35,14 +40,12 @@ final class DefaultStudio: StudioConfigurable {
     var videoDataOutput: AVCaptureVideoDataOutput
     var audioDataOutput: AVCaptureAudioDataOutput
     var movieFileOutput: AVCaptureMovieFileOutput?
-    var captureInput: AVCaptureInput?
     var videoTransform: CGAffineTransform?
     
     private let captureSession: AVCaptureSession
     
     init(deviceConfiguration: DeviceConfigurable, photoSettings: AVCapturePhotoSettings) {
         self.captureSession = AVCaptureSession()
-        self.captureInput = nil
         self.deviceConfiguration = deviceConfiguration
         self.photoSettings = photoSettings
         self.videoTransform = nil
@@ -72,7 +75,8 @@ final class DefaultStudio: StudioConfigurable {
         self.configureSession()
         self.configureCameraDevice(cameraDevices: .builtInDualWideCamera)
         self.configureAudioDevice()
-        self.configureInput()
+        self.addVideoDeviceInput()
+        self.addAudioDeviceInput()
         self.configurePhotoOutput()
         self.configurePhotoSettings()
         self.configureAudioDataOutput(presenter: presenter, sessionQueue: sessionQueue)
@@ -83,10 +87,62 @@ final class DefaultStudio: StudioConfigurable {
         self.configureSession()
         self.configureCameraDevice(cameraDevices: .builtInDualWideCamera)
         self.configureAudioDevice()
-        self.configureInput()
+        self.addVideoDeviceInput()
+        self.addAudioDeviceInput()
         self.configureMovieFileOutput()
         self.configureAudioDataOutput(presenter: presenter, sessionQueue: sessionQueue)
         self.configureVideoDataOutput(presenter: presenter, sessionQueue: sessionQueue)
+    }
+    
+    func convertCamera<T>(to camera: CameraDevices, presenter: T, sessionQueue: DispatchQueue) where T: UIViewController & DataOutputSampleBufferDelegate {
+        print(self.deviceConfiguration.defaultDevice == nil)
+        guard let captureDevice = self.deviceConfiguration.defaultDevice else { return }
+        switch captureDevice.position {
+        case .back:
+            guard let deviceInput = self.deviceConfiguration.videoDeviceInput else { return }
+            self.captureSession.removeInput(deviceInput)
+            self.deviceConfiguration.configureCameraDevice(cameraDevices: .frontCamera, videoDataOutput: self.videoDataOutput)
+            self.captureSession.beginConfiguration()
+            defer {
+                self.captureSession.commitConfiguration()
+            }
+            self.addVideoDeviceInput()
+            self.addAudioDeviceInput()
+            self.configurePhotoOutput()
+            self.configurePhotoSettings()
+            self.configureVideoDataOutput(presenter: presenter, sessionQueue: sessionQueue)
+            self.configureAudioDataOutput(presenter: presenter, sessionQueue: sessionQueue)
+        case .front:
+            guard let deviceInput = self.deviceConfiguration.videoDeviceInput else { return }
+            self.captureSession.removeInput(deviceInput)
+            self.deviceConfiguration.configureCameraDevice(cameraDevices: .builtInDualWideCamera, videoDataOutput: self.videoDataOutput)
+            self.captureSession.beginConfiguration()
+            defer {
+                self.captureSession.commitConfiguration()
+            }
+            self.addVideoDeviceInput()
+            self.addAudioDeviceInput()
+            self.configurePhotoOutput()
+            self.configurePhotoSettings()
+            self.configureVideoDataOutput(presenter: presenter, sessionQueue: sessionQueue)
+            self.configureAudioDataOutput(presenter: presenter, sessionQueue: sessionQueue)
+        case .unspecified:
+            guard let deviceInput = self.deviceConfiguration.videoDeviceInput else { return }
+            self.captureSession.removeInput(deviceInput)
+            self.deviceConfiguration.configureCameraDevice(cameraDevices: .frontCamera, videoDataOutput: self.videoDataOutput)
+            self.captureSession.beginConfiguration()
+            defer {
+                self.captureSession.commitConfiguration()
+            }
+            self.addVideoDeviceInput()
+            self.addAudioDeviceInput()
+            self.configurePhotoOutput()
+            self.configurePhotoSettings()
+            self.configureVideoDataOutput(presenter: presenter, sessionQueue: sessionQueue)
+            self.configureAudioDataOutput(presenter: presenter, sessionQueue: sessionQueue)
+        @unknown default:
+            fatalError("FATAL")
+        }
     }
     
     func invalidateStudio() {
@@ -101,9 +157,22 @@ final class DefaultStudio: StudioConfigurable {
 // MARK: - Session
 
 extension DefaultStudio {
-
+    
+    private func addAudioDeviceInput() {
+        guard let audioDeviceInput = self.deviceConfiguration.audioDeviceInput else { return }
+        if self.captureSession.canAddInput(audioDeviceInput) {
+            self.captureSession.addInput(audioDeviceInput)
+        }
+    }
+    
+    private func addVideoDeviceInput() {
+        guard let videoDeviceInput = self.deviceConfiguration.videoDeviceInput else { return }
+        if self.captureSession.canAddInput(videoDeviceInput) {
+            self.captureSession.addInput(videoDeviceInput)
+        }
+    }
+    
     private func captureSessionBeginConfiguration() {
-        self.captureSession.startRunning()
         self.captureSession.beginConfiguration()
     }
     
@@ -130,7 +199,7 @@ extension DefaultStudio {
         defer {
             self.captureSession.commitConfiguration()
         }
-        self.deviceConfiguration.configureCameraDevice(captureSession: self.captureSession, cameraDevices: cameraDevices, videoDataOutput: self.videoDataOutput)
+        self.deviceConfiguration.configureCameraDevice(cameraDevices: cameraDevices, videoDataOutput: self.videoDataOutput)
     }
     
     private func configureAudioDevice() {
@@ -138,29 +207,9 @@ extension DefaultStudio {
         defer {
             self.captureSession.commitConfiguration()
         }
-        self.deviceConfiguration.configureAudioDevice(captureSession: self.captureSession, audioDataOutput: self.audioDataOutput)
+        self.deviceConfiguration.configureAudioDevice(audioDataOutput: self.audioDataOutput)
     }
-    
-    private func configureInput() {
-        self.captureSession.beginConfiguration()
-        defer {
-            self.captureSession.commitConfiguration()
-        }
-        guard let captureDevice = self.deviceConfiguration.defaultDevice else { return }
 
-        do {
-            self.captureInput = try AVCaptureDeviceInput(device: captureDevice)
-            
-            guard let captureInput = self.captureInput else { return }
-            
-            if self.captureSession.canAddInput(captureInput) {
-                self.captureSession.addInput(captureInput)
-            }
-        } catch {
-            print(error.localizedDescription)
-        }
-    }
-    
     private func configurePhotoOutput() {
         self.captureSession.beginConfiguration()
         defer {

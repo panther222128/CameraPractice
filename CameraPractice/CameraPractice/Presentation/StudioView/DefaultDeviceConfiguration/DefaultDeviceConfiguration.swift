@@ -9,14 +9,16 @@ import AVFoundation
 
 protocol DeviceConfigurable: CameraDeviceConfigurable & AudioDeviceConfigurable {
     var defaultDevice: AVCaptureDevice? { get }
+    var audioDeviceInput: AVCaptureDeviceInput? { get }
+    var videoDeviceInput: AVCaptureDeviceInput? { get }
 }
 
 protocol CameraDeviceConfigurable {
-    func configureCameraDevice(captureSession: AVCaptureSession, cameraDevices: CameraDevices, videoDataOutput: AVCaptureVideoDataOutput)
+    func configureCameraDevice(cameraDevices: CameraDevices, videoDataOutput: AVCaptureVideoDataOutput)
 }
 
 protocol AudioDeviceConfigurable {
-    func configureAudioDevice(captureSession: AVCaptureSession, audioDataOutput: AVCaptureAudioDataOutput)
+    func configureAudioDevice(audioDataOutput: AVCaptureAudioDataOutput)
 }
 
 enum CameraDevices {
@@ -27,9 +29,13 @@ enum CameraDevices {
 final class DefaultDeviceConfiguration: DeviceConfigurable {
     
     var defaultDevice: AVCaptureDevice?
+    @objc dynamic var audioDeviceInput: AVCaptureDeviceInput?
+    @objc dynamic var videoDeviceInput: AVCaptureDeviceInput?
     
     init() {
         self.defaultDevice = nil
+        self.audioDeviceInput = nil
+        self.videoDeviceInput = nil
     }
 
 }
@@ -38,7 +44,9 @@ final class DefaultDeviceConfiguration: DeviceConfigurable {
 
 extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
     
-    func configureCameraDevice(captureSession: AVCaptureSession, cameraDevices: CameraDevices, videoDataOutput: AVCaptureVideoDataOutput) {
+    func configureCameraDevice(cameraDevices: CameraDevices, videoDataOutput: AVCaptureVideoDataOutput) {
+        self.defaultDevice = nil
+        self.videoDeviceInput = nil
         do {
             switch cameraDevices {
             case .builtInDualWideCamera:
@@ -54,11 +62,7 @@ extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
                 return
             }
             
-            let deviceInput = try AVCaptureDeviceInput(device: defaultDevice)
-            
-            if captureSession.canAddInput(deviceInput) {
-                captureSession.addInput(deviceInput)
-            }
+            self.videoDeviceInput = try AVCaptureDeviceInput(device: defaultDevice)
         } catch {
             return
         }
@@ -70,16 +74,13 @@ extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
 
 extension DefaultDeviceConfiguration: AudioDeviceConfigurable {
     
-    func configureAudioDevice(captureSession: AVCaptureSession, audioDataOutput: AVCaptureAudioDataOutput) {
+    func configureAudioDevice(audioDataOutput: AVCaptureAudioDataOutput) {
+        self.defaultDevice = nil
+        self.audioDeviceInput = nil
         do {
             guard let audioDevice = AVCaptureDevice.default(for: .audio) else { return }
-            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice)
             
-            if captureSession.canAddInput(audioDeviceInput) {
-                captureSession.addInput(audioDeviceInput)
-            } else {
-                print("Could not add audio device input to the session")
-            }
+            self.audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice)
         } catch {
             print("Could not create audio device input: \(error)")
         }
