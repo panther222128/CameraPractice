@@ -18,7 +18,6 @@ protocol StudioConfigurable {
     var photoOutput: AVCapturePhotoOutput? { get }
     var videoDataOutput: AVCaptureVideoDataOutput { get }
     var audioDataOutput: AVCaptureAudioDataOutput { get }
-    var movieFileOutput: AVCaptureMovieFileOutput? { get }
     var videoTransform: CGAffineTransform? { get }
     
     func configureEnvironment<T>(at index: Int, presenter: T,with camera: CameraDevices,  sessionQueue: DispatchQueue) where T: UIViewController & DataOutputSampleBufferDelegate
@@ -39,7 +38,6 @@ final class DefaultStudio: StudioConfigurable {
     var photoOutput: AVCapturePhotoOutput?
     var videoDataOutput: AVCaptureVideoDataOutput
     var audioDataOutput: AVCaptureAudioDataOutput
-    var movieFileOutput: AVCaptureMovieFileOutput?
     var videoTransform: CGAffineTransform?
     
     private let captureSession: AVCaptureSession
@@ -89,18 +87,18 @@ final class DefaultStudio: StudioConfigurable {
         self.configureAudioDevice()
         self.addVideoDeviceInput()
         self.addAudioDeviceInput()
-        self.configureMovieFileOutput()
         self.configureAudioDataOutput(presenter: presenter, sessionQueue: sessionQueue)
         self.configureVideoDataOutput(presenter: presenter, sessionQueue: sessionQueue)
     }
     
     func convertCamera<T>(to camera: CameraDevices, presenter: T, sessionQueue: DispatchQueue) where T: UIViewController & DataOutputSampleBufferDelegate {
-        print(self.deviceConfiguration.defaultDevice == nil)
-        guard let captureDevice = self.deviceConfiguration.defaultDevice else { return }
-        switch captureDevice.position {
+        guard let videoDeviceInput = self.deviceConfiguration.videoDeviceInput else { return }
+        switch videoDeviceInput.device.position {
         case .back:
             guard let deviceInput = self.deviceConfiguration.videoDeviceInput else { return }
             self.captureSession.removeInput(deviceInput)
+            guard let photoOutput = photoOutput else { return }
+            self.captureSession.removeOutput(photoOutput)
             self.deviceConfiguration.configureCameraDevice(cameraDevices: .frontCamera, videoDataOutput: self.videoDataOutput)
             self.captureSession.beginConfiguration()
             defer {
@@ -112,9 +110,18 @@ final class DefaultStudio: StudioConfigurable {
             self.configurePhotoSettings()
             self.configureVideoDataOutput(presenter: presenter, sessionQueue: sessionQueue)
             self.configureAudioDataOutput(presenter: presenter, sessionQueue: sessionQueue)
+            guard let deviceInput = self.deviceConfiguration.videoDeviceInput else { return }
+            guard let frontDeviceInput = self.deviceConfiguration.videoDeviceInput else { return }
+            guard let deviceInputPort = deviceInput.ports(for: .video, sourceDeviceType: frontDeviceInput.device.deviceType, sourceDevicePosition: frontDeviceInput.device.position).first else { return }
+            let connection = AVCaptureConnection(inputPorts: [deviceInputPort], output: self.videoDataOutput)
+            if self.captureSession.canAddConnection(connection) {
+                self.captureSession.addConnection(connection)
+            }
         case .front:
             guard let deviceInput = self.deviceConfiguration.videoDeviceInput else { return }
             self.captureSession.removeInput(deviceInput)
+            guard let photoOutput = photoOutput else { return }
+            self.captureSession.removeOutput(photoOutput)
             self.deviceConfiguration.configureCameraDevice(cameraDevices: .builtInDualWideCamera, videoDataOutput: self.videoDataOutput)
             self.captureSession.beginConfiguration()
             defer {
@@ -129,6 +136,8 @@ final class DefaultStudio: StudioConfigurable {
         case .unspecified:
             guard let deviceInput = self.deviceConfiguration.videoDeviceInput else { return }
             self.captureSession.removeInput(deviceInput)
+            guard let photoOutput = photoOutput else { return }
+            self.captureSession.removeOutput(photoOutput)
             self.deviceConfiguration.configureCameraDevice(cameraDevices: .frontCamera, videoDataOutput: self.videoDataOutput)
             self.captureSession.beginConfiguration()
             defer {
@@ -149,7 +158,6 @@ final class DefaultStudio: StudioConfigurable {
         self.stopSession()
         self.photoSettings = nil
         self.photoOutput = nil
-        self.movieFileOutput = nil
     }
     
 }
@@ -280,27 +288,6 @@ extension DefaultStudio {
         
         photoSettings.isDepthDataDeliveryEnabled = photoOutput.isDepthDataDeliveryEnabled
         photoSettings.isPortraitEffectsMatteDeliveryEnabled = photoOutput.isPortraitEffectsMatteDeliveryEnabled
-    }
-    
-}
-
-// MARK: - MovieFileOutput
-
-extension DefaultStudio {
-    
-    private func configureMovieFileOutput() {
-        self.captureSession.beginConfiguration()
-        defer {
-            self.captureSession.commitConfiguration()
-        }
-        
-        self.movieFileOutput = AVCaptureMovieFileOutput()
-        
-        guard let movieFileOutput = self.movieFileOutput else { return }
-        
-        if self.captureSession.canAddOutput(movieFileOutput) {
-            self.captureSession.addOutput(movieFileOutput)
-        }
     }
     
 }

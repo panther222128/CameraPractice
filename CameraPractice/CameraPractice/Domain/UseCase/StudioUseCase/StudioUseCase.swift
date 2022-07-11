@@ -13,13 +13,10 @@ protocol StudioUseCase {
     func checkDeviceAccessAuthorizationStatus(completion: @escaping (Bool) -> Void)
     func checkPhotoAlbumAccessAuthorizationStatus(completion: @escaping (Bool) -> Void)
     func capturePhoto(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput)
-    func startRecord<T>(movieFileOutput: AVCaptureMovieFileOutput, recorder: T, deviceOrientation: AVCaptureVideoOrientation) where T: AVCaptureFileOutputRecordingDelegate
-    func stopRecord(movieFileOutput: AVCaptureMovieFileOutput)
-    func saveRecordedMovie()
-    
+
     func recordVideo(sampleBuffer: CMSampleBuffer)
     func recordAudio(sampleBuffer: CMSampleBuffer)
-    func startRecording(videoTransform: CGAffineTransform)
+    func startRecording(videoTransform: CGAffineTransform, videoDataOutput: AVCaptureVideoDataOutput, audioDataOutput: AVCaptureAudioDataOutput)
     func stopRecording(completion: @escaping (URL) -> Void)
     func saveMovie(outputUrl: URL)
 }
@@ -87,30 +84,26 @@ final class DefaultStudioUseCase: StudioUseCase {
         photoOutput.capturePhoto(with: photoSettings, delegate: photoCaptureProcessor)
     }
     
-    /* MARK: - Available from Swift 5.7
-     same
-     func startRecord(deviceInput: AVCaptureDeviceInput, recorder: some AVCaptureFileOutputRecordingDelegate, deviceOrientation: AVCaptureVideoOrientation) { ... }
-     func startRecord<T>(deviceInput: AVCaptureDeviceInput, recorder: T, deviceOrientation: AVCaptureVideoOrientation) where T: AVCaptureFileOutputRecordingDelegate { ... }
-     */
-    
-    func startRecord<T>(movieFileOutput: AVCaptureMovieFileOutput, recorder: T, deviceOrientation: AVCaptureVideoOrientation) where T: AVCaptureFileOutputRecordingDelegate {
-        self.outputUrl = self.generateUrl()
-        guard let outputUrl = self.outputUrl else { return }
-        movieFileOutput.startRecording(to: outputUrl, recordingDelegate: recorder)
+    func recordVideo(sampleBuffer: CMSampleBuffer) {
+        self.movieRecorder.recordVideo(sampleBuffer: sampleBuffer)
     }
     
-    func stopRecord(movieFileOutput: AVCaptureMovieFileOutput) {
-        if movieFileOutput.isRecording {
-            movieFileOutput.stopRecording()
-        }
+    func recordAudio(sampleBuffer: CMSampleBuffer) {
+        self.movieRecorder.recordAudio(sampleBuffer: sampleBuffer)
     }
     
-    func saveRecordedMovie() {
-        guard let outputUrl = self.outputUrl else { return }
-        let recordedMovieUrl = outputUrl as URL
-        UISaveVideoAtPathToSavedPhotosAlbum(recordedMovieUrl.path, nil, nil, nil)
+    func startRecording(videoTransform: CGAffineTransform, videoDataOutput: AVCaptureVideoDataOutput, audioDataOutput: AVCaptureAudioDataOutput) {
+        self.movieRecorder.startRecording(videoTransform: videoTransform, videoDataOutput: videoDataOutput, audioDataOutput: audioDataOutput)
     }
     
+    func stopRecording(completion: @escaping (URL) -> Void) {
+        self.movieRecorder.stopRecording(completion: completion)
+    }
+    
+    func saveMovie(outputUrl: URL) {
+        self.cameraRepository.saveMovieToPhotoLibrary(outputUrl)
+    }
+
 }
 
 extension DefaultStudioUseCase {
@@ -149,30 +142,6 @@ extension DefaultStudioUseCase {
         }
         
         return nil
-    }
-    
-}
-
-extension DefaultStudioUseCase {
-    
-    func recordVideo(sampleBuffer: CMSampleBuffer) {
-        self.movieRecorder.recordVideo(sampleBuffer: sampleBuffer)
-    }
-    
-    func recordAudio(sampleBuffer: CMSampleBuffer) {
-        self.movieRecorder.recordAudio(sampleBuffer: sampleBuffer)
-    }
-    
-    func startRecording(videoTransform: CGAffineTransform) {
-        self.movieRecorder.startRecording(videoTransform: videoTransform)
-    }
-    
-    func stopRecording(completion: @escaping (URL) -> Void) {
-        self.movieRecorder.stopRecording(completion: completion)
-    }
-    
-    func saveMovie(outputUrl: URL) {
-        self.cameraRepository.saveMovieToPhotoLibrary(outputUrl)
     }
     
 }

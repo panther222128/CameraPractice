@@ -9,7 +9,7 @@ import AVFoundation
 import UIKit
 
 protocol MovieRecordable {
-    func startRecording(videoTransform: CGAffineTransform)
+    func startRecording(videoTransform: CGAffineTransform, videoDataOutput: AVCaptureVideoDataOutput, audioDataOutput: AVCaptureAudioDataOutput)
     func stopRecording(completion: @escaping (URL) -> Void)
     func recordVideo(sampleBuffer: CMSampleBuffer)
     func recordAudio(sampleBuffer: CMSampleBuffer)
@@ -21,23 +21,24 @@ final class DefaultMovieRecorder: MovieRecordable {
     private var assetWriterVideoInput: AVAssetWriterInput?
     private var assetWriterAudioInput: AVAssetWriterInput?
     
+    private var audioSettings: [String: Any]?
+    private var videoSettings: [String: Any]?
+    
     init() {
         self.assetWriter = nil
         self.assetWriterVideoInput = nil
         self.assetWriterAudioInput = nil
     }
     
-    func startRecording(videoTransform: CGAffineTransform) {
+    func startRecording(videoTransform: CGAffineTransform, videoDataOutput: AVCaptureVideoDataOutput, audioDataOutput: AVCaptureAudioDataOutput) {
         let outputFileName = NSUUID().uuidString
         let outputFileURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(outputFileName).appendingPathExtension("MOV")
-        guard let assetWriter = try? AVAssetWriter(url: outputFileURL, fileType: .mov) else {
-            return
-        }
-        let assetWriterAudioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: nil)
+        guard let assetWriter = try? AVAssetWriter(url: outputFileURL, fileType: .mov) else { return }
+        let assetWriterAudioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioDataOutput.recommendedAudioSettingsForAssetWriter(writingTo: .mov))
         assetWriterAudioInput.expectsMediaDataInRealTime = true
         assetWriter.add(assetWriterAudioInput)
         
-        let assetWriterVideoInput = AVAssetWriterInput(mediaType: .video, outputSettings: nil)
+        let assetWriterVideoInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoDataOutput.recommendedVideoSettingsForAssetWriter(writingTo: .mov))
         assetWriterVideoInput.expectsMediaDataInRealTime = true
         assetWriterVideoInput.transform = videoTransform
         assetWriter.add(assetWriterVideoInput)

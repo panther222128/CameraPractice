@@ -130,7 +130,7 @@ final class StudioViewController: UIViewController {
 
 extension StudioViewController {
     
-    func setOrientation() {
+    private func setOrientation() {
         DispatchQueue.main.async {
             guard let connection = self.studioConfiguration.videoDataOutput.connection(with: .video) else { return }
             guard let firstWindow = UIApplication.shared.windows.first else { return }
@@ -263,18 +263,16 @@ extension StudioViewController {
                 self.isRecordOn = true
                 self.recordTimer.start()
                 self.studioActionButton.setTitleColor(.red, for: .normal)
-                self.sessionQueue.async {
-                }
-                DispatchQueue.main.async {
+                self.dataInputOutpitQueue.async {
                     self.studioConfiguration.createVideoTransform(videoDataOutput: self.studioConfiguration.videoDataOutput)
                     guard let videoTransform = self.studioConfiguration.videoTransform else { return }
-                    self.viewModel.didPressRecordStartButton(videoTransform: videoTransform)
+                    self.viewModel.didPressRecordStartButton(videoTransform: videoTransform, videoDataOutput: self.studioConfiguration.videoDataOutput, audioDataOutput: self.studioConfiguration.audioDataOutput)
                 }
             } else {
                 self.isRecordOn = false
                 self.recordTimer.stop()
                 self.studioActionButton.setTitleColor(.white, for: .normal)
-                sessionQueue.async {
+                self.dataInputOutpitQueue.async {
                     self.viewModel.didPressRecordStopButton { url in
                         self.viewModel.saveMovie(outputUrl: url)
                     }

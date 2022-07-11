@@ -8,8 +8,6 @@
 import Foundation
 import AVFoundation
 
-// Observable error needed
-
 struct StudioViewModelAction {
     let presentMediaPickerView: (() -> Void)
 }
@@ -24,20 +22,18 @@ protocol StudioViewModel {
     func checkPhotoAlbumAccessAuthorized()
     
     func didPressTakePhotoButton(photoSettings: AVCapturePhotoSettings, photoOutput: AVCapturePhotoOutput)
-    func didPressRecordStartButton<T>(movieFileOutput: AVCaptureMovieFileOutput, recorder: T, deviceOrientation: AVCaptureVideoOrientation) where T: AVCaptureFileOutputRecordingDelegate
-    func didPressRecordStopButton(movieFileOutput: AVCaptureMovieFileOutput)
-    func didSaveRecordedMovie()
+
     func didPressPresentMediaPickerViewButton()
     
     func recordVideo(sampleBuffer: CMSampleBuffer)
     func recordAudio(sampleBuffer: CMSampleBuffer)
-    func didPressRecordStartButton( videoTransform: CGAffineTransform)
+    func didPressRecordStartButton(videoTransform: CGAffineTransform, videoDataOutput: AVCaptureVideoDataOutput, audioDataOutput: AVCaptureAudioDataOutput)
     func didPressRecordStopButton(completion: @escaping (URL) -> Void)
     func saveMovie(outputUrl: URL)
 }
 
 class DefaultStudioViewModel: StudioViewModel {
-    
+
     private let studioUseCase: StudioUseCase
     private let action: StudioViewModelAction
     
@@ -81,25 +77,9 @@ class DefaultStudioViewModel: StudioViewModel {
         self.studioUseCase.capturePhoto(photoSettings: photoSettings, photoOutput: photoOutput)
     }
     
-    func didPressRecordStartButton<T>(movieFileOutput: AVCaptureMovieFileOutput, recorder: T, deviceOrientation: AVCaptureVideoOrientation) where T: AVCaptureFileOutputRecordingDelegate {
-        self.studioUseCase.startRecord(movieFileOutput: movieFileOutput, recorder: recorder, deviceOrientation: deviceOrientation)
-    }
-    
-    func didPressRecordStopButton(movieFileOutput: AVCaptureMovieFileOutput) {
-        self.studioUseCase.stopRecord(movieFileOutput: movieFileOutput)
-    }
-    
-    func didSaveRecordedMovie() {
-        self.studioUseCase.saveRecordedMovie()
-    }
-    
     func didPressPresentMediaPickerViewButton() {
         self.action.presentMediaPickerView()
     }
-    
-}
-
-extension DefaultStudioViewModel {
     
     func recordVideo(sampleBuffer: CMSampleBuffer) {
         self.studioUseCase.recordVideo(sampleBuffer: sampleBuffer)
@@ -109,8 +89,8 @@ extension DefaultStudioViewModel {
         self.studioUseCase.recordAudio(sampleBuffer: sampleBuffer)
     }
     
-    func didPressRecordStartButton(videoTransform: CGAffineTransform) {
-        self.studioUseCase.startRecording(videoTransform: videoTransform)
+    func didPressRecordStartButton(videoTransform: CGAffineTransform, videoDataOutput: AVCaptureVideoDataOutput, audioDataOutput: AVCaptureAudioDataOutput) {
+        self.studioUseCase.startRecording(videoTransform: videoTransform, videoDataOutput: videoDataOutput, audioDataOutput: audioDataOutput)
     }
     
     func didPressRecordStopButton(completion: @escaping (URL) -> Void) {
