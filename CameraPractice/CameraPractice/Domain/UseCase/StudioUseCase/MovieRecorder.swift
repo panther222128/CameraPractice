@@ -65,7 +65,7 @@ final class DefaultMovieRecorder: MovieRecordable {
             assetWriter.startWriting()
             assetWriter.startSession(atSourceTime: CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
         } else if assetWriter.status == .writing {
-            if let input = assetWriterVideoInput,
+            if let input = self.assetWriterVideoInput,
                 input.isReadyForMoreMediaData {
                 input.append(sampleBuffer)
             }
@@ -73,7 +73,7 @@ final class DefaultMovieRecorder: MovieRecordable {
     }
     
     func recordAudio(sampleBuffer: CMSampleBuffer) {
-        guard let assetWriter = assetWriter, assetWriter.status == .writing, let input = assetWriterAudioInput, input.isReadyForMoreMediaData else { return }
+        guard let assetWriter = assetWriter, assetWriter.status == .writing, let input = self.assetWriterAudioInput, input.isReadyForMoreMediaData else { return }
         input.append(sampleBuffer)
     }
     

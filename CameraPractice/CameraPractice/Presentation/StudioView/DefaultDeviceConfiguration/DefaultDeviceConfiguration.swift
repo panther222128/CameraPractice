@@ -45,8 +45,6 @@ final class DefaultDeviceConfiguration: DeviceConfigurable {
 extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
     
     func configureCameraDevice(cameraDevices: CameraDevices, videoDataOutput: AVCaptureVideoDataOutput) {
-        self.defaultDevice = nil
-        self.videoDeviceInput = nil
         do {
             switch cameraDevices {
             case .builtInDualWideCamera:
@@ -75,8 +73,6 @@ extension DefaultDeviceConfiguration: CameraDeviceConfigurable {
 extension DefaultDeviceConfiguration: AudioDeviceConfigurable {
     
     func configureAudioDevice(audioDataOutput: AVCaptureAudioDataOutput) {
-        self.defaultDevice = nil
-        self.audioDeviceInput = nil
         do {
             guard let audioDevice = AVCaptureDevice.default(for: .audio) else { return }
             

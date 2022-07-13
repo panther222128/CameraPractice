@@ -262,7 +262,6 @@ extension DefaultStudio {
         defer {
             self.captureSession.commitConfiguration()
         }
-        
         if self.captureSession.canAddOutput(self.audioDataOutput) {
             self.captureSession.addOutput(self.audioDataOutput)
         }

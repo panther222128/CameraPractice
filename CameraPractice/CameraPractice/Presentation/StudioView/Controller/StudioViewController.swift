@@ -146,7 +146,8 @@ extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate, AV
         self.screenMetalView.pixelBuffer = videoPixelBuffer
         if let videoDataOutput = output as? AVCaptureVideoDataOutput {
             self.processFullScreenSampleBuffer(fullScreenSampleBuffer: sampleBuffer, from: videoDataOutput)
-        } else if let audioDataOutput = output as? AVCaptureAudioDataOutput {
+        }
+        if let audioDataOutput = output as? AVCaptureAudioDataOutput {
             self.processAudioSampleBuffer(sampleBuffer: sampleBuffer, from: audioDataOutput)
         }
     }
