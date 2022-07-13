@@ -10,12 +10,7 @@
 		9B2373B708CEDE453110E580 /* libPods-CameraPractice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB10BA060D23B295B40FEF6 /* libPods-CameraPractice.a */; };
 		A01287D6284456650068A093 /* DefaultDeviceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01287D5284456650068A093 /* DefaultDeviceConfiguration.swift */; };
 		A0190F422875203B000F5753 /* ScreenMetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0190F412875203B000F5753 /* ScreenMetalView.swift */; };
-		A0190F5628755602000F5753 /* DepthToGrayscale.metal in Sources */ = {isa = PBXBuildFile; fileRef = A0190F4628755424000F5753 /* DepthToGrayscale.metal */; };
-		A0190F5728755602000F5753 /* Mixer.metal in Sources */ = {isa = PBXBuildFile; fileRef = A0190F4428755424000F5753 /* Mixer.metal */; };
 		A0190F5828755602000F5753 /* PassThrough.metal in Sources */ = {isa = PBXBuildFile; fileRef = A0190F4528755424000F5753 /* PassThrough.metal */; };
-		A0190F5928755602000F5753 /* RosyEffect.metal in Sources */ = {isa = PBXBuildFile; fileRef = A0190F4728755424000F5753 /* RosyEffect.metal */; };
-		A0190F5B28755AD9000F5753 /* FilterRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0190F5A28755AD9000F5753 /* FilterRenderer.swift */; };
-		A0190F5F2875614F000F5753 /* VideoMixer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0190F5E28756020000F5753 /* VideoMixer.swift */; };
 		A030308828532604008BB69D /* RecordTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A030308728532604008BB69D /* RecordTimer.swift */; };
 		A030308A285346C9008BB69D /* DefaultPhotoSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0303089285346C9008BB69D /* DefaultPhotoSettings.swift */; };
 		A03B439A2858473B0050B656 /* DefaultAssetScreenRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03B43992858473B0050B656 /* DefaultAssetScreenRepository.swift */; };
@@ -69,12 +64,7 @@
 		5B5CA06E605C74C1EE2DEB64 /* Pods-CameraPractice.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CameraPractice.release.xcconfig"; path = "Target Support Files/Pods-CameraPractice/Pods-CameraPractice.release.xcconfig"; sourceTree = "<group>"; };
 		A01287D5284456650068A093 /* DefaultDeviceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDeviceConfiguration.swift; sourceTree = "<group>"; };
 		A0190F412875203B000F5753 /* ScreenMetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenMetalView.swift; sourceTree = "<group>"; };
-		A0190F4428755424000F5753 /* Mixer.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Mixer.metal; sourceTree = "<group>"; };
 		A0190F4528755424000F5753 /* PassThrough.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = PassThrough.metal; sourceTree = "<group>"; };
-		A0190F4628755424000F5753 /* DepthToGrayscale.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = DepthToGrayscale.metal; sourceTree = "<group>"; };
-		A0190F4728755424000F5753 /* RosyEffect.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = RosyEffect.metal; sourceTree = "<group>"; };
-		A0190F5A28755AD9000F5753 /* FilterRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterRenderer.swift; sourceTree = "<group>"; };
-		A0190F5E28756020000F5753 /* VideoMixer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoMixer.swift; sourceTree = "<group>"; };
 		A030308728532604008BB69D /* RecordTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTimer.swift; sourceTree = "<group>"; };
 		A0303089285346C9008BB69D /* DefaultPhotoSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultPhotoSettings.swift; sourceTree = "<group>"; };
 		A03B43992858473B0050B656 /* DefaultAssetScreenRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultAssetScreenRepository.swift; sourceTree = "<group>"; };
@@ -143,28 +133,9 @@
 		A0190F432875541B000F5753 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				A0190F4628755424000F5753 /* DepthToGrayscale.metal */,
-				A0190F4428755424000F5753 /* Mixer.metal */,
 				A0190F4528755424000F5753 /* PassThrough.metal */,
-				A0190F4728755424000F5753 /* RosyEffect.metal */,
 			);
 			path = Shaders;
-			sourceTree = "<group>";
-		};
-		A0190F5C28755AFD000F5753 /* FilterRenderer */ = {
-			isa = PBXGroup;
-			children = (
-				A0190F5A28755AD9000F5753 /* FilterRenderer.swift */,
-			);
-			path = FilterRenderer;
-			sourceTree = "<group>";
-		};
-		A0190F5D28756016000F5753 /* VideoMixer */ = {
-			isa = PBXGroup;
-			children = (
-				A0190F5E28756020000F5753 /* VideoMixer.swift */,
-			);
-			path = VideoMixer;
 			sourceTree = "<group>";
 		};
 		A0303086285325FC008BB69D /* RecordTimer */ = {
@@ -522,8 +493,6 @@
 		A0A096C12840B9CD00BCB214 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				A0190F5D28756016000F5753 /* VideoMixer */,
-				A0190F5C28755AFD000F5753 /* FilterRenderer */,
 				A0190F412875203B000F5753 /* ScreenMetalView.swift */,
 			);
 			path = View;
@@ -710,11 +679,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A0190F5F2875614F000F5753 /* VideoMixer.swift in Sources */,
-				A0190F5628755602000F5753 /* DepthToGrayscale.metal in Sources */,
-				A0190F5728755602000F5753 /* Mixer.metal in Sources */,
 				A0190F5828755602000F5753 /* PassThrough.metal in Sources */,
-				A0190F5928755602000F5753 /* RosyEffect.metal in Sources */,
 				A08F071B28573B27005AE166 /* MediaPickerRepository.swift in Sources */,
 				A0A096BB2840AD0100BCB214 /* StudioRepository.swift in Sources */,
 				A03B439C285847520050B656 /* AssetScreenRepository.swift in Sources */,
@@ -753,7 +718,6 @@
 				A0A096C62840C08A00BCB214 /* AuthorizationManager.swift in Sources */,
 				A0D7C03F2876DD6200BC2FAD /* UIWindow+Orientation.swift in Sources */,
 				A07F58F22861CE23000220E7 /* MovieTrimViewModel.swift in Sources */,
-				A0190F5B28755AD9000F5753 /* FilterRenderer.swift in Sources */,
 				A0A096B52840ACAD00BCB214 /* StudioViewModel.swift in Sources */,
 				A0190F422875203B000F5753 /* ScreenMetalView.swift in Sources */,
 				A0A096AC2840911B00BCB214 /* AppFlowCoordinator.swift in Sources */,

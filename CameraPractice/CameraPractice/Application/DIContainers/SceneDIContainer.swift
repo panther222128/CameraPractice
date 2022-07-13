@@ -59,16 +59,12 @@ final class SceneDIContainer: ViewFlowCoordinatorDependencies {
         return DefaultStudio(deviceConfiguration: self.deviceConfiguration, photoSettings: DefaultPhotoSettings())
     }
     
-    private func makeFilterRenderer() -> FilterRenderer {
-        return DefaultFilterRenderer()
-    }
-    
-    private func makeVideoMixer() -> VideoMixer {
-        return DefaultVideoMixer()
-    }
+//    private func makeVideoMixer() -> VideoMixer {
+//        return DefaultVideoMixer()
+//    }
     
     func makeStudioViewController(action: StudioViewModelAction) -> StudioViewController {
-        return StudioViewController.create(with: self.makeStudioViewModel(action: action), with: self.makeStudio(), with: self.makeRecordTimer(), with: self.makeFilterRenderer(), with: self.makeVideoMixer())
+        return StudioViewController.create(with: self.makeStudioViewModel(action: action), with: self.makeStudio(), with: self.makeRecordTimer())
     }
 
     // MARK: - MediaPicker

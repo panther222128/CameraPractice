@@ -22,8 +22,6 @@ final class StudioViewController: UIViewController {
     private var studioConfiguration: StudioConfigurable!
     private var viewModel: StudioViewModel!
     private var recordTimer: RecordTimerConfigurable!
-    private var filterRenderer: FilterRenderer!
-    private var videoMixer: VideoMixer!
     
     private let context = CIContext()
     private let studioActionButton = UIButton()
@@ -53,8 +51,6 @@ final class StudioViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.screenMetalView.configureMetal()
-        self.screenMetalView.createTextureCache()
         self.bind()
         self.viewModel.checkDeviceAccessAuthorizationStatus()
         self.viewModel.checkPhotoAlbumAccessAuthorized()
@@ -89,13 +85,11 @@ final class StudioViewController: UIViewController {
         }
     }
     
-    static func create(with viewModel: StudioViewModel, with studioConfiguration: StudioConfigurable, with recordTimer: RecordTimerConfigurable, with filterRenderer: FilterRenderer, with videoMixer: VideoMixer) -> StudioViewController {
+    static func create(with viewModel: StudioViewModel, with studioConfiguration: StudioConfigurable, with recordTimer: RecordTimerConfigurable) -> StudioViewController {
         let viewController = StudioViewController()
         viewController.viewModel = viewModel
         viewController.studioConfiguration = studioConfiguration
         viewController.recordTimer = recordTimer
-        viewController.filterRenderer = filterRenderer
-        viewController.videoMixer = videoMixer
         return viewController
     }
     
@@ -150,6 +144,41 @@ extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate, AV
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let videoPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         self.screenMetalView.pixelBuffer = videoPixelBuffer
+        if let videoDataOutput = output as? AVCaptureVideoDataOutput {
+            self.processFullScreenSampleBuffer(fullScreenSampleBuffer: sampleBuffer, from: videoDataOutput)
+        } else if let audioDataOutput = output as? AVCaptureAudioDataOutput {
+            self.processAudioSampleBuffer(sampleBuffer: sampleBuffer, from: audioDataOutput)
+        }
+    }
+    
+    private func processFullScreenSampleBuffer(fullScreenSampleBuffer: CMSampleBuffer, from videoDataOutput: AVCaptureVideoDataOutput) {
+        guard let fullScreenPixelBuffer = CMSampleBufferGetImageBuffer(fullScreenSampleBuffer) else { return }
+        guard let formatDescription = CMSampleBufferGetFormatDescription(fullScreenSampleBuffer) else { return }
+        guard let sampleBuffer = self.createVideoSampleBufferWithPixelBuffer(fullScreenPixelBuffer, formatDescription: formatDescription, presentationTime: CMSampleBufferGetPresentationTimeStamp(fullScreenSampleBuffer)) else { return }
+        self.viewModel.recordVideo(sampleBuffer: sampleBuffer)
+    }
+    
+    private func createVideoSampleBufferWithPixelBuffer(_ pixelBuffer: CVPixelBuffer, formatDescription: CMFormatDescription, presentationTime: CMTime) -> CMSampleBuffer? {
+        var sampleBuffer: CMSampleBuffer?
+        var timingInfo = CMSampleTimingInfo(duration: .invalid, presentationTimeStamp: presentationTime, decodeTimeStamp: .invalid)
+        
+        let err = CMSampleBufferCreateForImageBuffer(allocator: kCFAllocatorDefault,
+                                                     imageBuffer: pixelBuffer,
+                                                     dataReady: true,
+                                                     makeDataReadyCallback: nil,
+                                                     refcon: nil,
+                                                     formatDescription: formatDescription,
+                                                     sampleTiming: &timingInfo,
+                                                     sampleBufferOut: &sampleBuffer)
+        if sampleBuffer == nil {
+            print("Error: Sample buffer creation failed (error code: \(err))")
+        }
+        
+        return sampleBuffer
+    }
+
+    private func processAudioSampleBuffer(sampleBuffer: CMSampleBuffer, from audioDataOutput: AVCaptureAudioDataOutput) {
+        self.viewModel.recordAudio(sampleBuffer: sampleBuffer)
     }
     
 }
