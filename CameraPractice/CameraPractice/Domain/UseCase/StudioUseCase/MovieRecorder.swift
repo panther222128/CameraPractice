@@ -34,7 +34,12 @@ final class DefaultMovieRecorder: MovieRecordable {
         let outputFileName = NSUUID().uuidString
         let outputFileURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(outputFileName).appendingPathExtension("MOV")
         guard let assetWriter = try? AVAssetWriter(url: outputFileURL, fileType: .mov) else { return }
-        let assetWriterAudioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioDataOutput.recommendedAudioSettingsForAssetWriter(writingTo: .mov))
+        
+        let assetWriterAudioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: [
+            AVFormatIDKey : kAudioFormatMPEG4AAC,
+            AVNumberOfChannelsKey : 2,
+            AVSampleRateKey : 44100.0,
+            AVEncoderBitRateKey: 192000])
         assetWriterAudioInput.expectsMediaDataInRealTime = true
         assetWriter.add(assetWriterAudioInput)
         
