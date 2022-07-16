@@ -27,21 +27,11 @@ final class StudioViewController: UIViewController {
     private let studioActionButton = UIButton()
     private let presentMediaPickerViewButton = UIButton()
     private let screenMetalView = ScreenMetalView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 0)), device: MTLCreateSystemDefaultDevice())
-    private var outputConverter: UISegmentedControl = {
-        let outputs = ["Photo", "Movie"]
-        let outputConverter = UISegmentedControl(items: outputs)
-        outputConverter.selectedSegmentIndex = 0
-        return outputConverter
-    }()
-    private var cameraConverter: UISegmentedControl = {
-        let cameras = ["Default", "Front"]
-        let cameraConverter = UISegmentedControl(items: cameras)
-        cameraConverter.selectedSegmentIndex = 0
-        return cameraConverter
-    }()
+    private let outputConverterButton =  UIButton()
+    private let cameraConverterButton = UIButton()
     private let recordTimerLabel = UILabel()
     private let sessionQueue = DispatchQueue(label: "session queue")
-    private let dataInputOutpitQueue = DispatchQueue(label: "datainputoutput queue")
+    private let dataInputOutputQueue = DispatchQueue(label: "datainputoutput queue")
     
     private var isPhotoMode = true
     private var isRecordOn = false
@@ -57,10 +47,10 @@ final class StudioViewController: UIViewController {
         self.addSubviews()
         self.configureLayout()
         self.configureStudioActionButton()
-        self.addCameraConverterTarget()
-        self.configureCameraConverter()
-        self.addOutputConverterTarget()
-        self.configureOutputConverter()
+        self.configureCameraConverterButton()
+        self.configureCameraConverterButtonText()
+        self.configureOutputConverterButton()
+        self.configureOutputConverterButtonText()
         self.configureRecordTimerLabel()
         self.configureGoToMediaPickerButton()
     }
@@ -72,7 +62,7 @@ final class StudioViewController: UIViewController {
             if isAuthorized {
                 DispatchQueue.main.async {
                     self.sessionQueue.async {
-                        self.studioConfiguration.configureEnvironment(at: 0, presenter: self, with: .builtInDualWideCamera, sessionQueue: self.sessionQueue)
+                        self.studioConfiguration.configureDefaultMode(to: self, on: self.sessionQueue)
                         self.setOrientation()
                     }
                 }
@@ -145,14 +135,17 @@ extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate, AV
         guard let videoPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         self.screenMetalView.pixelBuffer = videoPixelBuffer
         if let videoDataOutput = output as? AVCaptureVideoDataOutput {
-            self.processFullScreenSampleBuffer(fullScreenSampleBuffer: sampleBuffer, from: videoDataOutput)
+            self.processFullScreenSampleBuffer(fullScreenSampleBuffer: sampleBuffer)
         }
         if let audioDataOutput = output as? AVCaptureAudioDataOutput {
-            self.processAudioSampleBuffer(sampleBuffer: sampleBuffer, from: audioDataOutput)
+            self.processAudioSampleBuffer(sampleBuffer: sampleBuffer)
+            self.processFullScreenSampleBuffer(fullScreenSampleBuffer: sampleBuffer)
+        } else if let audioDataOutput = output as? AVCaptureAudioDataOutput {
+            self.processAudioSampleBuffer(sampleBuffer: sampleBuffer)
         }
     }
     
-    private func processFullScreenSampleBuffer(fullScreenSampleBuffer: CMSampleBuffer, from videoDataOutput: AVCaptureVideoDataOutput) {
+    private func processFullScreenSampleBuffer(fullScreenSampleBuffer: CMSampleBuffer) {
         guard let fullScreenPixelBuffer = CMSampleBufferGetImageBuffer(fullScreenSampleBuffer) else { return }
         guard let formatDescription = CMSampleBufferGetFormatDescription(fullScreenSampleBuffer) else { return }
         guard let sampleBuffer = self.createVideoSampleBufferWithPixelBuffer(fullScreenPixelBuffer, formatDescription: formatDescription, presentationTime: CMSampleBufferGetPresentationTimeStamp(fullScreenSampleBuffer)) else { return }
@@ -178,7 +171,7 @@ extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate, AV
         return sampleBuffer
     }
 
-    private func processAudioSampleBuffer(sampleBuffer: CMSampleBuffer, from audioDataOutput: AVCaptureAudioDataOutput) {
+    private func processAudioSampleBuffer(sampleBuffer: CMSampleBuffer) {
         self.viewModel.recordAudio(sampleBuffer: sampleBuffer)
     }
     
@@ -188,36 +181,17 @@ extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate, AV
 
 extension StudioViewController {
     
-    private func addCameraConverterTarget() {
-        self.cameraConverter.addTarget(self, action: #selector(self.convertCamera), for: .valueChanged)
+    private func configureCameraConverterButton() {
+        self.cameraConverterButton.setTitle("Change Camera", for: .normal)
+        self.cameraConverterButton.addTarget(self, action: #selector(self.convertCamera), for: .touchUpInside)
     }
     
-    private func configureCameraConverter() {
-        self.cameraConverter.layer.borderWidth = 2
-        self.cameraConverter.layer.borderColor = UIColor.systemPink.cgColor
+    private func configureCameraConverterButtonText() {
+        
     }
     
-    @objc func convertCamera(sender: UISegmentedControl) {
-        switch sender.selectedSegmentIndex {
-        case 0:
-            DispatchQueue.main.async {
-                self.sessionQueue.async {
-                    self.studioConfiguration.convertCamera(to: .builtInDualWideCamera, presenter: self, sessionQueue: self.sessionQueue)
-                }
-            }
-        case 1:
-            DispatchQueue.main.async {
-                self.sessionQueue.async {
-                    self.studioConfiguration.convertCamera(to: .frontCamera, presenter: self, sessionQueue: self.sessionQueue)
-                }
-            }
-        default:
-            DispatchQueue.main.async {
-                self.sessionQueue.async {
-                    self.studioConfiguration.convertCamera(to: .builtInDualWideCamera, presenter: self, sessionQueue: self.sessionQueue)
-                }
-            }
-        }
+    @objc func convertCamera() {
+        self.studioConfiguration.convertCamera(for: self, on: self.sessionQueue)
     }
     
 }
@@ -226,41 +200,28 @@ extension StudioViewController {
 
 extension StudioViewController {
     
-    private func addOutputConverterTarget() {
-        self.outputConverter.addTarget(self, action: #selector(self.convertOutput), for: .valueChanged)
+    private func configureOutputConverterButton() {
+        self.outputConverterButton.setTitle("Photo", for: .normal)
+        self.outputConverterButton.addTarget(self, action: #selector(self.convertOutput), for: .touchUpInside)
     }
     
-    private func configureOutputConverter() {
-        self.outputConverter.layer.borderWidth = 2
-        self.outputConverter.layer.borderColor = UIColor.systemPink.cgColor
+    private func configureOutputConverterButtonText() {
+        
     }
     
-    @objc func convertOutput(sender: UISegmentedControl) {
-        switch sender.selectedSegmentIndex {
-        case 0:
-            DispatchQueue.main.async {
-                self.isPhotoMode = true
-                if self.isPhotoMode {
-                    self.recordTimerLabel.isHidden = true
-                    self.convertStudioActionButtonText()
-                }
-            }
-        case 1:
-            DispatchQueue.main.async {
-                self.isPhotoMode = false
-                if !self.isPhotoMode {
-                    self.recordTimerLabel.isHidden = false
-                    self.convertStudioActionButtonText()
-                }
-            }
-        default:
-            DispatchQueue.main.async {
-                self.isPhotoMode = true
-                if self.isPhotoMode {
-                    self.recordTimerLabel.isHidden = true
-                    self.convertStudioActionButtonText()
-                }
-            }
+    @objc func convertOutput() {
+        if self.isPhotoMode {
+            self.isPhotoMode = false
+            self.studioConfiguration.configureMovieMode(to: self, on: self.sessionQueue)
+            self.outputConverterButton.setTitle("Movie", for: .normal)
+            self.studioActionButton.setTitle("Record Movie", for: .normal)
+            self.recordTimerLabel.isHidden = false
+        } else {
+            self.isPhotoMode = true
+            self.studioConfiguration.configurePhotoMode()
+            self.outputConverterButton.setTitle("Photo", for: .normal)
+            self.studioActionButton.setTitle("Take Photo", for: .normal)
+            self.recordTimerLabel.isHidden = true
         }
     }
     
@@ -275,25 +236,18 @@ extension StudioViewController {
         self.studioActionButton.addTarget(self, action: #selector(self.pressedStudioActionButtonAction), for: .touchUpInside)
     }
     
-    private func convertStudioActionButtonText() {
-        if self.isPhotoMode {
-            self.studioActionButton.setTitle("Take Photo", for: .normal)
-        } else {
-            self.studioActionButton.setTitle("Record Video", for: .normal)
-        }
-    }
-    
     @objc func pressedStudioActionButtonAction() {
         guard let photoOutput = self.studioConfiguration.photoOutput else { return }
         guard let photoSettings = self.studioConfiguration.photoSettings else { return }
         if self.isPhotoMode {
             self.viewModel.didPressTakePhotoButton(photoSettings: photoSettings, photoOutput: photoOutput)
+            self.studioConfiguration.setPhotoOption()
         } else {
             if !self.isRecordOn {
                 self.isRecordOn = true
                 self.recordTimer.start()
                 self.studioActionButton.setTitleColor(.red, for: .normal)
-                self.dataInputOutpitQueue.async {
+                self.dataInputOutputQueue.async {
                     self.studioConfiguration.createVideoTransform(videoDataOutput: self.studioConfiguration.videoDataOutput)
                     guard let videoTransform = self.studioConfiguration.videoTransform else { return }
                     self.viewModel.didPressRecordStartButton(videoTransform: videoTransform, videoDataOutput: self.studioConfiguration.videoDataOutput, audioDataOutput: self.studioConfiguration.audioDataOutput)
@@ -302,7 +256,7 @@ extension StudioViewController {
                 self.isRecordOn = false
                 self.recordTimer.stop()
                 self.studioActionButton.setTitleColor(.white, for: .normal)
-                self.dataInputOutpitQueue.async {
+                self.dataInputOutputQueue.async {
                     self.viewModel.didPressRecordStopButton { url in
                         self.viewModel.saveMovie(outputUrl: url)
                     }
@@ -341,8 +295,8 @@ extension StudioViewController {
     private func addSubviews() {
         self.view.addSubview(self.screenMetalView)
         self.view.addSubview(self.studioActionButton)
-        self.view.addSubview(self.cameraConverter)
-        self.view.addSubview(self.outputConverter)
+        self.view.addSubview(self.cameraConverterButton)
+        self.view.addSubview(self.outputConverterButton)
         self.view.addSubview(self.recordTimerLabel)
         self.view.addSubview(self.presentMediaPickerViewButton)
     }
@@ -358,17 +312,13 @@ extension StudioViewController {
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(self.view.snp.bottom).offset(-60)
         }
-        self.cameraConverter.snp.makeConstraints {
-            $0.leading.equalTo(self.view.snp.leading).offset(100)
-            $0.top.equalTo(self.view.snp.top).offset(80)
-            $0.trailing.equalTo(self.view.snp.trailing).offset(-100)
-            $0.height.equalTo(38)
+        self.cameraConverterButton.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview()
+            $0.top.equalTo(self.outputConverterButton.snp.top).offset(40)
         }
-        self.outputConverter.snp.makeConstraints {
-            $0.leading.equalTo(self.view.snp.leading).offset(100)
-            $0.top.equalTo(self.cameraConverter.snp.bottom).offset(4)
-            $0.trailing.equalTo(self.view.snp.trailing).offset(-100)
-            $0.height.equalTo(38)
+        self.outputConverterButton.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview()
+            $0.top.equalTo(self.view.snp.top).offset(80)
         }
         self.recordTimerLabel.snp.makeConstraints {
             $0.centerX.equalTo(self.view.snp.centerX)

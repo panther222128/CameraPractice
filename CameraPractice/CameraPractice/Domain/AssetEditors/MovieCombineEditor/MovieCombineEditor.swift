@@ -79,7 +79,7 @@ final class DefaultMovieCombineEditor: MovieCombineEditor {
         videoComposition.frameDuration = CMTimeMake(value: 1, timescale: 30)
         videoComposition.renderSize = self.renderSize
         
-        guard let exportSession = AVAssetExportSession(asset: mergedMutableComposition, presetName: AVAssetExportPresetHEVCHighestQuality) else { return }
+        guard let exportSession = AVAssetExportSession(asset: mergedMutableComposition, presetName: AVAssetExportPreset1920x1080) else { return }
         let videoName = UUID().uuidString
         let exportURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(videoName).appendingPathExtension("mov")
         exportSession.outputFileType = .mov
