@@ -48,9 +48,7 @@ final class StudioViewController: UIViewController {
         self.configureLayout()
         self.configureStudioActionButton()
         self.configureCameraConverterButton()
-        self.configureCameraConverterButtonText()
         self.configureOutputConverterButton()
-        self.configureOutputConverterButtonText()
         self.configureRecordTimerLabel()
         self.configureGoToMediaPickerButton()
     }
@@ -71,7 +69,8 @@ final class StudioViewController: UIViewController {
             }
         }
         self.recordTimer.time.bind { [weak self] timeProgressStatus in
-            self?.recordTimerLabel.text = timeProgressStatus
+            guard let self = self else { return }
+            self.recordTimerLabel.text = timeProgressStatus
         }
     }
     
@@ -134,13 +133,9 @@ extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate, AV
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let videoPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         self.screenMetalView.pixelBuffer = videoPixelBuffer
-        if let videoDataOutput = output as? AVCaptureVideoDataOutput {
+        if output == self.studioConfiguration.videoDataOutput {
             self.processFullScreenSampleBuffer(fullScreenSampleBuffer: sampleBuffer)
-        }
-        if let audioDataOutput = output as? AVCaptureAudioDataOutput {
-            self.processAudioSampleBuffer(sampleBuffer: sampleBuffer)
-            self.processFullScreenSampleBuffer(fullScreenSampleBuffer: sampleBuffer)
-        } else if let audioDataOutput = output as? AVCaptureAudioDataOutput {
+        } else if output == self.studioConfiguration.backAudioDataOutput {
             self.processAudioSampleBuffer(sampleBuffer: sampleBuffer)
         }
     }
@@ -167,7 +162,6 @@ extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate, AV
         if sampleBuffer == nil {
             print("Error: Sample buffer creation failed (error code: \(err))")
         }
-        
         return sampleBuffer
     }
 
@@ -186,12 +180,8 @@ extension StudioViewController {
         self.cameraConverterButton.addTarget(self, action: #selector(self.convertCamera), for: .touchUpInside)
     }
     
-    private func configureCameraConverterButtonText() {
-        
-    }
-    
     @objc func convertCamera() {
-        self.studioConfiguration.convertCamera(for: self, on: self.sessionQueue)
+        self.studioConfiguration.convertCamera(at: self, on: self.sessionQueue)
     }
     
 }
@@ -203,10 +193,6 @@ extension StudioViewController {
     private func configureOutputConverterButton() {
         self.outputConverterButton.setTitle("Photo", for: .normal)
         self.outputConverterButton.addTarget(self, action: #selector(self.convertOutput), for: .touchUpInside)
-    }
-    
-    private func configureOutputConverterButtonText() {
-        
     }
     
     @objc func convertOutput() {
@@ -250,7 +236,7 @@ extension StudioViewController {
                 self.dataInputOutputQueue.async {
                     self.studioConfiguration.createVideoTransform(videoDataOutput: self.studioConfiguration.videoDataOutput)
                     guard let videoTransform = self.studioConfiguration.videoTransform else { return }
-                    self.viewModel.didPressRecordStartButton(videoTransform: videoTransform, videoDataOutput: self.studioConfiguration.videoDataOutput, audioDataOutput: self.studioConfiguration.audioDataOutput)
+                    self.viewModel.didPressRecordStartButton(videoTransform: videoTransform, videoDataOutput: self.studioConfiguration.videoDataOutput, audioDataOutput: self.studioConfiguration.backAudioDataOutput)
                 }
             } else {
                 self.isRecordOn = false

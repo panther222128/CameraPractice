@@ -21,9 +21,6 @@ final class DefaultMovieRecorder: MovieRecordable {
     private var assetWriterVideoInput: AVAssetWriterInput?
     private var assetWriterAudioInput: AVAssetWriterInput?
     
-    private var audioSettings: [String: Any]?
-    private var videoSettings: [String: Any]?
-    
     init() {
         self.assetWriter = nil
         self.assetWriterVideoInput = nil
@@ -35,22 +32,23 @@ final class DefaultMovieRecorder: MovieRecordable {
         let outputFileURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(outputFileName).appendingPathExtension("MOV")
         guard let assetWriter = try? AVAssetWriter(url: outputFileURL, fileType: .mov) else { return }
         
-        let assetWriterAudioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: [
-            AVFormatIDKey : kAudioFormatMPEG4AAC,
-            AVNumberOfChannelsKey : 2,
-            AVSampleRateKey : 44100.0,
-            AVEncoderBitRateKey: 192000])
-        assetWriterAudioInput.expectsMediaDataInRealTime = true
-        assetWriter.add(assetWriterAudioInput)
-        
         let assetWriterVideoInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoDataOutput.recommendedVideoSettingsForAssetWriter(writingTo: .mov))
         assetWriterVideoInput.expectsMediaDataInRealTime = true
         assetWriterVideoInput.transform = videoTransform
-        assetWriter.add(assetWriterVideoInput)
         
+        if assetWriter.canAdd(assetWriterVideoInput) {
+            assetWriter.add(assetWriterVideoInput)
+        }
+        
+        let assetWriterAudioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioDataOutput.recommendedAudioSettingsForAssetWriter(writingTo: .mov))
+        assetWriterAudioInput.expectsMediaDataInRealTime = true
+        
+        if assetWriter.canAdd(assetWriterAudioInput) {
+            assetWriter.add(assetWriterAudioInput)
+        }
         self.assetWriter = assetWriter
-        self.assetWriterAudioInput = assetWriterAudioInput
         self.assetWriterVideoInput = assetWriterVideoInput
+        self.assetWriterAudioInput = assetWriterAudioInput
     }
     
     func stopRecording(completion: @escaping (URL) -> Void) {

@@ -12,13 +12,13 @@ protocol StudioConfigurable {
     var photoSettings: AVCapturePhotoSettings? { get }
     var photoOutput: AVCapturePhotoOutput? { get }
     var videoDataOutput: AVCaptureVideoDataOutput { get }
-    var audioDataOutput: AVCaptureAudioDataOutput { get }
+    var backAudioDataOutput: AVCaptureAudioDataOutput { get }
     var videoTransform: CGAffineTransform? { get }
     
     func configureDefaultMode<T>(to presenter: T, on sessionQueue: DispatchQueue) where T: AVCaptureVideoDataOutputSampleBufferDelegate & UIViewController
     func configureMovieMode<T>(to presenter: T, on sessionQueue: DispatchQueue) where T: AVCaptureVideoDataOutputSampleBufferDelegate & AVCaptureAudioDataOutputSampleBufferDelegate & UIViewController
     func configurePhotoMode()
-    func convertCamera<T>(for presenter: T, on sessionQueue: DispatchQueue) where T: AVCaptureVideoDataOutputSampleBufferDelegate & AVCaptureAudioDataOutputSampleBufferDelegate & UIViewController
+    func convertCamera<T>(at presenter: T, on sessionQueue: DispatchQueue) where T: AVCaptureVideoDataOutputSampleBufferDelegate & AVCaptureAudioDataOutputSampleBufferDelegate & UIViewController
     func setPhotoOption()
     
     func createVideoTransform(videoDataOutput: AVCaptureVideoDataOutput)
@@ -33,12 +33,14 @@ final class DefaultStudio: StudioConfigurable {
     var photoSettings: AVCapturePhotoSettings?
     var photoOutput: AVCapturePhotoOutput?
     var videoDataOutput: AVCaptureVideoDataOutput
-    var audioDataOutput: AVCaptureAudioDataOutput
+    var backAudioDataOutput: AVCaptureAudioDataOutput
+    var frontAudioDataOutput: AVCaptureAudioDataOutput
     var videoTransform: CGAffineTransform?
     
     private let captureSession: AVCaptureSession
     
     private var isPhotoMode: Bool
+    private var isBackCamera: Bool
 
     init(deviceConfiguration: DeviceConfigurable, photoSettings: AVCapturePhotoSettings) {
         self.captureSession = AVCaptureSession()
@@ -46,8 +48,10 @@ final class DefaultStudio: StudioConfigurable {
         self.photoSettings = photoSettings
         self.videoTransform = nil
         self.videoDataOutput = AVCaptureVideoDataOutput()
-        self.audioDataOutput = AVCaptureAudioDataOutput()
+        self.backAudioDataOutput = AVCaptureAudioDataOutput()
+        self.frontAudioDataOutput = AVCaptureAudioDataOutput()
         self.isPhotoMode = true
+        self.isBackCamera = true
     }
     
     func configureDefaultMode<T>(to presenter: T, on sessionQueue: DispatchQueue) where T: AVCaptureVideoDataOutputSampleBufferDelegate & UIViewController {
@@ -74,7 +78,14 @@ final class DefaultStudio: StudioConfigurable {
         guard let photoOutput = self.photoOutput else { return }
         self.captureSession.removeOutput(photoOutput)
 
-        self.configureAudioDevice()
+        self.deviceConfiguration.configureAudioDevice(audioDataOutput: self.backAudioDataOutput)
+        
+        guard let audioDeviceInput = self.deviceConfiguration.audioDeviceInput else { return }
+        
+        if self.captureSession.canAddInput(audioDeviceInput) {
+            self.captureSession.addInputWithNoConnections(audioDeviceInput)
+        }
+        
         self.setVideoOption(to: presenter, on: sessionQueue)
         self.setAudioOption(to: presenter, on: sessionQueue)
     }
@@ -86,11 +97,11 @@ final class DefaultStudio: StudioConfigurable {
             self.captureSession.commitConfiguration()
         }
         
-        self.captureSession.removeOutput(self.audioDataOutput)
+        self.captureSession.removeOutput(self.backAudioDataOutput)
         self.setPhotoOption()
     }
     
-    func convertCamera<T>(for presenter: T, on sessionQueue: DispatchQueue) where T: AVCaptureVideoDataOutputSampleBufferDelegate & AVCaptureAudioDataOutputSampleBufferDelegate & UIViewController {
+    func convertCamera<T>(at presenter: T, on sessionQueue: DispatchQueue) where T: AVCaptureVideoDataOutputSampleBufferDelegate & AVCaptureAudioDataOutputSampleBufferDelegate & UIViewController {
         self.captureSession.beginConfiguration()
         defer {
             self.captureSession.commitConfiguration()
@@ -100,21 +111,23 @@ final class DefaultStudio: StudioConfigurable {
         self.captureSession.removeInput(videoDeviceInput)
         
         if devicePosition == .back {
+            self.isBackCamera = false
             self.configureVideoDevice(devicePosition: .front)
             self.setVideoOption(to: presenter, on: sessionQueue)
             if self.isPhotoMode  {
                 self.setPhotoOption()
             } else {
-                self.configureAudioDevice()
+                self.deviceConfiguration.configureAudioDevice(audioDataOutput: self.backAudioDataOutput)
                 self.setAudioOption(to: presenter, on: sessionQueue)
             }
         } else if devicePosition == .front {
+            self.isBackCamera = true
             self.configureVideoDevice(devicePosition: .back)
             self.setVideoOption(to: presenter, on: sessionQueue)
             if self.isPhotoMode {
                 self.setPhotoOption()
             } else {
-                self.configureAudioDevice()
+                self.deviceConfiguration.configureAudioDevice(audioDataOutput: self.frontAudioDataOutput)
                 self.setAudioOption(to: presenter, on: sessionQueue)
             }
         }
@@ -133,14 +146,13 @@ final class DefaultStudio: StudioConfigurable {
         }
         
         guard let videoDeviceInput = self.deviceConfiguration.videoDeviceInput else { return }
+        
         if self.captureSession.canAddInput(videoDeviceInput) {
             self.captureSession.addInputWithNoConnections(videoDeviceInput)
         }
     }
     
     private func configureAudioDevice() {
-        self.deviceConfiguration.configureAudioDevice(audioDataOutput: self.audioDataOutput)
-        
         guard let audioDeviceInput = self.deviceConfiguration.audioDeviceInput else { return }
         
         if self.captureSession.canAddInput(audioDeviceInput) {
@@ -182,40 +194,65 @@ final class DefaultStudio: StudioConfigurable {
     
     private func setVideoOption<T>(to presenter: T, on sessionQueue: DispatchQueue) where T: AVCaptureVideoDataOutputSampleBufferDelegate & UIViewController {
         self.videoDataOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)]
-        self.videoDataOutput.setSampleBufferDelegate(presenter, queue: sessionQueue)
+        
         if self.captureSession.canAddOutput(self.videoDataOutput) {
             self.captureSession.addOutputWithNoConnections(self.videoDataOutput)
         }
         
-        guard let videoDeviceInput = self.deviceConfiguration.videoDeviceInput else { return }
-        guard let videoInputPort = videoDeviceInput.ports(for: .video, sourceDeviceType: videoDeviceInput.device.deviceType, sourceDevicePosition: videoDeviceInput.device.position).first else { return }
-        let videoDataOutputConnection = AVCaptureConnection(inputPorts: [videoInputPort], output: self.videoDataOutput)
+        self.videoDataOutput.setSampleBufferDelegate(presenter, queue: sessionQueue)
         
-        if self.captureSession.canAddConnection(videoDataOutputConnection) {
-            self.captureSession.addConnection(videoDataOutputConnection)
+        guard let videoDeviceInput = self.deviceConfiguration.videoDeviceInput else { return }
+        
+        if isBackCamera {
+            guard let videoInputPort = videoDeviceInput.ports(for: .video, sourceDeviceType: videoDeviceInput.device.deviceType, sourceDevicePosition: .back).first else { return }
+            let videoDataOutputConnection = AVCaptureConnection(inputPorts: [videoInputPort], output: self.videoDataOutput)
+            if self.captureSession.canAddConnection(videoDataOutputConnection) {
+                self.captureSession.addConnection(videoDataOutputConnection)
+            }
+        } else {
+            guard let videoInputPort = videoDeviceInput.ports(for: .video, sourceDeviceType: videoDeviceInput.device.deviceType, sourceDevicePosition: .front).first else { return }
+            let videoDataOutputConnection = AVCaptureConnection(inputPorts: [videoInputPort], output: self.videoDataOutput)
+            if self.captureSession.canAddConnection(videoDataOutputConnection) {
+                self.captureSession.addConnection(videoDataOutputConnection)
+            }
         }
     }
     
     private func setAudioOption<T>(to presenter: T, on sessionQueue: DispatchQueue) where T: AVCaptureAudioDataOutputSampleBufferDelegate & UIViewController {
-        self.captureSession.removeOutput(self.audioDataOutput)
-        
         self.captureSession.beginConfiguration()
         defer {
             self.captureSession.commitConfiguration()
         }
-
-        audioDataOutput.setSampleBufferDelegate(presenter, queue: sessionQueue)
         
-        if self.captureSession.canAddOutput(self.audioDataOutput) {
-            self.captureSession.addOutput(self.audioDataOutput)
+        guard let deviceInput = self.deviceConfiguration.audioDeviceInput else { return }
+        
+        guard let backMicrophonePort = deviceInput.ports(for: .audio, sourceDeviceType: deviceInput.device.deviceType, sourceDevicePosition: .back).first else { return }
+        guard let frontMicrophonePort = deviceInput.ports(for: .audio, sourceDeviceType: deviceInput.device.deviceType, sourceDevicePosition: .front).first else { return }
+        
+        if self.captureSession.canAddOutput(self.backAudioDataOutput) {
+            self.captureSession.addOutputWithNoConnections(self.backAudioDataOutput)
         }
         
-        guard let audioDeviceInput = self.deviceConfiguration.audioDeviceInput else { return }
-        guard let audioInputPort = audioDeviceInput.ports(for: .audio, sourceDeviceType: audioDeviceInput.device.deviceType, sourceDevicePosition: audioDeviceInput.device.position).first else { return }
-        let audioDataOutputConnection = AVCaptureConnection(inputPorts: [audioInputPort], output: self.audioDataOutput)
+        self.backAudioDataOutput.setSampleBufferDelegate(presenter, queue: sessionQueue)
         
-        if self.captureSession.canAddConnection(audioDataOutputConnection) {
-            self.captureSession.addConnection(audioDataOutputConnection)
+        let backAudioDataOutputConnection = AVCaptureConnection(inputPorts: [backMicrophonePort], output: self.backAudioDataOutput)
+        
+        if self.captureSession.canAddConnection(backAudioDataOutputConnection) {
+            self.captureSession.addConnection(backAudioDataOutputConnection)
+        }
+        
+        //
+        
+        if self.captureSession.canAddOutput(self.frontAudioDataOutput) {
+            self.captureSession.addOutputWithNoConnections(self.frontAudioDataOutput)
+        }
+        
+        self.frontAudioDataOutput.setSampleBufferDelegate(presenter, queue: sessionQueue)
+        
+        let frontAudioDataOutputConnection = AVCaptureConnection(inputPorts: [frontMicrophonePort], output: self.frontAudioDataOutput)
+        
+        if self.captureSession.canAddConnection(frontAudioDataOutputConnection) {
+            self.captureSession.addConnection(frontAudioDataOutputConnection)
         }
     }
     
