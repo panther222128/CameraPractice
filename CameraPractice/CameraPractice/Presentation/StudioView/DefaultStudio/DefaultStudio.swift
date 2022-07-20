@@ -83,7 +83,7 @@ final class DefaultStudio: StudioConfigurable {
         guard let audioDeviceInput = self.deviceConfiguration.audioDeviceInput else { return }
         
         if self.captureSession.canAddInput(audioDeviceInput) {
-            self.captureSession.addInputWithNoConnections(audioDeviceInput)
+            self.captureSession.addInput(audioDeviceInput)
         }
         
         self.setVideoOption(to: presenter, on: sessionQueue)
@@ -219,41 +219,10 @@ final class DefaultStudio: StudioConfigurable {
     }
     
     private func setAudioOption<T>(to presenter: T, on sessionQueue: DispatchQueue) where T: AVCaptureAudioDataOutputSampleBufferDelegate & UIViewController {
-        self.captureSession.beginConfiguration()
-        defer {
-            self.captureSession.commitConfiguration()
-        }
-        
-        guard let deviceInput = self.deviceConfiguration.audioDeviceInput else { return }
-        
-        guard let backMicrophonePort = deviceInput.ports(for: .audio, sourceDeviceType: deviceInput.device.deviceType, sourceDevicePosition: .back).first else { return }
-        guard let frontMicrophonePort = deviceInput.ports(for: .audio, sourceDeviceType: deviceInput.device.deviceType, sourceDevicePosition: .front).first else { return }
-        
         if self.captureSession.canAddOutput(self.backAudioDataOutput) {
-            self.captureSession.addOutputWithNoConnections(self.backAudioDataOutput)
+            self.captureSession.addOutput(self.backAudioDataOutput)
         }
-        
         self.backAudioDataOutput.setSampleBufferDelegate(presenter, queue: sessionQueue)
-        
-        let backAudioDataOutputConnection = AVCaptureConnection(inputPorts: [backMicrophonePort], output: self.backAudioDataOutput)
-        
-        if self.captureSession.canAddConnection(backAudioDataOutputConnection) {
-            self.captureSession.addConnection(backAudioDataOutputConnection)
-        }
-        
-        //
-        
-        if self.captureSession.canAddOutput(self.frontAudioDataOutput) {
-            self.captureSession.addOutputWithNoConnections(self.frontAudioDataOutput)
-        }
-        
-        self.frontAudioDataOutput.setSampleBufferDelegate(presenter, queue: sessionQueue)
-        
-        let frontAudioDataOutputConnection = AVCaptureConnection(inputPorts: [frontMicrophonePort], output: self.frontAudioDataOutput)
-        
-        if self.captureSession.canAddConnection(frontAudioDataOutputConnection) {
-            self.captureSession.addConnection(frontAudioDataOutputConnection)
-        }
     }
     
     func invalidateStudio() {

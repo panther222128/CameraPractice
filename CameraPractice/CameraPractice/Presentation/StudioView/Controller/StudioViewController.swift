@@ -9,7 +9,7 @@ import UIKit
 import AVFoundation
 import SnapKit
 
-protocol DataOutputSampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate & AVCaptureAudioDataOutputSampleBufferDelegate {
+protocol DataOutputSampleBufferDelegate: AVCaptureAudioDataOutputSampleBufferDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
     
 }
 
@@ -128,15 +128,15 @@ extension StudioViewController {
 
 // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
 
-extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
+extension StudioViewController: AVCaptureAudioDataOutputSampleBufferDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let videoPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         self.screenMetalView.pixelBuffer = videoPixelBuffer
-        if output == self.studioConfiguration.videoDataOutput {
-            self.processFullScreenSampleBuffer(fullScreenSampleBuffer: sampleBuffer)
-        } else if output == self.studioConfiguration.backAudioDataOutput {
-            self.processAudioSampleBuffer(sampleBuffer: sampleBuffer)
+        if let videoDataOutput = output as? AVCaptureVideoDataOutput {
+            processFullScreenSampleBuffer(fullScreenSampleBuffer: sampleBuffer)
+        } else if let audioDataOutput = output as? AVCaptureAudioDataOutput {
+            processAudioSampleBuffer(sampleBuffer: sampleBuffer, fromOutput: self.studioConfiguration.backAudioDataOutput)
         }
     }
     
@@ -165,7 +165,8 @@ extension StudioViewController: AVCaptureVideoDataOutputSampleBufferDelegate, AV
         return sampleBuffer
     }
 
-    private func processAudioSampleBuffer(sampleBuffer: CMSampleBuffer) {
+    private func processAudioSampleBuffer(sampleBuffer: CMSampleBuffer, fromOutput audioDataOutput: AVCaptureAudioDataOutput) {
+        guard audioDataOutput == self.studioConfiguration.backAudioDataOutput else { return }
         self.viewModel.recordAudio(sampleBuffer: sampleBuffer)
     }
     
@@ -198,7 +199,7 @@ extension StudioViewController {
     @objc func convertOutput() {
         if self.isPhotoMode {
             self.isPhotoMode = false
-            self.studioConfiguration.configureMovieMode(to: self, on: self.sessionQueue)
+            self.studioConfiguration.configureMovieMode(to: self, on: self.dataInputOutputQueue)
             self.outputConverterButton.setTitle("Movie", for: .normal)
             self.studioActionButton.setTitle("Record Movie", for: .normal)
             self.recordTimerLabel.isHidden = false

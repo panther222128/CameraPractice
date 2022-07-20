@@ -28,7 +28,7 @@ enum CameraDevices {
 final class DefaultDeviceConfiguration: DeviceConfigurable {
     
     @objc dynamic var audioDeviceInput: AVCaptureDeviceInput?
-    @objc dynamic var videoDeviceInput: AVCaptureDeviceInput?
+    var videoDeviceInput: AVCaptureDeviceInput?
     
     init() {
         self.audioDeviceInput = nil
