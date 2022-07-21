@@ -19,6 +19,14 @@ extension StudioViewController: DataOutputSampleBufferDelegate {
 
 final class StudioViewController: UIViewController {
     
+    /*
+     Filter objects will be requested from server but not yet. When these filters are response from network, responsibility of repository occurs and
+     code of repository, usecase, viewmodel are needed to add appropriate codes for architecture flow.
+     */
+    private let filterRenderes: [FilterRenderer] = [RosyMetalRenderer(), LookupMetalRenderer()]
+    
+    private var videoFilter: FilterRenderer?
+    
     private var studioConfiguration: StudioConfigurable!
     private var viewModel: StudioViewModel!
     private var recordTimer: RecordTimerConfigurable!
@@ -30,6 +38,13 @@ final class StudioViewController: UIViewController {
     private let outputConverterButton =  UIButton()
     private let cameraConverterButton = UIButton()
     private let recordTimerLabel = UILabel()
+    private let filterConverter: UISegmentedControl = {
+        let filterConverterItems = ["none", "Rosy", "Lookup"]
+        let filterConverter = UISegmentedControl(items: filterConverterItems)
+        filterConverter.selectedSegmentIndex = 0
+        return filterConverter
+    }()
+    
     private let sessionQueue = DispatchQueue(label: "session queue")
     private let dataInputOutputQueue = DispatchQueue(label: "datainputoutput queue")
     
@@ -172,6 +187,29 @@ extension StudioViewController: AVCaptureAudioDataOutputSampleBufferDelegate, AV
     
 }
 
+// MARK: - FilterConverter
+
+extension StudioViewController {
+    
+    private func addFilterConverterTarget() {
+        self.filterConverter.addTarget(self, action: #selector(self.convertFilter), for: .valueChanged)
+    }
+    
+    @objc func convertFilter(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            print("0")
+        case 1:
+            print("1")
+        case 2:
+            print("2")
+        default:
+            print("3")
+        }
+    }
+    
+}
+
 // MARK: - CameraConverter
 
 extension StudioViewController {
@@ -286,6 +324,7 @@ extension StudioViewController {
         self.view.addSubview(self.outputConverterButton)
         self.view.addSubview(self.recordTimerLabel)
         self.view.addSubview(self.presentMediaPickerViewButton)
+        self.view.addSubview(self.filterConverter)
     }
     
     private func configureLayout() {
@@ -314,6 +353,12 @@ extension StudioViewController {
         self.presentMediaPickerViewButton.snp.makeConstraints {
             $0.top.trailing.equalTo(self.view.safeAreaLayoutGuide)
             $0.height.equalTo(24)
+        }
+        self.filterConverter.snp.makeConstraints {
+            $0.leading.equalTo(self.view.snp.leading).offset(100)
+            $0.bottom.equalTo(self.studioActionButton.snp.top).offset(-20)
+            $0.trailing.equalTo(self.view.snp.trailing).offset(-100)
+            $0.height.equalTo(38)
         }
     }
     
