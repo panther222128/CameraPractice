@@ -23,7 +23,7 @@ final class StudioViewController: UIViewController {
      Filter objects will be requested from server but not yet. When these filters are response from network, responsibility of repository occurs and
      code of repository, usecase, viewmodel are needed to add appropriate codes for architecture flow.
      */
-    private let filterRenderes: [FilterRenderer] = [RosyMetalRenderer(), LookupMetalRenderer()]
+    private let filterRenderes: [FilterRenderer?] = [nil, RosyMetalRenderer(), LookupMetalRenderer()]
     
     private var videoFilter: FilterRenderer?
     
@@ -66,6 +66,7 @@ final class StudioViewController: UIViewController {
         self.configureOutputConverterButton()
         self.configureRecordTimerLabel()
         self.configureGoToMediaPickerButton()
+        self.addFilterConverterTarget()
     }
     
     private func bind() {
@@ -146,19 +147,29 @@ extension StudioViewController {
 extension StudioViewController: AVCaptureAudioDataOutputSampleBufferDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        guard let videoPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-        self.screenMetalView.pixelBuffer = videoPixelBuffer
         if let videoDataOutput = output as? AVCaptureVideoDataOutput {
-            processFullScreenSampleBuffer(fullScreenSampleBuffer: sampleBuffer)
+            processFullScreenSampleBuffer(fullScreenSampleBuffer: sampleBuffer, view: self.screenMetalView)
         } else if let audioDataOutput = output as? AVCaptureAudioDataOutput {
-            processAudioSampleBuffer(sampleBuffer: sampleBuffer, fromOutput: self.studioConfiguration.backAudioDataOutput)
+            processAudioSampleBuffer(sampleBuffer: sampleBuffer, fromOutput: audioDataOutput)
         }
     }
     
-    private func processFullScreenSampleBuffer(fullScreenSampleBuffer: CMSampleBuffer) {
+    private func processFullScreenSampleBuffer(fullScreenSampleBuffer: CMSampleBuffer, view: ScreenMetalView) {
         guard let fullScreenPixelBuffer = CMSampleBufferGetImageBuffer(fullScreenSampleBuffer) else { return }
         guard let formatDescription = CMSampleBufferGetFormatDescription(fullScreenSampleBuffer) else { return }
-        guard let sampleBuffer = self.createVideoSampleBufferWithPixelBuffer(fullScreenPixelBuffer, formatDescription: formatDescription, presentationTime: CMSampleBufferGetPresentationTimeStamp(fullScreenSampleBuffer)) else { return }
+        
+        var finalVideoPixelBuffer = fullScreenPixelBuffer
+        
+        if let filter = self.videoFilter {
+            if !filter.isPrepared {
+                filter.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
+            }
+            guard let filteredBuffer = filter.render(pixelBuffer: finalVideoPixelBuffer) else { return }
+            finalVideoPixelBuffer = filteredBuffer
+        }
+        
+        guard let sampleBuffer = self.createVideoSampleBufferWithPixelBuffer(finalVideoPixelBuffer, formatDescription: formatDescription, presentationTime: CMSampleBufferGetPresentationTimeStamp(fullScreenSampleBuffer)) else { return }
+        view.pixelBuffer = finalVideoPixelBuffer
         self.viewModel.recordVideo(sampleBuffer: sampleBuffer)
     }
     
@@ -198,13 +209,17 @@ extension StudioViewController {
     @objc func convertFilter(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
-            print("0")
+            self.videoFilter?.reset()
+            self.videoFilter = self.filterRenderes[sender.selectedSegmentIndex]
         case 1:
-            print("1")
+            self.videoFilter?.reset()
+            self.videoFilter = self.filterRenderes[sender.selectedSegmentIndex]
         case 2:
-            print("2")
+            self.videoFilter?.reset()
+            self.videoFilter = self.filterRenderes[sender.selectedSegmentIndex]
         default:
-            print("3")
+            self.videoFilter?.reset()
+            self.videoFilter = self.filterRenderes[sender.selectedSegmentIndex]
         }
     }
     
@@ -348,7 +363,7 @@ extension StudioViewController {
         }
         self.recordTimerLabel.snp.makeConstraints {
             $0.centerX.equalTo(self.view.snp.centerX)
-            $0.bottom.equalTo(self.studioActionButton.snp.top).offset(-20)
+            $0.bottom.equalTo(self.filterConverter.snp.top).offset(-20)
         }
         self.presentMediaPickerViewButton.snp.makeConstraints {
             $0.top.trailing.equalTo(self.view.safeAreaLayoutGuide)

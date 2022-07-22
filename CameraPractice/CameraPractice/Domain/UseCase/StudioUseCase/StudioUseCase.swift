@@ -89,7 +89,6 @@ final class DefaultStudioUseCase: StudioUseCase {
     }
     
     func recordAudio(sampleBuffer: CMSampleBuffer) {
-        print("Recording audio")
         self.movieRecorder.recordAudio(sampleBuffer: sampleBuffer)
     }
     

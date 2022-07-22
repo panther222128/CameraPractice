@@ -118,7 +118,6 @@ class RosyMetalRenderer: FilterRenderer {
         
         guard let cvTexture = cvTextureOut, let texture = CVMetalTextureGetTexture(cvTexture) else {
             CVMetalTextureCacheFlush(textureCache, 0)
-            
             return nil
         }
         

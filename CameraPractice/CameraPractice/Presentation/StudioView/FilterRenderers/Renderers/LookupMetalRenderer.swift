@@ -8,12 +8,15 @@
 import CoreMedia
 import CoreVideo
 import Metal
+import MetalKit
 
 class LookupMetalRenderer: FilterRenderer {
 
     var description: String = "Lookup (Metal)"
     var isPrepared: Bool = false
     
+    private let samplers: [String: String]?
+    private var intensity: Float
     private(set) var inputFormatDescription: CMFormatDescription?
     private(set) var outputFormatDescription: CMFormatDescription?
     private var outputPixelBufferPool: CVPixelBufferPool?
@@ -26,6 +29,8 @@ class LookupMetalRenderer: FilterRenderer {
     }()
     
     required init() {
+        self.samplers = ["lookup": "original_lookup.png"]
+        self.intensity = 1
         self.outputBufferPoolAllocator = DefaultOutputBufferPoolAllocator()
         let defaultLibrary = metalDevice.makeDefaultLibrary()!
         let kernelFunction = defaultLibrary.makeFunction(name: "lookupKernel")
@@ -79,10 +84,21 @@ class LookupMetalRenderer: FilterRenderer {
             return nil
         }
         
+        commandEncoder.setBytes(&intensity, length: MemoryLayout<Float>.size, index: 0)
         commandEncoder.label = "Lookup"
         commandEncoder.setComputePipelineState(computePipelineState!)
         commandEncoder.setTexture(inputTexture, index: 0)
         commandEncoder.setTexture(outputTexture, index: 1)
+        
+        if let samplers = samplers {
+            for key in samplers.keys.sorted() {
+                let imageName = samplers[key]!
+                if !imageName.isEmpty {
+                    let texture = getSamplerTexture(named: imageName)!
+                    commandEncoder.setTexture(texture, index: 2)
+                }
+            }
+        }
         
         let width = computePipelineState!.threadExecutionWidth
         let height = computePipelineState!.maxTotalThreadsPerThreadgroup / width
@@ -108,6 +124,20 @@ class LookupMetalRenderer: FilterRenderer {
         }
         
         return texture
+    }
+    
+    private func getSamplerTexture(named name: String) -> MTLTexture? {
+        let bundle = Bundle(for: Self.self)
+        let resourceURL = bundle.url(forResource: "FilterResources", withExtension: "bundle")!
+        let resourceBundle = Bundle(url: resourceURL)!
+        let url = resourceBundle.url(forResource: name, withExtension: nil)!
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        return self.loadTexture(data: data, metalDevice: self.metalDevice)
+    }
+
+    private func loadTexture(data: Data, metalDevice: MTLDevice) -> MTLTexture? {
+        let loader = MTKTextureLoader(device: metalDevice)
+        return try? loader.newTexture(data: data, options: [MTKTextureLoader.Option.SRGB: false])
     }
     
 }
