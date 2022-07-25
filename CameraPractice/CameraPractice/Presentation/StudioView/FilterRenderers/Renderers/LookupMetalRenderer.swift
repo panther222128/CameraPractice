@@ -30,7 +30,7 @@ class LookupMetalRenderer: FilterRenderer {
     
     required init() {
         self.samplers = ["lookup": "original_lookup.png"]
-        self.intensity = 1
+        self.intensity = 1.0
         self.outputBufferPoolAllocator = DefaultOutputBufferPoolAllocator()
         let defaultLibrary = metalDevice.makeDefaultLibrary()!
         let kernelFunction = defaultLibrary.makeFunction(name: "lookupKernel")
