@@ -190,7 +190,7 @@ extension StudioViewController: AVCaptureAudioDataOutputSampleBufferDelegate, AV
         }
         return sampleBuffer
     }
-
+    
     private func processAudioSampleBuffer(sampleBuffer: CMSampleBuffer, fromOutput audioDataOutput: AVCaptureAudioDataOutput) {
         guard audioDataOutput == self.studioConfiguration.backAudioDataOutput else { return }
         self.viewModel.recordAudio(sampleBuffer: sampleBuffer)
@@ -279,15 +279,9 @@ extension StudioViewController {
     @objc func pressedStudioActionButtonAction() {
         guard let photoOutput = self.studioConfiguration.photoOutput else { return }
         guard let photoSettings = self.studioConfiguration.photoSettings else { return }
-        if self.isPhotoMode {
-            self.viewModel.didPressTakePhotoButton(photoSettings: photoSettings, photoOutput: photoOutput)
-            self.studioConfiguration.setPhotoOption()
-        } else {
-            if !self.isRecordOn {
-                self.dataInputOutputQueue.async {
-                    if UIDevice.current.isMultitaskingSupported {
-                        self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
-                    }
+        if !self.isPhotoMode {
+            self.dataInputOutputQueue.async {
+                if !self.isRecordOn {
                     self.isRecordOn = true
                     DispatchQueue.main.async {
                         self.recordTimer.start()
@@ -296,10 +290,8 @@ extension StudioViewController {
                     self.studioConfiguration.createVideoTransform(videoDataOutput: self.studioConfiguration.videoDataOutput)
                     guard let videoTransform = self.studioConfiguration.videoTransform else { return }
                     self.viewModel.didPressRecordStartButton(videoTransform: videoTransform, videoDataOutput: self.studioConfiguration.videoDataOutput, audioDataOutput: self.studioConfiguration.backAudioDataOutput)
-                }
-            } else {
-                self.isRecordOn = false
-                self.dataInputOutputQueue.async {
+                } else {
+                    self.isRecordOn = false
                     DispatchQueue.main.async {
                         self.recordTimer.stop()
                         self.studioActionButton.setTitleColor(.white, for: .normal)
@@ -309,6 +301,9 @@ extension StudioViewController {
                     }
                 }
             }
+        } else {
+            self.viewModel.didPressTakePhotoButton(photoSettings: photoSettings, photoOutput: photoOutput)
+            self.studioConfiguration.setPhotoOption()
         }
     }
     
