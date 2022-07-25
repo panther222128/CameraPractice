@@ -29,7 +29,7 @@ class LookupMetalRenderer: FilterRenderer {
     }()
     
     required init() {
-        self.samplers = ["lookup": "original_lookup.png"]
+        self.samplers = ["lookup": "dark_lookup.png"]
         self.intensity = 1.0
         self.outputBufferPoolAllocator = DefaultOutputBufferPoolAllocator()
         let defaultLibrary = metalDevice.makeDefaultLibrary()!
@@ -87,8 +87,8 @@ class LookupMetalRenderer: FilterRenderer {
         commandEncoder.setBytes(&intensity, length: MemoryLayout<Float>.size, index: 0)
         commandEncoder.label = "Lookup"
         commandEncoder.setComputePipelineState(computePipelineState!)
-        commandEncoder.setTexture(inputTexture, index: 0)
-        commandEncoder.setTexture(outputTexture, index: 1)
+        commandEncoder.setTexture(outputTexture, index: 0)
+        commandEncoder.setTexture(inputTexture, index: 1)
         
         if let samplers = samplers {
             for key in samplers.keys.sorted() {

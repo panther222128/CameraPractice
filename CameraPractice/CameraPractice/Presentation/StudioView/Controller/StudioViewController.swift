@@ -76,7 +76,7 @@ final class StudioViewController: UIViewController {
             if isAuthorized {
                 DispatchQueue.main.async {
                     self.sessionQueue.async {
-                        self.studioConfiguration.configureDefaultMode(to: self, on: self.sessionQueue)
+                        self.studioConfiguration.configureDefaultMode(to: self, on: self.dataInputOutputQueue)
                         self.setOrientation()
                     }
                 }

@@ -62,7 +62,6 @@ class RosyMetalRenderer: FilterRenderer {
         isPrepared = false
     }
     
-    /// - Tag: FilterMetalRosy
     func render(pixelBuffer: CVPixelBuffer) -> CVPixelBuffer? {
         if !isPrepared {
             assertionFailure("Invalid state: Not prepared.")
