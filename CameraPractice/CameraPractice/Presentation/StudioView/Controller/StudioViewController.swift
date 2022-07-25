@@ -18,7 +18,7 @@ extension StudioViewController: DataOutputSampleBufferDelegate {
 }
 
 final class StudioViewController: UIViewController {
-    
+    private var backgroundRecordingID: UIBackgroundTaskIdentifier?
     /*
      Filter objects will be requested from server but not yet. When these filters are response from network, responsibility of repository occurs and
      code of repository, usecase, viewmodel are needed to add appropriate codes for architecture flow.
@@ -284,19 +284,26 @@ extension StudioViewController {
             self.studioConfiguration.setPhotoOption()
         } else {
             if !self.isRecordOn {
-                self.isRecordOn = true
-                self.recordTimer.start()
-                self.studioActionButton.setTitleColor(.red, for: .normal)
                 self.dataInputOutputQueue.async {
+                    if UIDevice.current.isMultitaskingSupported {
+                        self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+                    }
+                    self.isRecordOn = true
+                    DispatchQueue.main.async {
+                        self.recordTimer.start()
+                        self.studioActionButton.setTitleColor(.red, for: .normal)
+                    }
                     self.studioConfiguration.createVideoTransform(videoDataOutput: self.studioConfiguration.videoDataOutput)
                     guard let videoTransform = self.studioConfiguration.videoTransform else { return }
                     self.viewModel.didPressRecordStartButton(videoTransform: videoTransform, videoDataOutput: self.studioConfiguration.videoDataOutput, audioDataOutput: self.studioConfiguration.backAudioDataOutput)
                 }
             } else {
                 self.isRecordOn = false
-                self.recordTimer.stop()
-                self.studioActionButton.setTitleColor(.white, for: .normal)
                 self.dataInputOutputQueue.async {
+                    DispatchQueue.main.async {
+                        self.recordTimer.stop()
+                        self.studioActionButton.setTitleColor(.white, for: .normal)
+                    }
                     self.viewModel.didPressRecordStopButton { url in
                         self.viewModel.saveMovie(outputUrl: url)
                     }
