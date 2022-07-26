@@ -148,13 +148,13 @@ extension StudioViewController: AVCaptureAudioDataOutputSampleBufferDelegate, AV
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if let videoDataOutput = output as? AVCaptureVideoDataOutput {
-            processFullScreenSampleBuffer(fullScreenSampleBuffer: sampleBuffer, view: self.screenMetalView)
+            processFullScreenSampleBuffer(fullScreenSampleBuffer: sampleBuffer)
         } else if let audioDataOutput = output as? AVCaptureAudioDataOutput {
             processAudioSampleBuffer(sampleBuffer: sampleBuffer, fromOutput: audioDataOutput)
         }
     }
     
-    private func processFullScreenSampleBuffer(fullScreenSampleBuffer: CMSampleBuffer, view: ScreenMetalView) {
+    private func processFullScreenSampleBuffer(fullScreenSampleBuffer: CMSampleBuffer) {
         guard let fullScreenPixelBuffer = CMSampleBufferGetImageBuffer(fullScreenSampleBuffer) else { return }
         guard let formatDescription = CMSampleBufferGetFormatDescription(fullScreenSampleBuffer) else { return }
         
@@ -169,7 +169,7 @@ extension StudioViewController: AVCaptureAudioDataOutputSampleBufferDelegate, AV
         }
         
         guard let sampleBuffer = self.createVideoSampleBufferWithPixelBuffer(finalVideoPixelBuffer, formatDescription: formatDescription, presentationTime: CMSampleBufferGetPresentationTimeStamp(fullScreenSampleBuffer)) else { return }
-        view.pixelBuffer = finalVideoPixelBuffer
+        self.screenMetalView.pixelBuffer = finalVideoPixelBuffer
         self.viewModel.recordVideo(sampleBuffer: sampleBuffer)
     }
     
