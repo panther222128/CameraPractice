@@ -3,5 +3,6 @@
 
 target 'CameraPractice' do
   pod 'SnapKit', '~> 5.0.0'
-  pod 'SDWebImageWebPCoder'
+  pod 'SDWebImage', '~> 5.0', :modular_headers => true
+  pod 'SDWebImageWebPCoder', :modular_headers => true
 end

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9B2373B708CEDE453110E580 /* libPods-CameraPractice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB10BA060D23B295B40FEF6 /* libPods-CameraPractice.a */; };
 		A01287D6284456650068A093 /* DefaultDeviceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01287D5284456650068A093 /* DefaultDeviceConfiguration.swift */; };
 		A0190F422875203B000F5753 /* ScreenMetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0190F412875203B000F5753 /* ScreenMetalView.swift */; };
 		A0190F5828755602000F5753 /* PassThrough.metal in Sources */ = {isa = PBXBuildFile; fileRef = A0190F4528755424000F5753 /* PassThrough.metal */; };
@@ -35,6 +34,11 @@
 		A08F071728573ABA005AE166 /* MediaPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08F071628573ABA005AE166 /* MediaPickerViewModel.swift */; };
 		A08F071928573B18005AE166 /* DefaultMediaPickerRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08F071828573B18005AE166 /* DefaultMediaPickerRepository.swift */; };
 		A08F071B28573B27005AE166 /* MediaPickerRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08F071A28573B27005AE166 /* MediaPickerRepository.swift */; };
+		A095023028911B15006F5C2D /* liblibwebp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A095022C28911B15006F5C2D /* liblibwebp.a */; };
+		A095023128911B15006F5C2D /* libPods-CameraPractice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB10BA060D23B295B40FEF6 /* libPods-CameraPractice.a */; };
+		A095023228911B15006F5C2D /* libSDWebImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A095022D28911B15006F5C2D /* libSDWebImage.a */; };
+		A095023328911B15006F5C2D /* libSDWebImageWebPCoder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A095022E28911B15006F5C2D /* libSDWebImageWebPCoder.a */; };
+		A095023428911B15006F5C2D /* libSnapKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A095022F28911B15006F5C2D /* libSnapKit.a */; };
 		A0985E9B2873D1CD00C386DE /* MovieRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0985E9A2873D1CD00C386DE /* MovieRecorder.swift */; };
 		A0985E9D2873D9CB00C386DE /* AVCaptureVideoOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0985E9C2873D9CB00C386DE /* AVCaptureVideoOrientation.swift */; };
 		A0985E9F2873D9F900C386DE /* AVCaptureConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0985E9E2873D9F900C386DE /* AVCaptureConnection.swift */; };
@@ -96,6 +100,10 @@
 		A08F071628573ABA005AE166 /* MediaPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPickerViewModel.swift; sourceTree = "<group>"; };
 		A08F071828573B18005AE166 /* DefaultMediaPickerRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultMediaPickerRepository.swift; sourceTree = "<group>"; };
 		A08F071A28573B27005AE166 /* MediaPickerRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPickerRepository.swift; sourceTree = "<group>"; };
+		A095022C28911B15006F5C2D /* liblibwebp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = liblibwebp.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A095022D28911B15006F5C2D /* libSDWebImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libSDWebImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A095022E28911B15006F5C2D /* libSDWebImageWebPCoder.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libSDWebImageWebPCoder.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A095022F28911B15006F5C2D /* libSnapKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libSnapKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A0985E9A2873D1CD00C386DE /* MovieRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieRecorder.swift; sourceTree = "<group>"; };
 		A0985E9C2873D9CB00C386DE /* AVCaptureVideoOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCaptureVideoOrientation.swift; sourceTree = "<group>"; };
 		A0985E9E2873D9F900C386DE /* AVCaptureConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCaptureConnection.swift; sourceTree = "<group>"; };
@@ -136,7 +144,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9B2373B708CEDE453110E580 /* libPods-CameraPractice.a in Frameworks */,
+				A095023028911B15006F5C2D /* liblibwebp.a in Frameworks */,
+				A095023328911B15006F5C2D /* libSDWebImageWebPCoder.a in Frameworks */,
+				A095023228911B15006F5C2D /* libSDWebImage.a in Frameworks */,
+				A095023428911B15006F5C2D /* libSnapKit.a in Frameworks */,
+				A095023128911B15006F5C2D /* libPods-CameraPractice.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -613,6 +625,10 @@
 		FA43348C704AC43944C6E981 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A095022C28911B15006F5C2D /* liblibwebp.a */,
+				A095022D28911B15006F5C2D /* libSDWebImage.a */,
+				A095022E28911B15006F5C2D /* libSDWebImageWebPCoder.a */,
+				A095022F28911B15006F5C2D /* libSnapKit.a */,
 				BFB10BA060D23B295B40FEF6 /* libPods-CameraPractice.a */,
 			);
 			name = Frameworks;
@@ -789,7 +805,7 @@
 		A0A096982840900D00BCB214 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -850,7 +866,7 @@
 		A0A096992840900D00BCB214 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
