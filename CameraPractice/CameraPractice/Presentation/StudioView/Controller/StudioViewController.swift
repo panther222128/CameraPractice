@@ -21,7 +21,7 @@ final class StudioViewController: UIViewController {
     private var backgroundRecordingID: UIBackgroundTaskIdentifier?
     /*
      Filter objects will be requested from server but not yet. When these filters are response from network, responsibility of repository occurs and
-     code of repository, usecase, viewmodel are needed to add appropriate codes for architecture flow.
+     some codes of repository, usecase, viewmodel which are appropriate for architecture flow will be added.
      */
     private let filterRenderes: [FilterRenderer?] = [nil, RosyMetalRenderer(), LookupMetalRenderer()]
     
