@@ -28,16 +28,7 @@ final class DefaultAssetScreenUseCase: AssetScreenUseCase {
         self.assetEditor = assetEditor
         self.animatedWebPCoder = DefaultAnimatedWebPCoder()
     }
-    
-    func encode(asset: PHAsset) {
-        self.requestAsset(of: asset) { asset, audioMix, error in
-            if let asset = asset {
-                let animatedImage = self.animatedWebPCoder.encode(asset: asset)
-                
-            }
-        }
-    }
-    
+
     func requestImage(of asset: PHAsset, size: CGSize, resultHandler: @escaping (UIImage?, [AnyHashable : Any]?) -> Void) {
         self.assetScreenRepository.requestImage(of: asset, size: size, resultHandler: resultHandler)
     }

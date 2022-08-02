@@ -17,8 +17,8 @@ class AssetScreenViewController: UIViewController {
     // MARK: - Views
     private let imageScreenView = UIImageView()
     private let movieScreenView = UIView()
-    private let showTrimViewButton = UIButton()
-    private let showEditViewButton = UIButton()
+    private let presentTrimViewButton = UIButton()
+    private let overlayButton = UIButton()
     private let letterboxButton = UIButton()
     
     // MARK: - Media
@@ -33,8 +33,8 @@ class AssetScreenViewController: UIViewController {
         self.addSubviews()
         self.configureLayout()
         self.configureView()
-        self.configureShowTrimViewButtion()
-        self.configureShowEditViewButton()
+        self.configurePresentTrimViewButtion()
+        self.configureOverlayButton()
         self.configureLetterboxButton()
     }
     
@@ -118,8 +118,8 @@ extension AssetScreenViewController {
                 self.view.addSubview(self.imageScreenView)
             }
         }
-        self.view.addSubview(self.showTrimViewButton)
-        self.view.addSubview(self.showEditViewButton)
+        self.view.addSubview(self.presentTrimViewButton)
+        self.view.addSubview(self.overlayButton)
         self.view.addSubview(self.letterboxButton)
     }
     
@@ -139,18 +139,18 @@ extension AssetScreenViewController {
                 $0.edges.equalToSuperview()
             }
         }
-        self.showTrimViewButton.snp.makeConstraints {
+        self.presentTrimViewButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(self.view.snp.bottom).offset(-60)
         }
         
-        self.showEditViewButton.snp.makeConstraints {
+        self.overlayButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.top.equalTo(self.view.snp.top).offset(120)
         }
         self.letterboxButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(self.showTrimViewButton.snp.bottom).offset(-40)
+            $0.bottom.equalTo(self.presentTrimViewButton.snp.bottom).offset(-40)
         }
     }
     
@@ -160,23 +160,23 @@ extension AssetScreenViewController {
 
 extension AssetScreenViewController {
 
-    private func configureShowTrimViewButtion() {
-        self.showTrimViewButton.addTarget(self, action: #selector(self.showTrimViewAction), for: .touchUpInside)
-        self.showTrimViewButton.setTitleColor(.systemPink , for: .normal)
-        self.showTrimViewButton.setTitle("Trim", for: .normal)
+    private func configurePresentTrimViewButtion() {
+        self.presentTrimViewButton.addTarget(self, action: #selector(self.presentTrimViewButtonAction), for: .touchUpInside)
+        self.presentTrimViewButton.setTitleColor(.systemPink , for: .normal)
+        self.presentTrimViewButton.setTitle("Trim", for: .normal)
     }
     
-    @objc func showTrimViewAction() {
+    @objc func presentTrimViewButtonAction() {
         self.viewModel.didPressShowTrimViewButton()
     }
     
-    private func configureShowEditViewButton() {
-        self.showEditViewButton.addTarget(self, action: #selector(self.showEditViewButtonAction), for: .touchUpInside)
-        self.showEditViewButton.setTitleColor(.systemPink, for: .normal)
-        self.showEditViewButton.setTitle("Image Overlay", for: .normal)
+    private func configureOverlayButton() {
+        self.overlayButton.addTarget(self, action: #selector(self.overlayButtonAction), for: .touchUpInside)
+        self.overlayButton.setTitleColor(.systemPink, for: .normal)
+        self.overlayButton.setTitle("Image Overlay", for: .normal)
     }
     
-    @objc func showEditViewButtonAction() {
+    @objc func overlayButtonAction() {
         self.viewModel.didAddOverlay(of: UIImage(named: "overlay")) { [weak self] result in
             guard let self = self else { return }
             switch result {
