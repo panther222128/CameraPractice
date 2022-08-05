@@ -9,6 +9,7 @@ import UIKit
 import AVFoundation
 import SnapKit
 import Photos
+import SDWebImageWebPCoder
 
 class AssetScreenViewController: UIViewController {
 
@@ -18,8 +19,9 @@ class AssetScreenViewController: UIViewController {
     private let imageScreenView = UIImageView()
     private let movieScreenView = UIView()
     private let showTrimViewButton = UIButton()
-    private let showEditViewButton = UIButton()
+    private let imageOverlayViewButton = UIButton()
     private let letterboxButton = UIButton()
+    private let applyTemplateButton = UIButton()
     
     // MARK: - Media
     private let moviePlayer = AVPlayer()
@@ -34,8 +36,9 @@ class AssetScreenViewController: UIViewController {
         self.configureLayout()
         self.configureView()
         self.configureShowTrimViewButtion()
-        self.configureShowEditViewButton()
+        self.configureImageOverlayViewButton()
         self.configureLetterboxButton()
+        self.configureApplyTemplateButton()
     }
     
     static func create(with viewModel: AssetScreenViewModel) -> AssetScreenViewController {
@@ -119,8 +122,9 @@ extension AssetScreenViewController {
             }
         }
         self.view.addSubview(self.showTrimViewButton)
-        self.view.addSubview(self.showEditViewButton)
+        self.view.addSubview(self.imageOverlayViewButton)
         self.view.addSubview(self.letterboxButton)
+        self.view.addSubview(self.applyTemplateButton)
     }
     
     private func configureLayout() {
@@ -144,13 +148,17 @@ extension AssetScreenViewController {
             $0.bottom.equalTo(self.view.snp.bottom).offset(-60)
         }
         
-        self.showEditViewButton.snp.makeConstraints {
+        self.imageOverlayViewButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.top.equalTo(self.view.snp.top).offset(120)
         }
         self.letterboxButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(self.showTrimViewButton.snp.bottom).offset(-40)
+        }
+        self.applyTemplateButton.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview()
+            $0.top.equalTo(self.imageOverlayViewButton.snp.bottom).offset(20)
         }
     }
     
@@ -170,13 +178,13 @@ extension AssetScreenViewController {
         self.viewModel.didPressShowTrimViewButton()
     }
     
-    private func configureShowEditViewButton() {
-        self.showEditViewButton.addTarget(self, action: #selector(self.showEditViewButtonAction), for: .touchUpInside)
-        self.showEditViewButton.setTitleColor(.systemPink, for: .normal)
-        self.showEditViewButton.setTitle("Image Overlay", for: .normal)
+    private func configureImageOverlayViewButton() {
+        self.imageOverlayViewButton.addTarget(self, action: #selector(self.imageOverlayViewButtonAction), for: .touchUpInside)
+        self.imageOverlayViewButton.setTitleColor(.systemPink, for: .normal)
+        self.imageOverlayViewButton.setTitle("Image Overlay", for: .normal)
     }
     
-    @objc func showEditViewButtonAction() {
+    @objc func imageOverlayViewButtonAction() {
         self.viewModel.didAddOverlay(of: UIImage(named: "overlay")) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -204,6 +212,17 @@ extension AssetScreenViewController {
                 self.showErrorAlert()
             }
         }
+    }
+    
+    private func configureApplyTemplateButton() {
+        self.applyTemplateButton.addTarget(self, action: #selector(self.applyTemplateButtonAction), for: .touchUpInside)
+        self.applyTemplateButton.setTitle("Template", for: .normal)
+    }
+    
+    @objc func applyTemplateButtonAction() {
+        let webPCoder = SDImageWebPCoder.shared
+        SDImageCodersManager.shared.addCoder(webPCoder)
+        let animatedImage = SDAnimatedImage(named: "movie_31.webp")
     }
     
 }

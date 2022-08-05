@@ -36,7 +36,6 @@ final class DefaultMovieRecorder: MovieRecordable {
         assetWriterAudioInput.expectsMediaDataInRealTime = true
         assetWriter.add(assetWriterAudioInput)
         
-        
         let assetWriterVideoInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoDataOutput.recommendedVideoSettingsForAssetWriter(writingTo: .mov))
         assetWriterVideoInput.expectsMediaDataInRealTime = true
         assetWriterVideoInput.transform = videoTransform
