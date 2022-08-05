@@ -35,7 +35,7 @@ final class DefaultImageManager: PHImageManager, ImageManager {
     // MARK: - This method has to return PHImageRequestID if you want to cancel during request.
     
     func requestAssetVideoWithDefaultOptions(for asset: PHAsset, resultHandler: @escaping (AVAsset?, AVAudioMix?, [AnyHashable : Any]?) -> Void) {
-        self.requestAVAsset(forVideo: asset, options: defaultVideoRequestOptions, resultHandler: resultHandler)
+        self.requestAVAsset(forVideo: asset, options: self.defaultVideoRequestOptions, resultHandler: resultHandler)
     }
     
 }
