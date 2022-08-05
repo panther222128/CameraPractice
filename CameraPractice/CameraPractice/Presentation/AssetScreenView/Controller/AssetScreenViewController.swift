@@ -18,7 +18,7 @@ class AssetScreenViewController: UIViewController {
     // MARK: - Views
     private let imageScreenView = UIImageView()
     private let movieScreenView = UIView()
-    private let showTrimViewButton = UIButton()
+    private let presentTrimViewButton = UIButton()
     private let imageOverlayButton = UIButton()
     private let letterboxButton = UIButton()
     private let applyTemplateButton = UIButton()
@@ -35,7 +35,7 @@ class AssetScreenViewController: UIViewController {
         self.addSubviews()
         self.configureLayout()
         self.configureView()
-        self.configureShowTrimViewButtion()
+        self.configurePresentTrimViewButtion()
         self.configureImageOverlayButton()
         self.configureLetterboxButton()
         self.configureApplyTemplateButton()
@@ -121,7 +121,7 @@ extension AssetScreenViewController {
                 self.view.addSubview(self.imageScreenView)
             }
         }
-        self.view.addSubview(self.showTrimViewButton)
+        self.view.addSubview(self.presentTrimViewButton)
         self.view.addSubview(self.imageOverlayButton)
         self.view.addSubview(self.letterboxButton)
         self.view.addSubview(self.applyTemplateButton)
@@ -143,7 +143,7 @@ extension AssetScreenViewController {
                 $0.edges.equalToSuperview()
             }
         }
-        self.showTrimViewButton.snp.makeConstraints {
+        self.presentTrimViewButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(self.view.snp.bottom).offset(-60)
         }
@@ -154,7 +154,7 @@ extension AssetScreenViewController {
         }
         self.letterboxButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(self.showTrimViewButton.snp.bottom).offset(-40)
+            $0.bottom.equalTo(self.presentTrimViewButton.snp.bottom).offset(-40)
         }
         self.applyTemplateButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
@@ -168,13 +168,13 @@ extension AssetScreenViewController {
 
 extension AssetScreenViewController {
 
-    private func configureShowTrimViewButtion() {
-        self.showTrimViewButton.addTarget(self, action: #selector(self.showTrimViewAction), for: .touchUpInside)
-        self.showTrimViewButton.setTitleColor(.systemPink , for: .normal)
-        self.showTrimViewButton.setTitle("Trim", for: .normal)
+    private func configurePresentTrimViewButtion() {
+        self.presentTrimViewButton.addTarget(self, action: #selector(self.presentTrimViewButtonAction), for: .touchUpInside)
+        self.presentTrimViewButton.setTitleColor(.systemPink , for: .normal)
+        self.presentTrimViewButton.setTitle("Trim", for: .normal)
     }
     
-    @objc func showTrimViewAction() {
+    @objc func presentTrimViewButtonAction() {
         self.viewModel.didPressShowTrimViewButton()
     }
     
