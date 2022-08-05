@@ -19,7 +19,7 @@ class AssetScreenViewController: UIViewController {
     private let imageScreenView = UIImageView()
     private let movieScreenView = UIView()
     private let showTrimViewButton = UIButton()
-    private let imageOverlayViewButton = UIButton()
+    private let imageOverlayButton = UIButton()
     private let letterboxButton = UIButton()
     private let applyTemplateButton = UIButton()
     
@@ -36,7 +36,7 @@ class AssetScreenViewController: UIViewController {
         self.configureLayout()
         self.configureView()
         self.configureShowTrimViewButtion()
-        self.configureImageOverlayViewButton()
+        self.configureImageOverlayButton()
         self.configureLetterboxButton()
         self.configureApplyTemplateButton()
     }
@@ -122,7 +122,7 @@ extension AssetScreenViewController {
             }
         }
         self.view.addSubview(self.showTrimViewButton)
-        self.view.addSubview(self.imageOverlayViewButton)
+        self.view.addSubview(self.imageOverlayButton)
         self.view.addSubview(self.letterboxButton)
         self.view.addSubview(self.applyTemplateButton)
     }
@@ -148,7 +148,7 @@ extension AssetScreenViewController {
             $0.bottom.equalTo(self.view.snp.bottom).offset(-60)
         }
         
-        self.imageOverlayViewButton.snp.makeConstraints {
+        self.imageOverlayButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.top.equalTo(self.view.snp.top).offset(120)
         }
@@ -158,7 +158,7 @@ extension AssetScreenViewController {
         }
         self.applyTemplateButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
-            $0.top.equalTo(self.imageOverlayViewButton.snp.bottom).offset(20)
+            $0.top.equalTo(self.imageOverlayButton.snp.bottom).offset(20)
         }
     }
     
@@ -178,13 +178,13 @@ extension AssetScreenViewController {
         self.viewModel.didPressShowTrimViewButton()
     }
     
-    private func configureImageOverlayViewButton() {
-        self.imageOverlayViewButton.addTarget(self, action: #selector(self.imageOverlayViewButtonAction), for: .touchUpInside)
-        self.imageOverlayViewButton.setTitleColor(.systemPink, for: .normal)
-        self.imageOverlayViewButton.setTitle("Image Overlay", for: .normal)
+    private func configureImageOverlayButton() {
+        self.imageOverlayButton.addTarget(self, action: #selector(self.imageOverlayButtonAction), for: .touchUpInside)
+        self.imageOverlayButton.setTitleColor(.systemPink, for: .normal)
+        self.imageOverlayButton.setTitle("Image Overlay", for: .normal)
     }
     
-    @objc func imageOverlayViewButtonAction() {
+    @objc func imageOverlayButtonAction() {
         self.viewModel.didAddOverlay(of: UIImage(named: "overlay")) { [weak self] result in
             guard let self = self else { return }
             switch result {
