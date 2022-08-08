@@ -418,7 +418,7 @@
 			children = (
 				A048F8B828698861005E9832 /* AssetEditors */,
 				A07F58F52861D030000220E7 /* Entity */,
-				A0A096B62840ACCE00BCB214 /* Interface */,
+				A0A096B62840ACCE00BCB214 /* Interfaces */,
 				A0A096A22840908B00BCB214 /* UseCase */,
 			);
 			path = Domain;
@@ -494,7 +494,7 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		A0A096B62840ACCE00BCB214 /* Interface */ = {
+		A0A096B62840ACCE00BCB214 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
 				A0A096BA2840AD0100BCB214 /* StudioRepository.swift */,
@@ -502,7 +502,7 @@
 				A03B439B285847520050B656 /* AssetScreenRepository.swift */,
 				A07F58FF2861D2D3000220E7 /* MovieTrimRepository.swift */,
 			);
-			path = Interface;
+			path = Interfaces;
 			sourceTree = "<group>";
 		};
 		A0A096B72840ACD200BCB214 /* Repository */ = {
