@@ -28,6 +28,7 @@ protocol AssetScreenViewModel {
     func didAddOverlay(of image: UIImage?, completion: @escaping (Result<URL?, Error>) -> Void)
     func didPressShowTrimViewButton()
     func didApplyLetterBox(completion: @escaping (Result<URL?, Error>) -> Void)
+    func didApplyTemplate(completion: @escaping (Result<URL?, Error>) -> Void)
 }
 
 final class DefaultAssetScreenViewModel: AssetScreenViewModel {
@@ -98,6 +99,20 @@ final class DefaultAssetScreenViewModel: AssetScreenViewModel {
             case .success(let url):
                 completion(.success(url))
             case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    func didApplyTemplate(completion: @escaping (Result<URL?, Error>) -> Void) {
+        guard let assetsRequestResult = assetsRequestResult else { return }
+        let asset = assetsRequestResult.object(at: self.assetIndex)
+        self.assetScreenUseCase.addTemplate(to: asset) { result in
+            switch result {
+            case .success(let url):
+                completion(.success(url))
+            case .failure(let error):
+                self.error.value = error
                 completion(.failure(error))
             }
         }

@@ -60,8 +60,13 @@ class AssetScreenViewController: UIViewController {
         
     }
     
-    private func showErrorAlert() {
-        
+    private func showErrorAlert(errorMessage: String) {
+        DispatchQueue.main.async {
+            let authorizationAlert = UIAlertController(title: "오류 발생", message: "\(errorMessage)", preferredStyle: UIAlertController.Style.alert)
+            let addAuthorizationAlertAction = UIAlertAction(title: "OK", style: .default)
+            authorizationAlert.addAction(addAuthorizationAlertAction)
+            self.present(authorizationAlert, animated: true, completion: nil)
+        }
     }
     
     private func showLetterboxSuccessAlert() {
@@ -150,8 +155,6 @@ extension AssetScreenViewController {
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(self.view.snp.bottom).offset(-60)
         }
-        
-        self.overlayButton.snp.makeConstraints {
         self.imageOverlayButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.top.equalTo(self.view.snp.top).offset(120)
@@ -195,7 +198,7 @@ extension AssetScreenViewController {
             case .success(let url):
                 self.showOverlaySuccessAlert()
             case .failure(let error):
-                self.showErrorAlert()
+                self.showErrorAlert(errorMessage: error.localizedDescription)
             }
         }
     }
@@ -212,7 +215,7 @@ extension AssetScreenViewController {
             case .success(let url):
                 self.showOverlaySuccessAlert()
             case .failure(let error):
-                self.showErrorAlert()
+                self.showErrorAlert(errorMessage: error.localizedDescription)
             }
         }
     }
@@ -230,20 +233,27 @@ extension AssetScreenViewController {
             case .success(let url):
                 self.showLetterboxSuccessAlert()
             case .failure(let error):
-                self.showErrorAlert()
+                self.showErrorAlert(errorMessage: error.localizedDescription)
             }
         }
     }
     
     private func configureApplyTemplateButton() {
         self.applyTemplateButton.addTarget(self, action: #selector(self.applyTemplateButtonAction), for: .touchUpInside)
+        self.applyTemplateButton.setTitleColor(.systemPink, for: .normal)
         self.applyTemplateButton.setTitle("Template", for: .normal)
     }
     
     @objc func applyTemplateButtonAction() {
-        let webPCoder = SDImageWebPCoder.shared
-        SDImageCodersManager.shared.addCoder(webPCoder)
-        let animatedImage = SDAnimatedImage(named: "movie_31.webp")
+        self.viewModel.didApplyTemplate { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let url):
+                self.showOverlaySuccessAlert()
+            case .failure(let error):
+                self.showErrorAlert(errorMessage: error.localizedDescription)
+            }
+        }
     }
     
 }

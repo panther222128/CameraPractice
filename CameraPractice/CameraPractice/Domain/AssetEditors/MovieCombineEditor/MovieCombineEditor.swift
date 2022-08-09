@@ -376,8 +376,8 @@ extension DefaultMovieCombineEditor {
             return
         }
         let videoName = UUID().uuidString
-        let exportURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(videoName).appendingPathExtension("mp4")
-        exportSession.outputFileType = .mp4
+        let exportURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(videoName).appendingPathExtension("mov")
+        exportSession.outputFileType = .mov
         exportSession.outputURL = exportURL
         
         exportSession.exportAsynchronously {

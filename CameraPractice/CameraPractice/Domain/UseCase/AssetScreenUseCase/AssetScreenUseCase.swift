@@ -15,18 +15,17 @@ protocol AssetScreenUseCase {
     func addOverlay(of image: UIImage?, to asset: PHAsset, completion: @escaping (Result<URL?, Error>) -> Void)
     func applyLetterbox(to asset: PHAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void)
     func fetchAssets() -> PHFetchResult<PHAsset>
+    func addTemplate(to asset: PHAsset, completion: @escaping (Result<URL?, Error>) -> Void)
 }
 
 final class DefaultAssetScreenUseCase: AssetScreenUseCase {
     
     private let assetScreenRepository: AssetScreenRepository
-    private let animatedWebPCoder: AnimatedWebPCoder
     private var assetEditor: AssetEditor
     
     init(assetScreenRepository: AssetScreenRepository, assetEditor: AssetEditor) {
         self.assetScreenRepository = assetScreenRepository
         self.assetEditor = assetEditor
-        self.animatedWebPCoder = DefaultAnimatedWebPCoder()
     }
 
     func requestImage(of asset: PHAsset, size: CGSize, resultHandler: @escaping (UIImage?, [AnyHashable : Any]?) -> Void) {
@@ -42,6 +41,22 @@ final class DefaultAssetScreenUseCase: AssetScreenUseCase {
         self.requestAsset(of: asset) { asset, audioMix, error in
             if let asset = asset {
                 self.assetEditor.addImageOverlay(of: image, to: asset) { result in
+                    switch result {
+                    case .success(let url):
+                        self.saveRecordedMovie(outputUrl: url)
+                        completion(.success(url))
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                }
+            }
+        }
+    }
+    
+    func addTemplate(to asset: PHAsset, completion: @escaping (Result<URL?, Error>) -> Void) {
+        self.requestAsset(of: asset) { asset, audioMix, error in
+            if let asset = asset {
+                self.assetEditor.applyAnimatedWebP(to: asset) { result in
                     switch result {
                     case .success(let url):
                         self.saveRecordedMovie(outputUrl: url)
