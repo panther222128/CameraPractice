@@ -65,7 +65,11 @@ final class StudioViewController: UIViewController {
         self.configureCameraConverterButton()
         self.configureOutputConverterButton()
         self.configureRecordTimerLabel()
+<<<<<<< HEAD
         self.configurePresentMediaPickerViewButton()
+=======
+        self.configurePresentMediaPickerButton()
+>>>>>>> 5c416ad9a331fdf87843311a2ce001ca6215ccba
         self.addFilterConverterTarget()
     }
     
@@ -307,8 +311,13 @@ extension StudioViewController {
         }
     }
     
+<<<<<<< HEAD
     private func configurePresentMediaPickerViewButton() {
         self.presentMediaPickerViewButton.setTitle("Media Picker", for: .normal)
+=======
+    private func configurePresentMediaPickerButton() {
+        self.presentMediaPickerViewButton.setTitle("Image", for: .normal)
+>>>>>>> 5c416ad9a331fdf87843311a2ce001ca6215ccba
         self.presentMediaPickerViewButton.addTarget(self, action: #selector(self.presentMediaPickverViewButtonAction), for: .touchUpInside)
     }
     
