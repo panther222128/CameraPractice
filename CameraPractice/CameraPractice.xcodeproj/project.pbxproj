@@ -57,7 +57,6 @@
 		A0A096BD2840AD1D00BCB214 /* DefaultStudioRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096BC2840AD1D00BCB214 /* DefaultStudioRepository.swift */; };
 		A0A096C02840AF5300BCB214 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096BF2840AF5300BCB214 /* Observable.swift */; };
 		A0A096C62840C08A00BCB214 /* AuthorizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A096C52840C08A00BCB214 /* AuthorizationManager.swift */; };
-		A0A8D098289789F500B60B48 /* AnimatedWebPCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A8D097289789F500B60B48 /* AnimatedWebPCoder.swift */; };
 		A0BE9E58285C4FF8001B9240 /* AssetEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0BE9E57285C4FF8001B9240 /* AssetEditor.swift */; };
 		A0C135F72861D8EB00BFB841 /* MovieTrimEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07F58FC2861D19E000220E7 /* MovieTrimEditor.swift */; };
 		A0D7C03F2876DD6200BC2FAD /* UIWindow+Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D7C03E2876DD6200BC2FAD /* UIWindow+Orientation.swift */; };
@@ -126,7 +125,6 @@
 		A0A096BC2840AD1D00BCB214 /* DefaultStudioRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultStudioRepository.swift; sourceTree = "<group>"; };
 		A0A096BF2840AF5300BCB214 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		A0A096C52840C08A00BCB214 /* AuthorizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationManager.swift; sourceTree = "<group>"; };
-		A0A8D097289789F500B60B48 /* AnimatedWebPCoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedWebPCoder.swift; sourceTree = "<group>"; };
 		A0BE9E57285C4FF8001B9240 /* AssetEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetEditor.swift; sourceTree = "<group>"; };
 		A0D7C03E2876DD6200BC2FAD /* UIWindow+Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+Orientation.swift"; sourceTree = "<group>"; };
 		A0DA208C2843644E00604A5D /* DefaultStudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultStudio.swift; sourceTree = "<group>"; };
@@ -587,7 +585,6 @@
 		A0F4461D28572D2A00932C21 /* AssetScreenUseCase */ = {
 			isa = PBXGroup;
 			children = (
-				A0A8D097289789F500B60B48 /* AnimatedWebPCoder.swift */,
 				A0F4461F28572D4700932C21 /* AssetScreenUseCase.swift */,
 			);
 			path = AssetScreenUseCase;
@@ -778,7 +775,6 @@
 				A06975D62865922B00FE8462 /* ImageManager.swift in Sources */,
 				A0985E9F2873D9F900C386DE /* AVCaptureConnection.swift in Sources */,
 				A07F58FA2861D144000220E7 /* MovieTrimUseCase.swift in Sources */,
-				A0A8D098289789F500B60B48 /* AnimatedWebPCoder.swift in Sources */,
 				A07F58F42861CE35000220E7 /* MovieTrimViewController.swift in Sources */,
 				A08F071728573ABA005AE166 /* MediaPickerViewModel.swift in Sources */,
 				A087047C2862E9B90091418D /* MovieCombineEditor.swift in Sources */,

@@ -20,24 +20,13 @@ protocol AssetScreenUseCase {
 final class DefaultAssetScreenUseCase: AssetScreenUseCase {
     
     private let assetScreenRepository: AssetScreenRepository
-    private let animatedWebPCoder: AnimatedWebPCoder
     private var assetEditor: AssetEditor
     
     init(assetScreenRepository: AssetScreenRepository, assetEditor: AssetEditor) {
         self.assetScreenRepository = assetScreenRepository
         self.assetEditor = assetEditor
-        self.animatedWebPCoder = DefaultAnimatedWebPCoder()
     }
-    
-    func encode(asset: PHAsset) {
-        self.requestAsset(of: asset) { asset, audioMix, error in
-            if let asset = asset {
-                let animatedImage = self.animatedWebPCoder.encode(asset: asset)
-                
-            }
-        }
-    }
-    
+
     func requestImage(of asset: PHAsset, size: CGSize, resultHandler: @escaping (UIImage?, [AnyHashable : Any]?) -> Void) {
         self.assetScreenRepository.requestImage(of: asset, size: size, resultHandler: resultHandler)
     }
@@ -58,6 +47,20 @@ final class DefaultAssetScreenUseCase: AssetScreenUseCase {
                     case .failure(let error):
                         completion(.failure(error))
                     }
+                }
+            }
+        }
+    }
+    
+    func addTemplate(of url: URL?, to asset: PHAsset, completion: @escaping (Result<URL?, Error>) -> Void) {
+        guard let url = url else { return }
+        self.requestAsset(of: asset) { asset, audioMix, error in
+            self.assetEditor.addTemplate(of: url, to: asset) { result in
+                switch result {
+                case .success(let url):
+                    
+                case .failure(let error):
+                    
                 }
             }
         }
