@@ -380,3 +380,7 @@ extension StudioViewController {
     }
     
 }
+
+class LocalTempTest {
+    
+}
