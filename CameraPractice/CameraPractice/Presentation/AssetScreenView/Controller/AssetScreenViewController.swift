@@ -23,6 +23,7 @@ class AssetScreenViewController: UIViewController {
     private let imageOverlayButton = UIButton()
     private let letterboxButton = UIButton()
     private let applyTemplateButton = UIButton()
+    private let tempImageView = UIImageView()
     
     // MARK: - Media
     private let moviePlayer = AVPlayer()
@@ -133,6 +134,7 @@ extension AssetScreenViewController {
         self.view.addSubview(self.imageOverlayButton)
         self.view.addSubview(self.letterboxButton)
         self.view.addSubview(self.applyTemplateButton)
+        self.view.addSubview(self.tempImageView)
     }
     
     private func configureLayout() {
@@ -166,6 +168,10 @@ extension AssetScreenViewController {
         self.applyTemplateButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.top.equalTo(self.imageOverlayButton.snp.bottom).offset(20)
+        }
+        self.tempImageView.snp.makeConstraints {
+            $0.leading.top.trailing.equalToSuperview()
+            $0.bottom.equalTo(self.applyTemplateButton.snp.bottom)
         }
     }
     

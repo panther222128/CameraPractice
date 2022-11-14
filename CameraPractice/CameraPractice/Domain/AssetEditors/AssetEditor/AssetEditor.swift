@@ -55,6 +55,45 @@ final class DefaultAssetEditor: AssetEditor {
         self.mutableVideoCompositionInstruction = AVMutableVideoCompositionInstruction()
     }
     
+    func addTemplateOverlay(of url: URL?, to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
+        self.addMutableTrack()
+        self.getAssetTrack(from: asset)
+        switch self.insertTimeRangeToMutableCompositionTrack(asset: asset) {
+        case .success(_):
+            guard let assetTrack = assetTrack else {
+                completion(.failure(.insertTimeRangeError))
+                return
+            }
+            guard let mutableCompositionTrack = mutableCompositionTrack else {
+                completion(.failure(.mutableCompositionTrackError))
+                return
+            }
+            self.setPreferredTransform(of: mutableCompositionTrack, to: assetTrack)
+            let videoOrientation = orientation(from: assetTrack.preferredTransform)
+            let videoSize: CGSize
+            if videoOrientation.isPortrait {
+                videoSize = CGSize(width: assetTrack.naturalSize.height, height: assetTrack.naturalSize.width)
+            } else {
+                videoSize = assetTrack.naturalSize
+            }
+            self.setVideoLayer(size: videoSize)
+            self.setOverlayLayer(size: videoSize)
+            self.setOutputLayer(videoLayer: self.videoLayer, overlayLayer: self.overlayLayer, size: videoSize)
+            self.setMutableVideoComposition(size: videoSize, videoLayer: self.videoLayer, outputLayer: self.outputLayer)
+            self.setInstructions(mutableComposition: self.mutableComposition, compositionTrack: mutableCompositionTrack)
+            self.export(composition: self.mutableComposition, videoComposition: self.mutableVideoComposition) { result in
+                switch result {
+                case .success(let url):
+                    completion(.success(url))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
+        case .failure(let error):
+            completion(.failure(error))
+        }
+    }
+    
     func addImageOverlay(of image: UIImage?, to asset: AVAsset, completion: @escaping (Result<URL?, AssetEditorError>) -> Void) {
         self.addMutableTrack()
         self.getAssetTrack(from: asset)
